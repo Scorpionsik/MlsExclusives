@@ -1,0 +1,450 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CoreWPF</name>
+    </assembly>
+    <members>
+        <member name="T:CoreWPF.Interfaces.IIdentify">
+            <summary>
+            Интерфейс для представления данных в формате Id - Имя
+            </summary>
+        </member>
+        <member name="P:CoreWPF.Interfaces.IIdentify.Id">
+            <summary>
+            Id объекта
+            </summary>
+        </member>
+        <member name="P:CoreWPF.Interfaces.IIdentify.Name">
+            <summary>
+            Имя объекта
+            </summary>
+        </member>
+        <member name="T:CoreWPF.MVVM.Interfaces.IModel`1">
+            <summary>
+            Интерфейс для модели
+            </summary>
+        </member>
+        <member name="M:CoreWPF.MVVM.Interfaces.IModel`1.Clone">
+            <summary>
+            Метод создает копию текущей модели
+            </summary>
+            <returns>Возвращает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> - копию</returns>
+        </member>
+        <member name="M:CoreWPF.MVVM.Interfaces.IModel`1.Equals(`0)">
+            <summary>
+            Метод cравнивает модели между собой
+            </summary>
+            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> для сравнения</param>
+            <returns>Возвращает true, если модели равны</returns>
+        </member>
+        <member name="M:CoreWPF.MVVM.Interfaces.IModel`1.Merge(`0)">
+            <summary>
+            Метод переписывает данные из другой модели в текущую
+            </summary>
+            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/>, с которой будет записывать данные</param>
+        </member>
+        <member name="T:CoreWPF.MVVM.NotifyPropertyChanged">
+            <summary>
+            Реализует интерфейс <see cref="T:System.ComponentModel.INotifyPropertyChanged"/>
+            </summary>
+        </member>
+        <member name="E:CoreWPF.MVVM.NotifyPropertyChanged.PropertyChanged">
+            <summary>
+            Событие для обновления привязанного объекта (в XAML)
+            </summary>
+        </member>
+        <member name="M:CoreWPF.MVVM.NotifyPropertyChanged.OnPropertyChanged(System.String)">
+            <summary>
+            Метод для обновления выбранного привязанного объекта (в XAML)
+            </summary>
+            <param name="prop">Принимает строку-имя объекта, который необходимо обновить</param>
+        </member>
+        <member name="E:CoreWPF.MVVM.Model.event_select_model">
+            <summary>
+            Событие выбора данной модели
+            </summary>
+        </member>
+        <member name="P:CoreWPF.MVVM.Model.Event_select_model">
+            <summary>
+            Событие выбора данной модели
+            </summary>
+        </member>
+        <member name="P:CoreWPF.MVVM.Model.ClassName">
+            <summary>
+            Возвращает имя класса текущей модели
+            </summary>
+        </member>
+        <member name="P:CoreWPF.MVVM.Model.Command_select_model">
+            <summary>
+            Команда, вызывающее событие выбора данной модели
+            </summary>
+        </member>
+        <member name="T:CoreWPF.MVVM.Utilites.ListModel`1">
+            <summary>
+            Наследуется от <see cref="T:CoreWPF.Utilites.ListExt`1"/>, адаптируя и расширяя функционал для <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/>
+            </summary>
+            <typeparam name="T">Должен наследоваться от <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/></typeparam>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.#ctor">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="collection">Принимает коллекцию, из которой создает массив элементов</param>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Удаляет из данного массива элементы коллекции; сравнивает объекты массива и коллекции как критерий
+            </summary>
+            <param name="collection">Принимает коллекцию элементов для удаления</param>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.Contains(`0)">
+            <summary>
+            Определяет, входил ли элемент в коллекцию; сравнивает через Equals
+            </summary>
+            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> для сравнения</param>
+            <returns>Возвращает true, если элемент найден, иначе false</returns>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.Clone">
+            <summary>
+            Создает копию текущей коллекции
+            </summary>
+            <returns>Возвращает копию текущей коллекции</returns>
+        </member>
+        <member name="T:CoreWPF.MVVM.Utilites.ListModelExt`1">
+            <summary>
+            Наследуется от <see cref="T:CoreWPF.Utilites.ListExt`1"/>, адаптируя и расширяя функционал для <see cref="T:CoreWPF.MVVM.Interfaces.IModel`1"/>
+            </summary>
+            <typeparam name="T">Должен наследоваться от <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/></typeparam>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.#ctor">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="collection">Принимает коллекцию, из которой создает массив элементов</param>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Удаляет из данного массива элементы коллекции; сравнивает объекты массива и коллекции как критерий
+            </summary>
+            <param name="collection">Принимает коллекцию элементов для удаления</param>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.Contains(`0)">
+            <summary>
+            Определяет, входил ли элемент в коллекцию; сравнивает через Equals
+            </summary>
+            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> для сравнения</param>
+            <returns>Возвращает true, если элемент найден, иначе false</returns>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.Clone">
+            <summary>
+            Создает копию текущей коллекции
+            </summary>
+            <returns>Возвращает копию текущей коллекции</returns>
+        </member>
+        <member name="T:CoreWPF.MVVM.ViewModel">
+            <summary>
+            Класс, который автоматически привязывается к событиям <see cref="T:CoreWPF.Windows.WindowExt"/>
+            </summary>
+        </member>
+        <member name="T:CoreWPF.Utilites.ListExt`1">
+            <summary>
+            Наследуется от <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/>, расширяя функционал
+            </summary>
+            <typeparam name="T">Принимает любой <see cref="T:System.Object"/></typeparam>
+        </member>
+        <member name="P:CoreWPF.Utilites.ListExt`1.First">
+            <summary>
+            Возвращает первый элемент последовательности
+            </summary>
+        </member>
+        <member name="P:CoreWPF.Utilites.ListExt`1.Last">
+            <summary>
+            Возвращает последний элемент последовательности
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.#ctor">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="collection">Принимает коллекцию, из которой создает массив элементов</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.AddRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Добавляет коллекцию в конец массива
+            </summary>
+            <param name="collection">Принимает коллекцию для добавления</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.InsertRange(System.Int32,System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Добавляет коллекцию в указанный индекс массива
+            </summary>
+            <param name="index">Принимает индекс</param>
+            <param name="collection">Принимает коллекцию для добавления</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.FindFirst(System.Func{`0,System.Boolean})">
+            <summary>
+            Возвращает первый элемент последовательности, удовлетворяющий указанному условию
+            </summary>
+            <param name="predicate">Функция для проверки каждого элемента на соответствие условию</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.FindLast(System.Func{`0,System.Boolean})">
+            <summary>
+            Возвращает последний элемент последовательности, удовлетворяющий указанному условию
+            </summary>
+            <param name="predicate">Функция для проверки каждого элемента на соответствие условию</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Удаляет из данного массива элементы коллекции; сравнивает объекты массива и коллекции как критерий
+            </summary>
+            <param name="collection">Принимает коллекцию элементов для удаления</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.Inverse(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Инвертирует полученную коллекцию
+            </summary>
+            <param name="collection">Принимает коллекцию</param>
+            <returns>Возвращает инвертированную коллекцию</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.Inverse">
+            <summary>
+            Инвертирует текущую коллекцию
+            </summary>
+            <returns>Возвращает инвертированную текущую коллекцию</returns>
+        </member>
+        <member name="T:CoreWPF.Utilites.Navigation.NavigationManager">
+            <summary>
+            Предоставляет инструменты для переключения нескольких ViewModel в одном окне.
+            <para>Начало работы: Сначала требуется создать экземпляр текущего менеджера и передать в конструкторе <see cref="T:System.Windows.Threading.Dispatcher"/> и <see cref="T:System.Windows.Controls.ContentControl"/> окна, в котором будут меняться ViewModel. 
+            Далее регистрируются ViewModel (в который передается ссылка на текущий менеджер), View и ключ, по которому можно будет найти ViewModel в коллекции менеджера. Рекомендуется отдельно хранить список ключей, по которым можно обратиться к тому или иному ViewModel.
+            После чего менеджер передается в конструкторе ViewModel основного окна.</para>
+            </summary>
+        </member>
+        <member name="T:CoreWPF.Utilites.RelayCommand">
+            <summary>
+            Класс, реализующий интерфейс <see cref="T:System.Windows.Input.ICommand"/>; определяет команду, принимающей в качестве параметра <see cref="T:System.Object"/>
+            </summary>
+        </member>
+        <member name="F:CoreWPF.Utilites.RelayCommand.execute">
+            <summary>
+            Хранит тело команды
+            </summary>
+        </member>
+        <member name="F:CoreWPF.Utilites.RelayCommand.canExecute">
+            <summary>
+            Хранит условие выполения команды
+            </summary>
+        </member>
+        <member name="E:CoreWPF.Utilites.RelayCommand.CanExecuteChanged">
+            <summary>
+            Происходит при изменениях, влияющих на то, должна выполняться данная команда или нет.
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Utilites.RelayCommand.#ctor(System.Action{System.Object},System.Func{System.Object,System.Boolean})">
+            <summary>
+            Конструктор инициализации команды
+            </summary>
+            <param name="execute">Принимает тело команды</param>
+            <param name="canExecute">Принимает условие выполнения команды</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.RelayCommand.CanExecute(System.Object)">
+            <summary>
+            Определяет метод, который определяет, может ли данная команда выполняться в ее текущем состоянии.
+            </summary>
+            <param name="parameter">Данные, используемые данной командой. Если команда не требует передачи данных, этому объект может быть присвоено значение null.</param>
+            <returns>Вернет true, если эту команду можно выполнить; в противном случае — false.</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.RelayCommand.Execute(System.Object)">
+            <summary>
+            Определяет метод, вызываемый при вызове данной команды.
+            </summary>
+            <param name="parameter">Данные, используемые данной командой. Если команда не требует передачи данных, этому объекту можно присвоить значение null.</param>
+        </member>
+        <member name="T:CoreWPF.Utilites.RelayCommand`1">
+            <summary>
+            Класс, реализующий интерфейс <see cref="T:System.Windows.Input.ICommand"/>; определяет команду, принимающей в качестве параметра <see cref="!:T"/>
+            </summary>
+        </member>
+        <member name="F:CoreWPF.Utilites.RelayCommand`1.execute">
+            <summary>
+            Хранит тело команды
+            </summary>
+        </member>
+        <member name="F:CoreWPF.Utilites.RelayCommand`1.canExecute">
+            <summary>
+            Хранит условие выполения команды
+            </summary>
+        </member>
+        <member name="E:CoreWPF.Utilites.RelayCommand`1.CanExecuteChanged">
+            <summary>
+            Происходит при изменениях, влияющих на то, должна выполняться данная команда или нет.
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Utilites.RelayCommand`1.#ctor(System.Action{`0},System.Func{`0,System.Boolean})">
+            <summary>
+            Конструктор инициализации команды
+            </summary>
+            <param name="execute">Принимает тело команды</param>
+            <param name="canExecute">Принимает условие выполнения команды</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.RelayCommand`1.CanExecute(System.Object)">
+            <summary>
+            Определяет метод, который определяет, может ли данная команда выполняться в ее текущем состоянии.
+            </summary>
+            <param name="parameter">Данные, используемые данной командой. Если команда не требует передачи данных, этому объект может быть присвоено значение null.</param>
+            <returns>Вернет true, если эту команду можно выполнить; в противном случае — false.</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.RelayCommand`1.Execute(System.Object)">
+            <summary>
+            Определяет метод, вызываемый при вызове данной команды.
+            </summary>
+            <param name="parameter">Данные, используемые данной командой. Если команда не требует передачи данных, этому объекту можно присвоить значение null.</param>
+        </member>
+        <member name="T:CoreWPF.Utilites.UnixTime">
+            <summary>
+            Реализует методы для работы с Unix Timestamp
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Utilites.UnixTime.ToDateTime(System.Double,System.TimeZoneInfo)">
+            <summary>
+            Преобразовывает Unix Timestamp в объект класса DateTime
+            </summary>
+            <param name="milliseconds">Принимает Unix Timestamp (в секундах)</param>
+            <returns>Возвращает объект класса DateTime</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.UnixTime.ToDateTime(System.String,System.TimeZoneInfo)">
+            <summary>
+            Переводит строку определенного формата в <see cref="T:System.DateTime"/>
+            </summary>
+            <param name="string_time">Принимает строку в формате "%год%-%месяц%-%день%Т%часы%:%минуты%:%секунды%"</param>
+            <returns>Возвращает <see cref="T:System.DateTime"/> принятой строки</returns>
+            <exception cref="T:System.ArgumentException"/>
+        </member>
+        <member name="M:CoreWPF.Utilites.UnixTime.ToString(System.Double,System.TimeZoneInfo)">
+            <summary>
+            Преобразовывает Unix Timestamp в строчное представление времени
+            </summary>
+            <param name="seconds">Принимает Unix Timestamp</param>
+            <returns>Возвращает строчное представление времени</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.UnixTime.ToUnixTimestamp(System.DateTime)">
+            <summary>
+            Преобразовывает <see cref="T:System.DateTime"/> в Unix Timestamp
+            </summary>
+            <param name="date_time">>Принимает <see cref="T:System.DateTime"/></param>
+            <returns>Возвращает Unix Timestamp</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.UnixTime.CurrentUnixTimestamp(System.TimeZoneInfo)">
+            <summary>
+            Вычисляет текущее время
+            </summary>
+            <returns>Возвращает Unix Timestamp текущего времени</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.UnixTime.CurrentString(System.TimeZoneInfo)">
+            <summary>
+            Вычисляет текущее время
+            </summary>
+            <returns>Возвращает строкое представление текущего времени</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.UnixTime.CurrentDateTime(System.TimeZoneInfo)">
+            <summary>
+            Вычисляет текущее время
+            </summary>
+            <returns>Возвращает <see cref="T:System.DateTime"/> текущего времени</returns>
+        </member>
+        <member name="T:CoreWPF.Backup.UnixTime">
+            <summary>
+            Реализует методы для работы с Unix Timestamp (в секундах)
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Backup.UnixTime.ToDateTime(System.Double)">
+            <summary>
+            Преобразовывает Unix Timestamp в объект класса DateTime
+            </summary>
+            <param name="seconds">Принимает Unix Timestamp (в секундах)</param>
+            <returns>Возвращает объект класса DateTime</returns>
+        </member>
+        <member name="M:CoreWPF.Backup.UnixTime.ToDateTime(System.String)">
+            <summary>
+            Переводит строку определенного формата в <see cref="T:System.DateTime"/>
+            </summary>
+            <param name="string_time">Принимает строку в формате "%год%-%месяц%-%день%Т%часы%:%минуты%:%секунды%"</param>
+            <returns>Возвращает <see cref="T:System.DateTime"/> принятой строки</returns>
+            <exception cref="T:System.ArgumentException"/>
+        </member>
+        <member name="M:CoreWPF.Backup.UnixTime.ToString(System.Double)">
+            <summary>
+            Преобразовывает Unix Timestamp в строчное представление времени
+            </summary>
+            <param name="seconds">Принимает Unix Timestamp</param>
+            <returns>Возвращает строчное представление времени</returns>
+        </member>
+        <member name="M:CoreWPF.Backup.UnixTime.ToString(System.DateTime)">
+            <summary>
+            Преобразовывает <see cref="T:System.DateTime"/> в строчное представление времени
+            </summary>
+            <param name="date_time">Принимает <see cref="T:System.DateTime"/></param>
+            <returns>Возвращает строчное представление времени</returns>
+        </member>
+        <member name="M:CoreWPF.Backup.UnixTime.ToUnixTimestamp(System.DateTime)">
+            <summary>
+            Преобразовывает <see cref="T:System.DateTime"/> в Unix Timestamp
+            </summary>
+            <param name="date_time">>Принимает <see cref="T:System.DateTime"/></param>
+            <returns>Возвращает Unix Timestamp</returns>
+        </member>
+        <member name="M:CoreWPF.Backup.UnixTime.CurrentUnixTimestamp">
+            <summary>
+            Вычисляет текущее время
+            </summary>
+            <returns>Возвращает Unix Timestamp текущего времени</returns>
+        </member>
+        <member name="M:CoreWPF.Backup.UnixTime.CurrentString">
+            <summary>
+            Вычисляет текущее время
+            </summary>
+            <returns>Возвращает строкое представление текущего времени</returns>
+        </member>
+        <member name="M:CoreWPF.Backup.UnixTime.CurrentDateTime">
+            <summary>
+            Вычисляет текущее время
+            </summary>
+            <returns>Возвращает <see cref="T:System.DateTime"/> текущего времени</returns>
+        </member>
+        <member name="P:CoreWPF.Windows.WindowExt.DataContext">
+            <summary>
+            Получает или задает контекст данных для элемента, участвующего в привязке данных.
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Windows.WindowExt.#ctor">
+            <summary>
+            Инициализирует новый экземпляр класса <see cref="T:CoreWPF.Windows.WindowExt"/>
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Windows.WindowExt.WinExtMinimized">
+            <summary>
+            Метод для сворачивания текущего окна
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Windows.WindowExt.WinExtState">
+            <summary>
+            Метод для развертывания (и обратно) текущего окна
+            </summary>
+        </member>
+    </members>
+</doc>

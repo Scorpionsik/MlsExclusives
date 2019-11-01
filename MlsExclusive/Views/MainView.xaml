@@ -1,11 +1,37 @@
-﻿<Window x:Class="MlsExclusive.Views.MainView"
+﻿<window:WindowExt x:Class="MlsExclusive.Views.MainView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:window="clr-namespace:CoreWPF.Windows;assembly=CoreWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="{Binding Path=Title}" Height="450" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+        <!--Панель управления-->
+        <ToolBarTray Grid.Row="0">
+            <ToolBar Header="Меню: " VerticalAlignment="Top" >
+                <Button Content="Загрузить из МЛС"/>
+                <Separator />
+                <Button Content="Записать в формате Яндекс-недвижимость..."/>
+                <Separator />
+                <Button Content="Сохранить результаты работы"/>
+            </ToolBar>
+        </ToolBarTray>
+        <!--конец Панель управления-->
+        <!--Контент-->
+        <ContentControl Grid.Row="1" x:Name="OfferTable"/>
+        <!--конец Контент-->
+        <!--Статусная строка-->
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock Text="{Binding Path=Status_string}" />
+            </StatusBarItem>
+        </StatusBar>
+        <!--конец Статусная строка-->
     </Grid>
-</Window>
+</window:WindowExt>
