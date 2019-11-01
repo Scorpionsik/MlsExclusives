@@ -80,7 +80,6 @@
     <Compile Include="Models\Agency.cs" />
     <Compile Include="Models\MlsOffer.cs" />
     <Compile Include="Utilites\Enums\MlsMode.cs" />
-    <Compile Include="Utilites\StatusString.cs" />
     <Compile Include="Utilites\UpdateTime.cs" />
     <Compile Include="Utilites\MlsServer.cs" />
     <Compile Include="Utilites\User.cs" />

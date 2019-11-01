@@ -4,14 +4,19 @@
         <name>CoreWPF</name>
     </assembly>
     <members>
-        <member name="T:CoreWPF.Interfaces.IIdentify">
+        <member name="T:CoreWPF.Interfaces.IId">
             <summary>
-            Интерфейс для представления данных в формате Id - Имя
+            Интерфейс для представления данных со свойством <see cref="P:CoreWPF.Interfaces.IId.Id"/>.
             </summary>
         </member>
-        <member name="P:CoreWPF.Interfaces.IIdentify.Id">
+        <member name="P:CoreWPF.Interfaces.IId.Id">
             <summary>
             Id объекта
+            </summary>
+        </member>
+        <member name="T:CoreWPF.Interfaces.IIdentify">
+            <summary>
+            Интерфейс для представления данных со свойствами <see cref="P:CoreWPF.Interfaces.IId.Id"/> и <see cref="P:CoreWPF.Interfaces.IIdentify.Name"/>.
             </summary>
         </member>
         <member name="P:CoreWPF.Interfaces.IIdentify.Name">
@@ -19,29 +24,57 @@
             Имя объекта
             </summary>
         </member>
+        <member name="T:CoreWPF.MVVM.Interfaces.IModel">
+            <summary>
+            Реализация клонирования, сравнения и слияния у неявно определенного объекта.
+            </summary>
+        </member>
+        <member name="M:CoreWPF.MVVM.Interfaces.IModel.Clone">
+            <summary>
+            Метод создает копию <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/>
+            </summary>
+            <returns>Возвращает копию текущего <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/></returns>
+        </member>
+        <member name="M:CoreWPF.MVVM.Interfaces.IModel.Equals(CoreWPF.MVVM.Interfaces.IModel)">
+            <summary>
+            Метод cравнивает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> между собой
+            </summary>
+            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> для сравнения</param>
+            <returns>Возвращает true, если <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> равны</returns>
+        </member>
+        <member name="M:CoreWPF.MVVM.Interfaces.IModel.Merge(CoreWPF.MVVM.Interfaces.IModel)">
+            <summary>
+            Метод переписывает данные из другой <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> в текущую
+            </summary>
+            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/>, с которой будет записывать данные</param>
+        </member>
         <member name="T:CoreWPF.MVVM.Interfaces.IModel`1">
             <summary>
-            Интерфейс для модели
+            Реализация клонирования, сравнения и слияния у явно определенного объекта. 
             </summary>
+            <typeparam name="T">Объект, наследующийся от <see cref="T:System.ComponentModel.INotifyPropertyChanged"/></typeparam>
+            <remarks>
+            Ищу применение для того, чтобы отказаться от неявно определенного <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/>. Если в итоге использоваться не будет, или в нём не будет толку - удалю.
+            </remarks>
         </member>
         <member name="M:CoreWPF.MVVM.Interfaces.IModel`1.Clone">
             <summary>
-            Метод создает копию текущей модели
+            Метод создает копию T
             </summary>
-            <returns>Возвращает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> - копию</returns>
+            <returns>Возвращает копию текущего объекта</returns>
         </member>
         <member name="M:CoreWPF.MVVM.Interfaces.IModel`1.Equals(`0)">
             <summary>
-            Метод cравнивает модели между собой
+            Метод cравнивает Т между собой
             </summary>
-            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> для сравнения</param>
-            <returns>Возвращает true, если модели равны</returns>
+            <param name="model">Принимает Т для сравнения</param>
+            <returns>Возвращает true, если Т равны</returns>
         </member>
         <member name="M:CoreWPF.MVVM.Interfaces.IModel`1.Merge(`0)">
             <summary>
-            Метод переписывает данные из другой модели в текущую
+            Метод переписывает данные из другой Т в текущую
             </summary>
-            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/>, с которой будет записывать данные</param>
+            <param name="model">Принимает Т, с которой будет записывать данные</param>
         </member>
         <member name="T:CoreWPF.MVVM.NotifyPropertyChanged">
             <summary>
@@ -87,20 +120,20 @@
         </member>
         <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.#ctor">
             <summary>
-            Конструктор
+            Инициализирует новый экземпляр класса <see cref="T:CoreWPF.MVVM.Utilites.ListModel`1"/>.
             </summary>
         </member>
         <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
             <summary>
-            Конструктор
+            Инициализирует новый экземпляр класса <see cref="T:CoreWPF.MVVM.Utilites.ListModel`1"/>, который содержит элементы, скопированные из указанной коллекции.
             </summary>
-            <param name="collection">Принимает коллекцию, из которой создает массив элементов</param>
+            <param name="collection">Принимает коллекцию, которая будет скорпирована в текущий экземпляр <see cref="T:CoreWPF.MVVM.Utilites.ListModel`1"/>.</param>
         </member>
         <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
             <summary>
-            Удаляет из данного массива элементы коллекции; сравнивает объекты массива и коллекции как критерий
+            Удаляет из данного массива элементы коллекции; сравнивает объекты массива и коллекции, используя <see cref="M:CoreWPF.MVVM.Interfaces.IModel.Equals(CoreWPF.MVVM.Interfaces.IModel)"/>.
             </summary>
-            <param name="collection">Принимает коллекцию элементов для удаления</param>
+            <param name="collection">Принимает коллекцию элементов для сравнения и удаления</param>
         </member>
         <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.Contains(`0)">
             <summary>
@@ -119,7 +152,7 @@
             <summary>
             Наследуется от <see cref="T:CoreWPF.Utilites.ListExt`1"/>, адаптируя и расширяя функционал для <see cref="T:CoreWPF.MVVM.Interfaces.IModel`1"/>
             </summary>
-            <typeparam name="T">Должен наследоваться от <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/></typeparam>
+            <typeparam name="T">Объект должен наследоваться от <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> и <see cref="T:CoreWPF.MVVM.Interfaces.IModel`1"/></typeparam>
         </member>
         <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.#ctor">
             <summary>
@@ -162,26 +195,26 @@
             </summary>
             <typeparam name="T">Принимает любой <see cref="T:System.Object"/></typeparam>
         </member>
-        <member name="P:CoreWPF.Utilites.ListExt`1.First">
+        <member name="P:CoreWPF.Utilites.ListExt`1.FirstElement">
             <summary>
             Возвращает первый элемент последовательности
             </summary>
         </member>
-        <member name="P:CoreWPF.Utilites.ListExt`1.Last">
+        <member name="P:CoreWPF.Utilites.ListExt`1.LastElement">
             <summary>
             Возвращает последний элемент последовательности
             </summary>
         </member>
         <member name="M:CoreWPF.Utilites.ListExt`1.#ctor">
             <summary>
-            Конструктор
+            Инициализирует новый экземпляр класса <see cref="T:CoreWPF.Utilites.ListExt`1"/>.
             </summary>
         </member>
         <member name="M:CoreWPF.Utilites.ListExt`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
             <summary>
-            Конструктор
+            Инициализирует новый экземпляр класса <see cref="T:CoreWPF.Utilites.ListExt`1"/>, который содержит элементы, скопированные из указанной коллекции.
             </summary>
-            <param name="collection">Принимает коллекцию, из которой создает массив элементов</param>
+            <param name="collection">Принимает коллекцию, которая будет скорпирована в текущий экземпляр <see cref="T:CoreWPF.Utilites.ListExt`1"/>.</param>
         </member>
         <member name="M:CoreWPF.Utilites.ListExt`1.AddRange(System.Collections.Generic.IEnumerable{`0})">
             <summary>
@@ -214,18 +247,18 @@
             </summary>
             <param name="collection">Принимает коллекцию элементов для удаления</param>
         </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.Inverse">
+            <summary>
+            Инвертирует текущую коллекцию
+            </summary>
+            <returns>Возвращает инвертированную текущую коллекцию</returns>
+        </member>
         <member name="M:CoreWPF.Utilites.ListExt`1.Inverse(System.Collections.Generic.IEnumerable{`0})">
             <summary>
             Инвертирует полученную коллекцию
             </summary>
             <param name="collection">Принимает коллекцию</param>
             <returns>Возвращает инвертированную коллекцию</returns>
-        </member>
-        <member name="M:CoreWPF.Utilites.ListExt`1.Inverse">
-            <summary>
-            Инвертирует текущую коллекцию
-            </summary>
-            <returns>Возвращает инвертированную текущую коллекцию</returns>
         </member>
         <member name="T:CoreWPF.Utilites.Navigation.NavigationManager">
             <summary>
@@ -315,6 +348,46 @@
             </summary>
             <param name="parameter">Данные, используемые данной командой. Если команда не требует передачи данных, этому объекту можно присвоить значение null.</param>
         </member>
+        <member name="T:CoreWPF.Utilites.StatusString">
+            <summary>
+            Строка с исчезающим со временем текстом; реализует интерфейс <see cref="T:System.ComponentModel.INotifyPropertyChanged"/>
+            </summary>
+            <remarks>
+            Удобно использовать в качестве статус-бара окна.
+            </remarks>
+        </member>
+        <member name="F:CoreWPF.Utilites.StatusString.LongTime">
+            <summary>
+            Константа для метода <see cref="M:CoreWPF.Utilites.StatusString.SetAsync(System.String,System.Double)"/>; задает 5-секундный интервал отображения текста.
+            </summary>
+        </member>
+        <member name="F:CoreWPF.Utilites.StatusString.ShortTime">
+            <summary>
+            Константа для метода <see cref="M:CoreWPF.Utilites.StatusString.SetAsync(System.String,System.Double)"/>; задает 3-секундный интервал отображения текста.
+            </summary>
+        </member>
+        <member name="F:CoreWPF.Utilites.StatusString.Infinite">
+            <summary>
+            Константа для метода <see cref="M:CoreWPF.Utilites.StatusString.SetAsync(System.String,System.Double)"/>; текст не исчезнет, пока вы не вызовите метод <see cref="M:CoreWPF.Utilites.StatusString.ClearAsync"/> или заново <see cref="M:CoreWPF.Utilites.StatusString.SetAsync(System.String,System.Double)"/>.
+            </summary>
+        </member>
+        <member name="P:CoreWPF.Utilites.StatusString.Status">
+            <summary>
+            Строка для отображения статуса
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Utilites.StatusString.SetAsync(System.String,System.Double)">
+            <summary>
+            Метод для установки текста
+            </summary>
+            <param name="status">Текст для отображения</param>
+            <param name="milliseconds">Интервал отображения текста; можно использовать константы <see cref="F:CoreWPF.Utilites.StatusString.LongTime"/>, <see cref="F:CoreWPF.Utilites.StatusString.ShortTime"/> и <see cref="F:CoreWPF.Utilites.StatusString.Infinite"/>.</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.StatusString.ClearAsync">
+            <summary>
+            Метод для стирания текста
+            </summary>
+        </member>
         <member name="T:CoreWPF.Utilites.UnixTime">
             <summary>
             Реализует методы для работы с Unix Timestamp
@@ -362,65 +435,6 @@
             <returns>Возвращает строкое представление текущего времени</returns>
         </member>
         <member name="M:CoreWPF.Utilites.UnixTime.CurrentDateTime(System.TimeZoneInfo)">
-            <summary>
-            Вычисляет текущее время
-            </summary>
-            <returns>Возвращает <see cref="T:System.DateTime"/> текущего времени</returns>
-        </member>
-        <member name="T:CoreWPF.Backup.UnixTime">
-            <summary>
-            Реализует методы для работы с Unix Timestamp (в секундах)
-            </summary>
-        </member>
-        <member name="M:CoreWPF.Backup.UnixTime.ToDateTime(System.Double)">
-            <summary>
-            Преобразовывает Unix Timestamp в объект класса DateTime
-            </summary>
-            <param name="seconds">Принимает Unix Timestamp (в секундах)</param>
-            <returns>Возвращает объект класса DateTime</returns>
-        </member>
-        <member name="M:CoreWPF.Backup.UnixTime.ToDateTime(System.String)">
-            <summary>
-            Переводит строку определенного формата в <see cref="T:System.DateTime"/>
-            </summary>
-            <param name="string_time">Принимает строку в формате "%год%-%месяц%-%день%Т%часы%:%минуты%:%секунды%"</param>
-            <returns>Возвращает <see cref="T:System.DateTime"/> принятой строки</returns>
-            <exception cref="T:System.ArgumentException"/>
-        </member>
-        <member name="M:CoreWPF.Backup.UnixTime.ToString(System.Double)">
-            <summary>
-            Преобразовывает Unix Timestamp в строчное представление времени
-            </summary>
-            <param name="seconds">Принимает Unix Timestamp</param>
-            <returns>Возвращает строчное представление времени</returns>
-        </member>
-        <member name="M:CoreWPF.Backup.UnixTime.ToString(System.DateTime)">
-            <summary>
-            Преобразовывает <see cref="T:System.DateTime"/> в строчное представление времени
-            </summary>
-            <param name="date_time">Принимает <see cref="T:System.DateTime"/></param>
-            <returns>Возвращает строчное представление времени</returns>
-        </member>
-        <member name="M:CoreWPF.Backup.UnixTime.ToUnixTimestamp(System.DateTime)">
-            <summary>
-            Преобразовывает <see cref="T:System.DateTime"/> в Unix Timestamp
-            </summary>
-            <param name="date_time">>Принимает <see cref="T:System.DateTime"/></param>
-            <returns>Возвращает Unix Timestamp</returns>
-        </member>
-        <member name="M:CoreWPF.Backup.UnixTime.CurrentUnixTimestamp">
-            <summary>
-            Вычисляет текущее время
-            </summary>
-            <returns>Возвращает Unix Timestamp текущего времени</returns>
-        </member>
-        <member name="M:CoreWPF.Backup.UnixTime.CurrentString">
-            <summary>
-            Вычисляет текущее время
-            </summary>
-            <returns>Возвращает строкое представление текущего времени</returns>
-        </member>
-        <member name="M:CoreWPF.Backup.UnixTime.CurrentDateTime">
             <summary>
             Вычисляет текущее время
             </summary>

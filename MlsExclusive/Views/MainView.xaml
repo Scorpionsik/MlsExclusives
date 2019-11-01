@@ -8,28 +8,118 @@
         Title="{Binding Path=Title}" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="27"/>
+            <RowDefinition Height="29"/>
             <RowDefinition/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
         <!--Панель управления-->
-        <ToolBarTray Grid.Row="0">
-            <ToolBar Header="Меню: " VerticalAlignment="Top" >
-                <Button Content="Загрузить из МЛС"/>
+        <ToolBar Grid.Row="0" Header="Меню: " VerticalAlignment="Top" Background="{StaticResource MlsLightGreen}">
+            <Button Content="Загрузить из МЛС" Command="{Binding Path=Command_LoadMls}"/>
                 <Separator />
-                <Button Content="Записать в формате Яндекс-недвижимость..."/>
+            <Button Content="Записать в формате Яндекс-недвижимость..."/>
                 <Separator />
                 <Button Content="Сохранить результаты работы"/>
+                <Separator />
+                <Button Content="Настройки"/>
             </ToolBar>
-        </ToolBarTray>
         <!--конец Панель управления-->
-        <!--Контент-->
-        <ContentControl Grid.Row="1" x:Name="OfferTable"/>
-        <!--конец Контент-->
+        <!--Фильтры-->
+        <DockPanel Grid.Row="1" LastChildFill="False">
+            <Label DockPanel.Dock="Left" Content="Фильтры: " Margin="5 2 0 0"/>
+            <ListBox ItemsSource="{Binding Path=Filters}" SelectedItem="{Binding Path=Select_filter}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource MlsGreen}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding Path=Key}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+        <!--конец Фильтры-->
+        <!--Таблицы-->
+        <Border Grid.Row="2" BorderBrush="{StaticResource MlsGreen}" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <!--Таблица агенств-->
+                <ListBox Grid.Column="0" ItemsSource="{Binding Path=Agencys}" SelectedItem="{Binding Path=Select_agency}" Background="{StaticResource MlsDarkGreen}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Margin" Value="3"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                        <Border Background="{TemplateBinding Background}">
+                                            <ContentPresenter/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource MlsGreen}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="False">
+                                                <Setter Property="Background" Value="{StaticResource MlsLightGreen}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel LastChildFill="False">
+                                <TextBlock DockPanel.Dock="Top" TextAlignment="Center" Text="{Binding Path=Name}" FontSize="20px" FontWeight="Bold"/>
+                                <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
+                                    <CheckBox DockPanel.Dock="Left" Content="Сохранять в файл" IsChecked="{Binding Path=IsLoad}"/>
+                                    <CheckBox DockPanel.Dock="Right" Content="Сохранять фото" IsChecked="{Binding Path=IsPicLoad}"/>
+                                </DockPanel>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <!--конец Таблица агенств-->
+                <!--Splitter-->
+                <GridSplitter Grid.Column="1" Background="{StaticResource MlsLightGreen}" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+                <!--конец Splitter-->
+                <!--Таблица объектов выбранного агенства-->
+                <ListBox Grid.Column="2" ItemsSource="{Binding Path=Current_offers}">
+                
+                </ListBox>
+                <!--конец Таблица объектов выбранного агенства-->
+            </Grid>
+        </Border>
+        <!--конец Таблицы-->
         <!--Статусная строка-->
-        <StatusBar Grid.Row="2">
+        <StatusBar Grid.Row="3" Background="{StaticResource MlsLightGreen}">
             <StatusBarItem>
-                <TextBlock Text="{Binding Path=Status_string}" />
+                <TextBlock Text="{Binding Path=StatusBar.Status}" />
             </StatusBarItem>
         </StatusBar>
         <!--конец Статусная строка-->
