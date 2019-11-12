@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MlsExclusive.Utilites.Enums
+{
+    public enum OfferStatus
+    {
+        New,
+        NoChanges,
+        Modify,
+        Delete
+    }
+}

@@ -14,7 +14,7 @@
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
         <!--Панель управления-->
-        <ToolBar Grid.Row="0" Header="Меню: " VerticalAlignment="Top" Background="{StaticResource MlsLightGreen}">
+        <ToolBar Grid.Row="0" Header="Меню: " VerticalAlignment="Top" Background="{StaticResource MlsAbsoluteLightGreen}" BorderThickness="0">
             <Button Content="Загрузить из МЛС" Command="{Binding Path=Command_LoadMls}"/>
                 <Separator />
             <Button Content="Записать в формате Яндекс-недвижимость..."/>
@@ -25,7 +25,7 @@
             </ToolBar>
         <!--конец Панель управления-->
         <!--Фильтры-->
-        <DockPanel Grid.Row="1" LastChildFill="False">
+        <DockPanel Grid.Row="1" LastChildFill="False" Background="{StaticResource MlsLightGreen}">
             <Label DockPanel.Dock="Left" Content="Фильтры: " Margin="5 2 0 0"/>
             <ListBox ItemsSource="{Binding Path=Filters}" SelectedItem="{Binding Path=Select_filter}">
                 <ListBox.ItemsPanel>
@@ -110,14 +110,41 @@
                 <!--конец Splitter-->
                 <!--Таблица объектов выбранного агенства-->
                 <ListBox Grid.Column="2" ItemsSource="{Binding Path=Current_offers}">
-                
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="100"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="3*"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" TextAlignment="Left" FontSize="18px" FontWeight="Bold" Text="{Binding StringFormat=Комнат: {0}, Path=RoomCount}"/>
+                                    <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Type}"/>
+                                    <StackPanel Orientation="Horizontal" Grid.Column="2">
+                                        <TextBlock TextAlignment="Right" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Price}"/>
+                                        <TextBlock TextAlignment="Right" FontSize="18px" FontWeight="Bold" Text=" $"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
                 <!--конец Таблица объектов выбранного агенства-->
             </Grid>
         </Border>
         <!--конец Таблицы-->
         <!--Статусная строка-->
-        <StatusBar Grid.Row="3" Background="{StaticResource MlsLightGreen}">
+        <StatusBar Grid.Row="3" Background="{StaticResource MlsAbsoluteLightGreen}">
             <StatusBarItem>
                 <TextBlock Text="{Binding Path=StatusBar.Status}" />
             </StatusBarItem>

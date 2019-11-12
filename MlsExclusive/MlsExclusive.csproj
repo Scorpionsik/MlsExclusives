@@ -61,14 +61,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\MainModules\FlatModule.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainModules\HouseModule.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -80,16 +72,11 @@
     <Compile Include="Models\Agency.cs" />
     <Compile Include="Models\MlsOffer.cs" />
     <Compile Include="Utilites\Enums\MlsMode.cs" />
+    <Compile Include="Utilites\Enums\OfferStatus.cs" />
     <Compile Include="Utilites\UpdateTime.cs" />
     <Compile Include="Utilites\MlsServer.cs" />
     <Compile Include="Utilites\User.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="Views\MainModules\FlatModule.xaml.cs">
-      <DependentUpon>FlatModule.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MainModules\HouseModule.xaml.cs">
-      <DependentUpon>HouseModule.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>

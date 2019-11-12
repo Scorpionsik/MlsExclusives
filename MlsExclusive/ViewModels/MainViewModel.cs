@@ -10,6 +10,7 @@ using CoreWPF.Utilites.Navigation;
 using CoreWPF.MVVM.Interfaces;
 using System.IO;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MlsExclusive.ViewModels
 {
@@ -193,6 +194,7 @@ namespace MlsExclusive.ViewModels
                     catch(Exception e)
                     {
                         //write in error-log code here
+                        Debug.Print(e.Message);
                     }
                 }
             });

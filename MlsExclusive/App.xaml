@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:MlsExclusive"
              StartupUri="Views/MainView.xaml">
     <Application.Resources>
+        <SolidColorBrush x:Key="MlsAbsoluteLightGreen" Color="#F3F9F0"/>
         <SolidColorBrush x:Key="MlsLightGreen" Color="#CEE6C1"/>
         <SolidColorBrush x:Key="MlsGreen">#71BC78</SolidColorBrush>
         <SolidColorBrush x:Key="MlsDarkGreen">#355823</SolidColorBrush>

@@ -17,8 +17,10 @@ namespace MlsExclusive.Models
             set
             {
                 this.isload = value;
+                //if (!this.isload) this.IsPicLoad = false;
                 //чтобы при нажатии на CheckBox было выбрано агенство-хозяин CheckBox
                 this.Command_select_model?.Execute(null);
+                if (!this.isload) this.IsPicLoad = false;
                 this.OnPropertyChanged("IsLoad");
             }
         }
@@ -29,7 +31,9 @@ namespace MlsExclusive.Models
             get { return this.ispicload; }
             set
             {
+
                 this.ispicload = value;
+
                 //чтобы при нажатии на CheckBox было выбрано агенство-хозяин CheckBox
                 this.Command_select_model?.Execute(null);
                 this.OnPropertyChanged("IsPicLoad");
