@@ -3,7 +3,6 @@ using CoreWPF.MVVM.Interfaces;
 using CoreWPF.Utilites;
 using MlsExclusive.Utilites.Enums;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 
 namespace MlsExclusive.Models
@@ -14,7 +13,17 @@ namespace MlsExclusive.Models
         public int Id { get; private set; }
         public MlsMode Mode { get; private set; }
         public string Changes { get; private set; }
-        public string Link { get; set; }
+
+        private string link;
+        public string Link
+        {
+            get { return this.link; }
+            set
+            {
+                this.link = value;
+                this.OnPropertyChanged("Link");
+            }
+        }
 
         public OfferStatus Status { get; private set; }
         public int RoomCount { get; private set; }
@@ -38,8 +47,8 @@ namespace MlsExclusive.Models
         public string GasValue { get; private set; }
         public string SewerageValue { get; private set; }
         public string BathroomValue { get; private set; }
-        public List<string> Phones { get; private set; }
-        public List<string> Photos { get; private set; }
+        public ListExt<string> Phones { get; private set; }
+        public ListExt<string> Photos { get; private set; }
         public string Date { get; private set; }
 
         public MlsOffer(string mls_string, MlsMode mode)
@@ -48,7 +57,7 @@ namespace MlsExclusive.Models
             this.Status = OfferStatus.New;
             this.Link = "";
             string[] old_values = mls_string.Split('\t');
-            List<string> values = new List<string>();
+            ListExt<string> values = new ListExt<string>();
             foreach(string s in old_values)
             {
                 values.Add(s.Replace("\"", ""));
@@ -115,14 +124,14 @@ namespace MlsExclusive.Models
                 try
                 {
                     values[17] = values[17].Remove(values[17].Length - 1);
-                    this.Phones = new List<string>(values[17].Split(','));
+                    this.Phones = new ListExt<string>(values[17].Split(','));
                 }
-                catch { this.Phones = new List<string>(); }
+                catch { this.Phones = new ListExt<string>(); }
                 if(values[18] != @"https://mls.kh.ua/photo/.jpg")
                 {
-                    this.Photos = new List<string>(values[18].Split(','));
+                    this.Photos = new ListExt<string>(values[18].Split(','));
                 }
-                else this.Photos = new List<string>();
+                else this.Photos = new ListExt<string>();
                 this.Date = values[19];
                 this.Id = Convert.ToInt32(values[20]);
             }
@@ -160,14 +169,14 @@ namespace MlsExclusive.Models
                 try
                 {
                     values[19] = values[19].Remove(values[19].Length - 1);
-                    this.Phones = new List<string>(values[19].Split(','));
+                    this.Phones = new ListExt<string>(values[19].Split(','));
                 }
-                catch { this.Phones = new List<string>(); }
+                catch { this.Phones = new ListExt<string>(); }
                 if (values[20] != @"https://mls.kh.ua/photo/.jpg")
                 {
-                    this.Photos = new List<string>(values[20].Split(','));
+                    this.Photos = new ListExt<string>(values[20].Split(','));
                 }
-                else this.Photos = new List<string>();
+                else this.Photos = new ListExt<string>();
                 this.Date = values[21];
 
                 this.Id = Convert.ToInt32(values[22]);
@@ -315,8 +324,23 @@ namespace MlsExclusive.Models
                 }
 
                 //set status
-                if (this.Changes.Length > 0) this.Status = OfferStatus.Modify;
-                else this.Status = OfferStatus.NoChanges;
+                if (this.Changes.Length > 0)
+                {
+                    if (this.Status != OfferStatus.Modify)
+                    {
+                        this.Status = OfferStatus.Modify;
+                        this.Command_select_model?.Execute(null);
+                    }
+
+                }
+                else
+                {
+                    if (this.Status != OfferStatus.NoChanges)
+                    {
+                        this.Status = OfferStatus.NoChanges;
+                        this.Command_select_model?.Execute(null);
+                    }
+                }
             }
         }
 
@@ -337,7 +361,7 @@ namespace MlsExclusive.Models
                     }
                     catch { }
                 },
-                (obj) => obj != null && obj.Length > 0 & obj.Contains("newcab.bee.th1.vps-private.net")
+                (obj) => obj != null && obj.Length > 0 && obj.ToLower().Contains("newcab.bee.th1.vps-private.net")
                 );
             }
         }

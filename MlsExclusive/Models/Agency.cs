@@ -17,10 +17,10 @@ namespace MlsExclusive.Models
             set
             {
                 this.isload = value;
-                //if (!this.isload) this.IsPicLoad = false;
+                if (!this.isload) this.IsPicLoad = false;
                 //чтобы при нажатии на CheckBox было выбрано агенство-хозяин CheckBox
                 this.Command_select_model?.Execute(null);
-                if (!this.isload) this.IsPicLoad = false;
+                //if (!this.isload) this.IsPicLoad = false;
                 this.OnPropertyChanged("IsLoad");
             }
         }
@@ -85,8 +85,19 @@ namespace MlsExclusive.Models
 
         public void AddOffer(MlsOffer offer)
         {
-            offer.Event_select_model = new Action<Model>(this.SetBindings);
-            this.Offers.Add(offer);
+            try
+            {
+                MlsOffer tmp = this.Offers.FindFirst(new Func<MlsOffer, bool>(obj =>
+                 {
+                     return offer.Equals(obj);
+                 }));
+                tmp.Merge(offer);
+            }
+            catch
+            {
+                offer.Event_select_model = new Action<Model>(this.SetBindings);
+                this.Offers.Add(offer);
+            }
         }
 
         private void SetBindings(object obj, NotifyCollectionChangedEventArgs e)

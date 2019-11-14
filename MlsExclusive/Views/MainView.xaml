@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:window="clr-namespace:CoreWPF.Windows;assembly=CoreWPF"
+        xmlns:corewpf="clr-namespace:CoreWPF.Utilites;assembly=CoreWPF"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         Title="{Binding Path=Title}" Height="450" Width="800">
     <Grid>
@@ -16,13 +18,13 @@
         <!--Панель управления-->
         <ToolBar Grid.Row="0" Header="Меню: " VerticalAlignment="Top" Background="{StaticResource MlsAbsoluteLightGreen}" BorderThickness="0">
             <Button Content="Загрузить из МЛС" Command="{Binding Path=Command_LoadMls}"/>
-                <Separator />
+            <Separator />
             <Button Content="Записать в формате Яндекс-недвижимость..."/>
-                <Separator />
-                <Button Content="Сохранить результаты работы"/>
-                <Separator />
-                <Button Content="Настройки"/>
-            </ToolBar>
+            <Separator />
+            <Button Content="Сохранить результаты работы"/>
+            <Separator />
+            <Button Content="Настройки"/>
+        </ToolBar>
         <!--конец Панель управления-->
         <!--Фильтры-->
         <DockPanel Grid.Row="1" LastChildFill="False" Background="{StaticResource MlsLightGreen}">
@@ -98,7 +100,7 @@
                                 <TextBlock DockPanel.Dock="Top" TextAlignment="Center" Text="{Binding Path=Name}" FontSize="20px" FontWeight="Bold"/>
                                 <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
                                     <CheckBox DockPanel.Dock="Left" Content="Сохранять в файл" IsChecked="{Binding Path=IsLoad}"/>
-                                    <CheckBox DockPanel.Dock="Right" Content="Сохранять фото" IsChecked="{Binding Path=IsPicLoad}"/>
+                                    <CheckBox DockPanel.Dock="Right" Content="Сохранять фото" IsEnabled="{Binding Path=IsLoad}" IsChecked="{Binding Path=IsPicLoad}"/>
                                 </DockPanel>
                             </DockPanel>
                         </DataTemplate>
@@ -108,38 +110,230 @@
                 <!--Splitter-->
                 <GridSplitter Grid.Column="1" Background="{StaticResource MlsLightGreen}" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
                 <!--конец Splitter-->
-                <!--Таблица объектов выбранного агенства-->
-                <ListBox Grid.Column="2" ItemsSource="{Binding Path=Current_offers}">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="100"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid Grid.Row="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="3*"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" TextAlignment="Left" FontSize="18px" FontWeight="Bold" Text="{Binding StringFormat=Комнат: {0}, Path=RoomCount}"/>
-                                    <TextBlock Grid.Column="1" TextAlignment="Center" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Type}"/>
-                                    <StackPanel Orientation="Horizontal" Grid.Column="2">
-                                        <TextBlock TextAlignment="Right" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Price}"/>
-                                        <TextBlock TextAlignment="Right" FontSize="18px" FontWeight="Bold" Text=" $"/>
-                                    </StackPanel>
+                <Grid Grid.Column="2" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <!--Режим-->
+                    <ListBox Background="{StaticResource MlsLightGreen}" Grid.Row="0" ItemsSource="{Binding Path=Modes}" SelectedItem="{Binding Path=Select_mode}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" Rows="1" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource MlsGreen}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                    <!--конец Режим-->
+                    <!--Таблица объектов выбранного агенства-->
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Path=Current_offers}" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource MlsLightGreen}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="70"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="50"/>
+                                            <RowDefinition Height="20"/>
+                                        </Grid.RowDefinitions>
+                                        <!--Заголовок-->
+                                        <Grid Grid.Row="0" Background="{StaticResource MlsGreen}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="3*"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.RowSpan="2" TextAlignment="Left" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Status}"/>
+                                            <TextBlock Grid.Column="1" Grid.Row="0" TextAlignment="Center" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Type}"/>
+                                            <TextBlock Grid.Column="1" Grid.Row="1" TextAlignment="Center" FontSize="14px" FontWeight="Bold" Text="{Binding StringFormat=комнат: {0}, Path=RoomCount}"/>
+                                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Grid.Column="2" Grid.RowSpan="2" HorizontalAlignment="Right">
+                                                <TextBlock TextAlignment="Right" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Price}"/>
+                                                <TextBlock TextAlignment="Right" FontSize="18px" FontWeight="Bold" Text=" $"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <!--конец Заголовок-->
+                                        <!--Ссылка-->
+                                        <DockPanel LastChildFill="True" Grid.Row="1">
+                                            <Button Content="Перейти" DockPanel.Dock="Right" Command="{Binding Path=Command_OpenLink}" CommandParameter="{Binding Path=Link}"/>
+                                            <TextBox Text="{Binding Path=Link, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </DockPanel>
+                                        <!--конец Ссылка-->
+                                    </Grid>
+                                    <Grid Grid.Row="1">
+                                        
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition Width="3*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <!--Характеристики-->
+                                        <StackPanel Orientation="Vertical" Grid.Column="0">
+
+                                            <StackPanel Orientation="Vertical">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Дата добавления: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=Date}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Материал: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=Materials}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Состояние: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=LiveStatus}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Margin="0 0 0 10"/>
+                                            <StackPanel Orientation="Vertical">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Район: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=District}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Ориентир: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=Guidemark}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock FontWeight="Bold" Text="Улица: "/>
+                                                    <TextBox IsReadOnly="True" Text="{Binding Path=Street}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Margin="0 0 0 10"/>
+                                            <StackPanel Orientation="Vertical">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock FontWeight="Bold" Text="Этажность: "/>
+                                                    <TextBlock Text="{Binding Path=Floor}"/>
+                                                    <TextBlock Text="/"/>
+                                                    <TextBlock Text="{Binding Path=Floors}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Балкон: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=BalconyType}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Санузел: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=BathroomType}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Комнаты: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=RoomsType}"/>
+                                                </StackPanel>
+                                                <StackPanel Margin="0 0 0 10"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Газ: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=GasValue}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Канализация: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=SewerageValue}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Наличие санузла: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=BathroomValue}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Margin="0 0 0 10"/>
+                                            <GroupBox Header="Телефоны">
+                                                <ListBox ItemsSource="{Binding Path=Phones}">
+                                                    <i:Interaction.Behaviors>
+                                                        <corewpf:IgnoreMouseWheelBehavior/>
+                                                    </i:Interaction.Behaviors>
+                                                    <ListBox.ItemContainerStyle>
+                                                        <Style TargetType="ListBoxItem">
+                                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                        </Style>
+                                                    </ListBox.ItemContainerStyle>
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBox IsReadOnly="True" Text="{Binding Mode=OneTime}"/>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                            </GroupBox>
+                                        </StackPanel>
+                                        <!--конец Характеристики-->
+
+                                        <StackPanel Orientation="Vertical" Grid.Column="2">
+                                            <!--Фотографии-->
+                                            <TextBlock Text="{Binding StringFormat=Фото: {0}, Path=Photos.Count}" FontWeight="Bold"/>
+                                            <ListBox ItemsSource="{Binding Path=Photos}">
+                                                <i:Interaction.Behaviors>
+                                                    <corewpf:IgnoreMouseWheelBehavior/>
+                                                </i:Interaction.Behaviors>
+                                                <ListBox.ItemContainerStyle>
+                                                    <Style TargetType="ListBoxItem">
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                    </Style>
+                                                </ListBox.ItemContainerStyle>
+                                                <ListBox.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel Orientation="Horizontal"/>
+                                                    </ItemsPanelTemplate>
+                                                </ListBox.ItemsPanel>
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Image HorizontalAlignment="Left" Source="{Binding}" MaxHeight="300"/>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                            <!--конец Фотографии-->
+                                            <!--Изменения-->
+                                            <StackPanel Orientation="Vertical">
+                                                <TextBlock Text="Изменения:" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding Path=Changes}"/>
+                                            </StackPanel>
+                                            <!--конец Изменения-->
+                                        </StackPanel>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <!--конец Таблица объектов выбранного агенства-->
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <!--конец Таблица объектов выбранного агенства-->
+                </Grid>
             </Grid>
         </Border>
         <!--конец Таблицы-->
@@ -147,6 +341,12 @@
         <StatusBar Grid.Row="3" Background="{StaticResource MlsAbsoluteLightGreen}">
             <StatusBarItem>
                 <TextBlock Text="{Binding Path=StatusBar.Status}" />
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <TextBlock Text="{Binding StringFormat=Отображается: {0}, Path=Current_offers.Count}"/>
+            </StatusBarItem>
+            <StatusBarItem  HorizontalAlignment="Right">
+                <TextBlock Text="{Binding StringFormat=Последнее обновление: {0}, Path=CurrentUpdateTime}"/>
             </StatusBarItem>
         </StatusBar>
         <!--конец Статусная строка-->

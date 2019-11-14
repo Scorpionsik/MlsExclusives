@@ -17,7 +17,7 @@ namespace MlsExclusive.ViewModels
     public class MainViewModel : ViewModel
     {
         private bool filterBlock = false;
-        private bool modeBlock = false;
+        private bool modeBlock = true;
 
         public bool Unblock { get; private set; }
 
@@ -153,26 +153,40 @@ namespace MlsExclusive.ViewModels
             });
         }
 
-        private async void LoadMlsMethod()
+        private void LoadMlsMethod()
         {
             this.Unblock = false;
-            await Task.Run(() =>
-            {
-                this.StatusBar.SetAsync("Загружаем из МЛС...", StatusString.Infinite);
-                MlsServer.GetFeeds();
-            });
+            this.Select_agency = null;
+            this.StatusBar.SetAsync("Загружаем из МЛС...", StatusString.Infinite);
+            MlsServer.GetFeeds();
 
-            await Task.Run(() =>
-            {
-                this.StatusBar.SetAsync("Обработка объектов...", StatusString.Infinite);
 
-                foreach(string offer in MlsServer.Flats.Split('\n'))
+
+            this.StatusBar.SetAsync("Обработка объектов...", StatusString.Infinite);
+
+            for (int i = 0; i < 2; i++)
+            {
+                MlsMode select_mode;
+                string select_offers;
+
+                if(i == 0)
+                {
+                    select_mode = MlsMode.Flat;
+                    select_offers = MlsServer.Flats;
+                }
+                else
+                {
+                    select_mode = MlsMode.House;
+                    select_offers = MlsServer.Houses;
+                }
+
+                foreach (string offer in select_offers.Split('\n'))
                 {
                     try
                     {
                         if (offer != "")
                         {
-                            MlsOffer newOffer = new MlsOffer(offer, MlsMode.Flat);
+                            MlsOffer newOffer = new MlsOffer(offer, select_mode);
                             Agency current_agency;
                             try
                             {
@@ -191,19 +205,20 @@ namespace MlsExclusive.ViewModels
                             }
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         //write in error-log code here
-                        Debug.Print(e.Message);
+                        string id_error;
+                        if (select_mode == MlsMode.Flat) id_error = offer.Split('\t')[20];
+                        else id_error = offer.Split('\t')[22];
+                        Debug.Print(UnixTime.CurrentString() + " - Mode: " + select_mode + ", Id: " + id_error + ", Message:" + e.Message);
                     }
                 }
-            });
+            }
 
-            await Task.Run(() =>
-            {
-                this.StatusBar.SetAsync("Готово!", StatusString.LongTime);
-                this.Unblock = true;
-            });
+            this.StatusBar.SetAsync("Готово!", StatusString.LongTime);
+            this.OnPropertyChanged("CurrentUpdateTime");
+            this.Unblock = true;
         }
 
         public RelayCommand Command_LoadMls

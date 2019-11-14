@@ -4,6 +4,9 @@ using System.IO;
 
 namespace MlsExclusive.Utilites
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class UpdateTime
     {
         private const string UnixTimestampPath = "Data/last_update.time";

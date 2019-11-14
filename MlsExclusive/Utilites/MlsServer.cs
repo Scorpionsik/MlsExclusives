@@ -5,17 +5,33 @@ using System.Text.RegularExpressions;
 
 namespace MlsExclusive.Utilites
 {
+    /// <summary>
+    /// Представляет собой инструменты для получения фидов МЛС
+    /// </summary>
     public static class MlsServer
     {
+        /// <summary>
+        /// Строка-фид с квартирами
+        /// </summary>
         public static string Flats { get; private set; }
+
+        /// <summary>
+        /// Строка-фид с домами
+        /// </summary>
         public static string Houses { get; private set; }
 
+        /// <summary>
+        /// Инициализация
+        /// </summary>
         static MlsServer()
         {
             Flats = "";
             Houses = "";
         }
 
+        /// <summary>
+        /// Метод пытается подключиться к МЛС серверу; записывает результаты работы в <see cref="Flats"/> и <see cref="Houses"/>.
+        /// </summary>
         public static void GetFeeds()
         {
             User user = App.GetUser();
