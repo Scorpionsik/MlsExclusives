@@ -21,6 +21,7 @@ namespace MlsExclusive.Models
             set
             {
                 this.link = value;
+                this.Command_select_model?.Execute(null);
                 this.OnPropertyChanged("Link");
             }
         }

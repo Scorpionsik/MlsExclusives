@@ -18,6 +18,7 @@ namespace MlsExclusive.Models
             {
                 this.isload = value;
                 if (!this.isload) this.IsPicLoad = false;
+                if (!this.IsChanges) this.IsChanges = true;
                 //чтобы при нажатии на CheckBox было выбрано агенство-хозяин CheckBox
                 this.Command_select_model?.Execute(null);
                 //if (!this.isload) this.IsPicLoad = false;
@@ -33,7 +34,7 @@ namespace MlsExclusive.Models
             {
 
                 this.ispicload = value;
-
+                if(!this.IsChanges)this.IsChanges = true;
                 //чтобы при нажатии на CheckBox было выбрано агенство-хозяин CheckBox
                 this.Command_select_model?.Execute(null);
                 this.OnPropertyChanged("IsPicLoad");
@@ -109,6 +110,7 @@ namespace MlsExclusive.Models
         {
             if (!this.IsChanges) this.IsChanges = true;
         }
+
 
         public static string Serialize(Agency agency, string folder_path)
         {

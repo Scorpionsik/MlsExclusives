@@ -263,10 +263,29 @@
         <member name="T:CoreWPF.Utilites.Navigation.NavigationManager">
             <summary>
             Предоставляет инструменты для переключения нескольких ViewModel в одном окне.
-            <para>Начало работы: Сначала требуется создать экземпляр текущего менеджера и передать в конструкторе <see cref="T:System.Windows.Threading.Dispatcher"/> и <see cref="T:System.Windows.Controls.ContentControl"/> окна, в котором будут меняться ViewModel. 
+            </summary>
+        </member>
+        <member name="P:CoreWPF.Utilites.Navigation.NavigationManager.Navigation_invoke">
+            <summary>
+            Событие триггерится при каждом срабатывании метода <see cref="M:CoreWPF.Utilites.Navigation.NavigationManager.Navigate(System.String,System.Object)"/>, при условии что ViewModel отнаследована от <see cref="T:CoreWPF.Utilites.Navigation.Interfaces.INavigateModule"/>.
+            </summary>
+        </member>
+        <member name="P:CoreWPF.Utilites.Navigation.NavigationManager.Keys">
+            <summary>
+            Возвращает коллекцию ключей, которые были указаны при вызове метода <see cref="M:CoreWPF.Utilites.Navigation.NavigationManager.Register``2(``0,System.String)"/>.
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Utilites.Navigation.NavigationManager.#ctor(System.Windows.Threading.Dispatcher,System.Windows.Controls.ContentControl)">
+            <summary>
+            Инициализация менеджера.
+            <para>Начало работы: Сначала требуется создать экземпляр текущего менеджера и передать в конструкторе <see cref="T:System.Windows.Threading.Dispatcher"/> и <see cref="T:System.Windows.Controls.ContentControl"/> окна, в котором будут меняться ViewModel.
             Далее регистрируются ViewModel (в который передается ссылка на текущий менеджер), View и ключ, по которому можно будет найти ViewModel в коллекции менеджера. Рекомендуется отдельно хранить список ключей, по которым можно обратиться к тому или иному ViewModel.
             После чего менеджер передается в конструкторе ViewModel основного окна.</para>
+            Для удобства рекомендуется наследоваться от классов <see cref="T:CoreWPF.Utilites.Navigation.NavigationViewModel"/> для вашей ViewModel и <see cref="T:CoreWPF.Utilites.Navigation.NavigationModel"/> для вашей модели представления данных.
             </summary>
+            <param name="dispatcher"><see cref="T:System.Windows.Threading.Dispatcher"/> окна, в котором данный диспетчер будет работать.</param>
+            <param name="frameControl"><see cref="T:System.Windows.Controls.ContentControl"/> окна, в котором будут переключаться ViewModel.</param>
+            <exception cref="T:System.ArgumentNullException"/>
         </member>
         <member name="T:CoreWPF.Utilites.RelayCommand">
             <summary>
@@ -356,6 +375,11 @@
             Удобно использовать в качестве статус-бара окна.
             </remarks>
         </member>
+        <member name="F:CoreWPF.Utilites.StatusString.SingleTimer">
+            <summary>
+            Таймер для своевременного стирания текста.
+            </summary>
+        </member>
         <member name="F:CoreWPF.Utilites.StatusString.LongTime">
             <summary>
             Константа для метода <see cref="M:CoreWPF.Utilites.StatusString.SetAsync(System.String,System.Double)"/>; задает 5-секундный интервал отображения текста.
@@ -386,6 +410,17 @@
         <member name="M:CoreWPF.Utilites.StatusString.ClearAsync">
             <summary>
             Метод для стирания текста
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Utilites.StatusString.Clear(System.Object)">
+            <summary>
+            Метод для стирания текста и очистки таймера; используется для <see cref="F:CoreWPF.Utilites.StatusString.SingleTimer"/>.
+            </summary>
+            <param name="obj">Не используется; всегда получает null.</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.StatusString.ClearTimer">
+            <summary>
+            Метод для очистки таймера; используется для того, чтобы обновлять время отображения сообщений.
             </summary>
         </member>
         <member name="T:CoreWPF.Utilites.UnixTime">
@@ -439,6 +474,45 @@
             Вычисляет текущее время
             </summary>
             <returns>Возвращает <see cref="T:System.DateTime"/> текущего времени</returns>
+        </member>
+        <member name="T:CoreWPF.Utilites.VisibilityBoolConverter">
+            <summary>
+            Класс для двусторонней конвертации <see cref="T:System.Boolean"/> - <see cref="T:System.Windows.Visibility"/>. Реализует интерфейс <see cref="T:System.Windows.Data.IValueConverter"/>.
+            </summary>
+        </member>
+        <member name="M:CoreWPF.Utilites.VisibilityBoolConverter.ToVisibility(System.Boolean)">
+            <summary>
+            Статический метод, конвертирует <see cref="T:System.Boolean"/> в <see cref="T:System.Windows.Visibility"/>.
+            </summary>
+            <param name="boolean">Значение для конвертации.</param>
+            <returns>Возвращает соответствующий значению <see cref="T:System.Windows.Visibility"/>.</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.VisibilityBoolConverter.ToBoolean(System.Windows.Visibility)">
+            <summary>
+            Статический метод, конвертирует <see cref="T:System.Windows.Visibility"/> в <see cref="T:System.Boolean"/>.
+            </summary>
+            <param name="visibility">Значение для конвертации.</param>
+            <returns>Возвращает соответствующий значению <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.VisibilityBoolConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Конвертирует <see cref="T:System.Boolean"/> в <see cref="T:System.Windows.Visibility"/>.
+            </summary>
+            <param name="value">Значение для конвертации.</param>
+            <param name="targetType">Не используется в данном методе; можно передать null.</param>
+            <param name="parameter">Не используется в данном методе; можно передать null.</param>
+            <param name="culture">Не используется в данном методе; можно передать null.</param>
+            <returns>Возвращает соответствующий значению <see cref="T:System.Windows.Visibility"/>; если значение не является <see cref="T:System.Boolean"/>, вернет <see cref="F:System.Windows.DependencyProperty.UnsetValue"/>.</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.VisibilityBoolConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Конвертирует <see cref="T:System.Windows.Visibility"/> в <see cref="T:System.Boolean"/>.
+            </summary>
+            <param name="value">Значение для конвертации.</param>
+            <param name="targetType">Не используется в данном методе; можно передать null.</param>
+            <param name="parameter">Не используется в данном методе; можно передать null.</param>
+            <param name="culture">Не используется в данном методе; можно передать null.</param>
+            <returns>Возвращает соответствующий значению <see cref="T:System.Boolean"/>; если значение не является <see cref="T:System.Windows.Visibility"/>, вернет <see cref="F:System.Windows.DependencyProperty.UnsetValue"/>.</returns>
         </member>
         <member name="P:CoreWPF.Windows.WindowExt.DataContext">
             <summary>

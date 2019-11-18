@@ -11,6 +11,8 @@ using CoreWPF.MVVM.Interfaces;
 using System.IO;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using CoreWPF.Windows.Enums;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MlsExclusive.ViewModels
 {
@@ -108,6 +110,26 @@ namespace MlsExclusive.ViewModels
             {
                 return true;
             }));
+            this.Filters.Add("Новые", new Func<MlsOffer, bool>(offer =>
+            {
+                if (offer.Status == OfferStatus.New) return true;
+                else return false;
+            }));
+            this.Filters.Add("Измененные", new Func<MlsOffer, bool>(offer =>
+            {
+                if (offer.Status == OfferStatus.Modify) return true;
+                else return false;
+            }));
+            this.Filters.Add("Удалённые", new Func<MlsOffer, bool>(offer =>
+            {
+                if (offer.Status == OfferStatus.Delete) return true;
+                else return false;
+            }));
+            this.Filters.Add("Без ссылок", new Func<MlsOffer, bool>(offer =>
+            {
+                if (offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net")) return true;
+                else return false;
+            }));
             this.select_filter = this.Filters.ElementAt(0);
 
             this.Modes = new ListExt<MlsMode>(Enum.GetValues(typeof(MlsMode)).Cast<MlsMode>());
@@ -135,14 +157,12 @@ namespace MlsExclusive.ViewModels
             }
         }
 
-        private async void LoadAllAgency()
+        private  void LoadAllAgency()
         {
-            await Task.Run(() =>
-            {
                 if (this.Agencys.Count == 0)
                 {
                     this.Unblock = false;
-                    string[] files = Directory.GetFiles("Data/", "*.agency");
+                    string[] files = Directory.GetFiles("Data/agencys/", "*.agency");
 
                     foreach (string file_path in files)
                     {
@@ -150,6 +170,21 @@ namespace MlsExclusive.ViewModels
                     }
                     this.Unblock = true;
                 }
+        }
+
+        private async void SaveChangesMethod()
+        {
+            await Task.Run(() =>
+            {
+                this.StatusBar.SetAsync("Идёт сохранение, пожалуйста подождите...", StatusString.Infinite);
+                foreach (Agency agency in this.Agencys)
+                {
+                    if (agency.IsChanges)
+                    {
+                        Agency.Serialize(agency, "Data/agencys/");
+                    }
+                }
+                this.StatusBar.SetAsync("Сохранение успешно завершено!", StatusString.LongTime);
             });
         }
 
@@ -221,6 +256,12 @@ namespace MlsExclusive.ViewModels
             this.Unblock = true;
         }
 
+        public override WindowClose CloseMethod()
+        {
+            this.SaveChangesMethod();
+            return base.CloseMethod();
+        }
+        
         public RelayCommand Command_LoadMls
         {
             get
@@ -231,6 +272,61 @@ namespace MlsExclusive.ViewModels
                 },
                 (obj) => this.Unblock
                 );
+            }
+        }
+
+        public RelayCommand One
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    this.StatusBar.SetAsync("One", StatusString.LongTime);
+                });
+            }
+        }
+
+        public RelayCommand Two
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    this.StatusBar.SetAsync("Two", StatusString.LongTime);
+                });
+            }
+        }
+
+        public RelayCommand Clear
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    this.StatusBar.ClearAsync();
+                });
+            }
+        }
+
+        public RelayCommand Infinite
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    this.StatusBar.SetAsync("Infinite", StatusString.Infinite);
+                });
+            }
+        }
+
+        public RelayCommand Command_SaveChanges
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    this.SaveChangesMethod();
+                });
             }
         }
     }

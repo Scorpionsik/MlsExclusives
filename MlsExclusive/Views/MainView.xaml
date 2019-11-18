@@ -7,7 +7,11 @@
         xmlns:corewpf="clr-namespace:CoreWPF.Utilites;assembly=CoreWPF"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
+        WindowState="Maximized"
         Title="{Binding Path=Title}" Height="450" Width="800">
+    <window:WindowExt.Resources>
+        <corewpf:VisibilityBoolConverter x:Key="Bool-Visibility"/>
+    </window:WindowExt.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="27"/>
@@ -21,9 +25,14 @@
             <Separator />
             <Button Content="Записать в формате Яндекс-недвижимость..."/>
             <Separator />
-            <Button Content="Сохранить результаты работы"/>
+            <Button Command="{Binding Path=Command_SaveChanges}" Content="Сохранить результаты работы"/>
             <Separator />
             <Button Content="Настройки"/>
+            <Separator />
+            <Button Content="One" Command="{Binding Path=One}"/>
+            <Button Content="Two" Command="{Binding Path=Two}"/>
+            <Button Content="Clear" Command="{Binding Path=Clear}"/>
+            <Button Content="Infinite" Command="{Binding Path=Infinite}"/>
         </ToolBar>
         <!--конец Панель управления-->
         <!--Фильтры-->
@@ -97,7 +106,13 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel LastChildFill="False">
-                                <TextBlock DockPanel.Dock="Top" TextAlignment="Center" Text="{Binding Path=Name}" FontSize="20px" FontWeight="Bold"/>
+                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock TextAlignment="Center" Text="{Binding Path=Name}" FontSize="20px" FontWeight="Bold"/>
+                                    <TextBlock Text=" (" FontSize="14px" FontWeight="Bold"/>
+                                    <TextBlock TextAlignment="Center" Text="{Binding Path=Offers.Count}" FontSize="14px" FontWeight="Bold"/>
+                                    <TextBlock Text=" шт.)" FontSize="14px" FontWeight="Bold"/>
+                                    <TextBlock TextAlignment="Center" Visibility="{Binding Path=IsChanges, Converter={StaticResource Bool-Visibility}}" Text="*" FontSize="20px" FontWeight="Bold"/>
+                                </StackPanel>
                                 <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
                                     <CheckBox DockPanel.Dock="Left" Content="Сохранять в файл" IsChecked="{Binding Path=IsLoad}"/>
                                     <CheckBox DockPanel.Dock="Right" Content="Сохранять фото" IsEnabled="{Binding Path=IsLoad}" IsChecked="{Binding Path=IsPicLoad}"/>
@@ -297,8 +312,11 @@
 
                                         <StackPanel Orientation="Vertical" Grid.Column="2">
                                             <!--Фотографии-->
-                                            <TextBlock Text="{Binding StringFormat=Фото: {0}, Path=Photos.Count}" FontWeight="Bold"/>
-                                            <ListBox ItemsSource="{Binding Path=Photos}">
+                                            <Expander IsExpanded="False">
+                                                <Expander.Header>
+                                                    <TextBlock Text="{Binding StringFormat=Фото: {0}, Path=Photos.Count}" FontWeight="Bold"/>
+                                                </Expander.Header>
+                                                <ListBox ItemsSource="{Binding Path=Photos}">
                                                 <i:Interaction.Behaviors>
                                                     <corewpf:IgnoreMouseWheelBehavior/>
                                                 </i:Interaction.Behaviors>
@@ -319,6 +337,7 @@
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
                                             </ListBox>
+                                            </Expander>
                                             <!--конец Фотографии-->
                                             <!--Изменения-->
                                             <StackPanel Orientation="Vertical">
@@ -342,11 +361,12 @@
             <StatusBarItem>
                 <TextBlock Text="{Binding Path=StatusBar.Status}" />
             </StatusBarItem>
-            <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock Text="{Binding StringFormat=Отображается: {0}, Path=Current_offers.Count}"/>
-            </StatusBarItem>
             <StatusBarItem  HorizontalAlignment="Right">
-                <TextBlock Text="{Binding StringFormat=Последнее обновление: {0}, Path=CurrentUpdateTime}"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding StringFormat=Отображается: {0}, Path=Current_offers.Count}"/>
+                    <Label Margin="5 0 5 0" Width="1" Background="DarkGray"/>
+                    <TextBlock Text="{Binding StringFormat=Последнее обновление: {0}, Path=CurrentUpdateTime}"/>
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
         <!--конец Статусная строка-->
