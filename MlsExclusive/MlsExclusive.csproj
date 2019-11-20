@@ -43,6 +43,9 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Offer">
+      <HintPath>..\Offer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http.WebRequest" />
@@ -77,6 +80,7 @@
     </Compile>
     <Compile Include="Models\Agency.cs" />
     <Compile Include="Models\MlsOffer.cs" />
+    <Compile Include="Utilites\Enums\AgencyStatus.cs" />
     <Compile Include="Utilites\Enums\MlsMode.cs" />
     <Compile Include="Utilites\Enums\OfferStatus.cs" />
     <Compile Include="Utilites\UpdateTime.cs" />

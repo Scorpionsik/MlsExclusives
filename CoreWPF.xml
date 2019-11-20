@@ -48,34 +48,6 @@
             </summary>
             <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/>, с которой будет записывать данные</param>
         </member>
-        <member name="T:CoreWPF.MVVM.Interfaces.IModel`1">
-            <summary>
-            Реализация клонирования, сравнения и слияния у явно определенного объекта. 
-            </summary>
-            <typeparam name="T">Объект, наследующийся от <see cref="T:System.ComponentModel.INotifyPropertyChanged"/></typeparam>
-            <remarks>
-            Ищу применение для того, чтобы отказаться от неявно определенного <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/>. Если в итоге использоваться не будет, или в нём не будет толку - удалю.
-            </remarks>
-        </member>
-        <member name="M:CoreWPF.MVVM.Interfaces.IModel`1.Clone">
-            <summary>
-            Метод создает копию T
-            </summary>
-            <returns>Возвращает копию текущего объекта</returns>
-        </member>
-        <member name="M:CoreWPF.MVVM.Interfaces.IModel`1.Equals(`0)">
-            <summary>
-            Метод cравнивает Т между собой
-            </summary>
-            <param name="model">Принимает Т для сравнения</param>
-            <returns>Возвращает true, если Т равны</returns>
-        </member>
-        <member name="M:CoreWPF.MVVM.Interfaces.IModel`1.Merge(`0)">
-            <summary>
-            Метод переписывает данные из другой Т в текущую
-            </summary>
-            <param name="model">Принимает Т, с которой будет записывать данные</param>
-        </member>
         <member name="T:CoreWPF.MVVM.NotifyPropertyChanged">
             <summary>
             Реализует интерфейс <see cref="T:System.ComponentModel.INotifyPropertyChanged"/>
@@ -92,6 +64,11 @@
             </summary>
             <param name="prop">Принимает строку-имя объекта, который необходимо обновить</param>
         </member>
+        <member name="T:CoreWPF.MVVM.Model">
+            <summary>
+            Предоставляет базовый функционал для модели приложения; наследуется от <see cref="T:CoreWPF.MVVM.NotifyPropertyChanged"/>.
+            </summary>
+        </member>
         <member name="E:CoreWPF.MVVM.Model.event_select_model">
             <summary>
             Событие выбора данной модели
@@ -99,12 +76,12 @@
         </member>
         <member name="P:CoreWPF.MVVM.Model.Event_select_model">
             <summary>
-            Событие выбора данной модели
+            Ссылка на событие выбора данной модели
             </summary>
         </member>
         <member name="P:CoreWPF.MVVM.Model.ClassName">
             <summary>
-            Возвращает имя класса текущей модели
+            Возвращает название класса текущей модели
             </summary>
         </member>
         <member name="P:CoreWPF.MVVM.Model.Command_select_model">
@@ -135,6 +112,13 @@
             </summary>
             <param name="collection">Принимает коллекцию элементов для сравнения и удаления</param>
         </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.FindRange(System.Func{`0,System.Boolean})">
+            <summary>
+            Возвращает коллекцию, соответствующую указанному условию.
+            </summary>
+            <param name="predicate">Условие для проверки коллекции.</param>
+            <returns>Возвращает коллекцию, соответствующую указанному условию.</returns>
+        </member>
         <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.Contains(`0)">
             <summary>
             Определяет, входил ли элемент в коллекцию; сравнивает через Equals
@@ -142,43 +126,19 @@
             <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> для сравнения</param>
             <returns>Возвращает true, если элемент найден, иначе false</returns>
         </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.Merge(`0)">
+            <summary>
+            Выполняет слияние элемента коллекции; Сначала элемент проверяется через <see cref="M:CoreWPF.MVVM.Interfaces.IModel.Equals(CoreWPF.MVVM.Interfaces.IModel)"/>, если найдено совпадение - применяется метод <see cref="M:CoreWPF.MVVM.Interfaces.IModel.Merge(CoreWPF.MVVM.Interfaces.IModel)"/>.
+            </summary>
+            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> для сравнения и слияния.</param>
+        </member>
+        <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.Merge(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Выполняет слияние элементов коллекции; Сначала элементы проверяются через <see cref="M:CoreWPF.MVVM.Interfaces.IModel.Equals(CoreWPF.MVVM.Interfaces.IModel)"/>, если они равны - применяется метод <see cref="M:CoreWPF.MVVM.Interfaces.IModel.Merge(CoreWPF.MVVM.Interfaces.IModel)"/>.
+            </summary>
+            <param name="models">Принимает коллекцию <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> для сравнения и слияния.</param>
+        </member>
         <member name="M:CoreWPF.MVVM.Utilites.ListModel`1.Clone">
-            <summary>
-            Создает копию текущей коллекции
-            </summary>
-            <returns>Возвращает копию текущей коллекции</returns>
-        </member>
-        <member name="T:CoreWPF.MVVM.Utilites.ListModelExt`1">
-            <summary>
-            Наследуется от <see cref="T:CoreWPF.Utilites.ListExt`1"/>, адаптируя и расширяя функционал для <see cref="T:CoreWPF.MVVM.Interfaces.IModel`1"/>
-            </summary>
-            <typeparam name="T">Объект должен наследоваться от <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> и <see cref="T:CoreWPF.MVVM.Interfaces.IModel`1"/></typeparam>
-        </member>
-        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.#ctor">
-            <summary>
-            Конструктор
-            </summary>
-        </member>
-        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
-            <summary>
-            Конструктор
-            </summary>
-            <param name="collection">Принимает коллекцию, из которой создает массив элементов</param>
-        </member>
-        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
-            <summary>
-            Удаляет из данного массива элементы коллекции; сравнивает объекты массива и коллекции как критерий
-            </summary>
-            <param name="collection">Принимает коллекцию элементов для удаления</param>
-        </member>
-        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.Contains(`0)">
-            <summary>
-            Определяет, входил ли элемент в коллекцию; сравнивает через Equals
-            </summary>
-            <param name="model">Принимает <see cref="T:CoreWPF.MVVM.Interfaces.IModel"/> для сравнения</param>
-            <returns>Возвращает true, если элемент найден, иначе false</returns>
-        </member>
-        <member name="M:CoreWPF.MVVM.Utilites.ListModelExt`1.Clone">
             <summary>
             Создает копию текущей коллекции
             </summary>
@@ -187,6 +147,68 @@
         <member name="T:CoreWPF.MVVM.ViewModel">
             <summary>
             Класс, который автоматически привязывается к событиям <see cref="T:CoreWPF.Windows.WindowExt"/>
+            </summary>
+        </member>
+        <member name="P:CoreWPF.MVVM.ViewModel.Dispatcher">
+            <summary>
+            Позволяет присвоить данной ViewModel <see cref="T:System.Windows.Threading.Dispatcher"/> текущего окна.
+            </summary>
+        </member>
+        <member name="E:CoreWPF.MVVM.ViewModel.Event_close">
+            <summary>
+            Позволяет назначить событие для закрытия окна.
+            </summary>
+        </member>
+        <member name="E:CoreWPF.MVVM.ViewModel.Event_save">
+            <summary>
+            Позволяет назначить событие <see cref="T:CoreWPF.Windows.DialogWindowExt"/>; закрытие окна с сохранением результатов. 
+            </summary>
+        </member>
+        <member name="E:CoreWPF.MVVM.ViewModel.Event_minimized">
+            <summary>
+            Позволяет назначить событие для сворачивания окна.
+            </summary>
+        </member>
+        <member name="E:CoreWPF.MVVM.ViewModel.Event_state">
+            <summary>
+            Позволяет назначить событие для развертывания (и обратно) текущего окна.
+            </summary>
+        </member>
+        <member name="P:CoreWPF.MVVM.ViewModel.Title">
+            <summary>
+            Заголовок окна.
+            </summary>
+        </member>
+        <member name="M:CoreWPF.MVVM.ViewModel.CloseMethod">
+            <summary>
+            Метод вызывается после срабатывания события <see cref="E:System.Windows.Window.Closing"/>. Позволяет предотвратить закрытие окна.
+            </summary>
+            <returns>Если нужно, чтобы окно было закрыто, нужно вернуть <see cref="F:CoreWPF.Windows.Enums.WindowClose.Confirm"/>, иначе - <see cref="F:CoreWPF.Windows.Enums.WindowClose.Abort"/>.</returns>
+        </member>
+        <member name="M:CoreWPF.MVVM.ViewModel.InvokeInMainThread(System.Action)">
+            <summary>
+            Выполняет указанную <see cref="T:System.Action"/> синхронно в потоке <see cref="T:System.Windows.Threading.Dispatcher"/> текущего окна.
+            </summary>
+            <param name="action"><see cref="T:System.Action"/> для запуска.</param>
+        </member>
+        <member name="P:CoreWPF.MVVM.ViewModel.Command_close">
+            <summary>
+            Команда для вызова события закрытия окна.
+            </summary>
+        </member>
+        <member name="P:CoreWPF.MVVM.ViewModel.Command_minimized">
+            <summary>
+            Команда для вызова события сворачивания окна.
+            </summary>
+        </member>
+        <member name="P:CoreWPF.MVVM.ViewModel.Command_state">
+            <summary>
+            Команда для вызова события развертывания (и обратно) текущего окна.
+            </summary>
+        </member>
+        <member name="P:CoreWPF.MVVM.ViewModel.Command_save">
+            <summary>
+            Команда для вызова события закрытия окна с сохранением результатов работы.
             </summary>
         </member>
         <member name="T:CoreWPF.Utilites.ListExt`1">
@@ -241,11 +263,30 @@
             </summary>
             <param name="predicate">Функция для проверки каждого элемента на соответствие условию</param>
         </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.FindRange(System.Func{`0,System.Boolean})">
+            <summary>
+            Возвращает коллекцию, соответствующую указанному условию.
+            </summary>
+            <param name="predicate">Условие для проверки коллекции.</param>
+            <returns>Возвращает коллекцию, соответствующую указанному условию.</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.Shuffle">
+            <summary>
+            Перетасовывает элементы коллекции.
+            </summary>
+            <returns>Возвращает перетасованную копию коллекции.</returns>
+        </member>
         <member name="M:CoreWPF.Utilites.ListExt`1.RemoveRange(System.Collections.Generic.IEnumerable{`0})">
             <summary>
             Удаляет из данного массива элементы коллекции; сравнивает объекты массива и коллекции как критерий
             </summary>
             <param name="collection">Принимает коллекцию элементов для удаления</param>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.GetId">
+            <summary>
+            Возвращащает коллекцию id, при условии что элементы коллекции реализуют <see cref="T:CoreWPF.Interfaces.IId"/>.
+            </summary>
+            <returns>Возвращает коллекцию id</returns>
         </member>
         <member name="M:CoreWPF.Utilites.ListExt`1.Inverse">
             <summary>
@@ -259,6 +300,14 @@
             </summary>
             <param name="collection">Принимает коллекцию</param>
             <returns>Возвращает инвертированную коллекцию</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.ListExt`1.FindRange(System.Collections.Generic.IEnumerable{`0},System.Func{`0,System.Boolean})">
+            <summary>
+            Возвращает коллекцию, соответствующую указанному условию.
+            </summary>
+            <param name="collection">Коллекция для проверки.</param>
+            <param name="predicate">Условие для проверки коллекции.</param>
+            <returns>Возвращает коллекцию, соответствующую указанному условию.</returns>
         </member>
         <member name="T:CoreWPF.Utilites.Navigation.NavigationManager">
             <summary>
@@ -304,7 +353,7 @@
         </member>
         <member name="E:CoreWPF.Utilites.RelayCommand.CanExecuteChanged">
             <summary>
-            Происходит при изменениях, влияющих на то, должна выполняться данная команда или нет.
+            Происходит при <see cref="T:System.Windows.Input.CommandManager"/> определяет условия, которые могут повлиять на возможность выполнения команды.
             </summary>
         </member>
         <member name="M:CoreWPF.Utilites.RelayCommand.#ctor(System.Action{System.Object},System.Func{System.Object,System.Boolean})">
@@ -316,16 +365,16 @@
         </member>
         <member name="M:CoreWPF.Utilites.RelayCommand.CanExecute(System.Object)">
             <summary>
-            Определяет метод, который определяет, может ли данная команда выполняться в ее текущем состоянии.
+            Метод для проверки, может ли данная команда выполняться в ее текущем состоянии.
             </summary>
-            <param name="parameter">Данные, используемые данной командой. Если команда не требует передачи данных, этому объект может быть присвоено значение null.</param>
+            <param name="parameter">Данные, используемые данной командой.</param>
             <returns>Вернет true, если эту команду можно выполнить; в противном случае — false.</returns>
         </member>
         <member name="M:CoreWPF.Utilites.RelayCommand.Execute(System.Object)">
             <summary>
-            Определяет метод, вызываемый при вызове данной команды.
+            Метод для вызова текущей команды.
             </summary>
-            <param name="parameter">Данные, используемые данной командой. Если команда не требует передачи данных, этому объекту можно присвоить значение null.</param>
+            <param name="parameter">Данные, которые будут переданы для текущей команды.</param>
         </member>
         <member name="T:CoreWPF.Utilites.RelayCommand`1">
             <summary>
@@ -344,7 +393,7 @@
         </member>
         <member name="E:CoreWPF.Utilites.RelayCommand`1.CanExecuteChanged">
             <summary>
-            Происходит при изменениях, влияющих на то, должна выполняться данная команда или нет.
+            Происходит при <see cref="T:System.Windows.Input.CommandManager"/> определяет условия, которые могут повлиять на возможность выполнения команды.
             </summary>
         </member>
         <member name="M:CoreWPF.Utilites.RelayCommand`1.#ctor(System.Action{`0},System.Func{`0,System.Boolean})">
@@ -356,16 +405,16 @@
         </member>
         <member name="M:CoreWPF.Utilites.RelayCommand`1.CanExecute(System.Object)">
             <summary>
-            Определяет метод, который определяет, может ли данная команда выполняться в ее текущем состоянии.
+            Метод для проверки, может ли данная команда выполняться в ее текущем состоянии.
             </summary>
-            <param name="parameter">Данные, используемые данной командой. Если команда не требует передачи данных, этому объект может быть присвоено значение null.</param>
+            <param name="parameter">Данные, используемые текущей командой.</param>
             <returns>Вернет true, если эту команду можно выполнить; в противном случае — false.</returns>
         </member>
         <member name="M:CoreWPF.Utilites.RelayCommand`1.Execute(System.Object)">
             <summary>
-            Определяет метод, вызываемый при вызове данной команды.
+            Метод для вызова текущей команды.
             </summary>
-            <param name="parameter">Данные, используемые данной командой. Если команда не требует передачи данных, этому объекту можно присвоить значение null.</param>
+            <param name="parameter">Данные, которые будут переданы для текущей команды.</param>
         </member>
         <member name="T:CoreWPF.Utilites.StatusString">
             <summary>
@@ -397,19 +446,19 @@
         </member>
         <member name="P:CoreWPF.Utilites.StatusString.Status">
             <summary>
-            Строка для отображения статуса
+            Строка для отображения статуса.
             </summary>
         </member>
         <member name="M:CoreWPF.Utilites.StatusString.SetAsync(System.String,System.Double)">
             <summary>
-            Метод для установки текста
+            Метод для установки текста.
             </summary>
-            <param name="status">Текст для отображения</param>
+            <param name="status">Текст для отображения.</param>
             <param name="milliseconds">Интервал отображения текста; можно использовать константы <see cref="F:CoreWPF.Utilites.StatusString.LongTime"/>, <see cref="F:CoreWPF.Utilites.StatusString.ShortTime"/> и <see cref="F:CoreWPF.Utilites.StatusString.Infinite"/>.</param>
         </member>
         <member name="M:CoreWPF.Utilites.StatusString.ClearAsync">
             <summary>
-            Метод для стирания текста
+            Метод для стирания текста.
             </summary>
         </member>
         <member name="M:CoreWPF.Utilites.StatusString.Clear(System.Object)">
@@ -425,55 +474,71 @@
         </member>
         <member name="T:CoreWPF.Utilites.UnixTime">
             <summary>
-            Реализует методы для работы с Unix Timestamp
+            Содержит инструменты для работы с Unix Timestamp.
             </summary>
         </member>
-        <member name="M:CoreWPF.Utilites.UnixTime.ToDateTime(System.Double,System.TimeZoneInfo)">
+        <member name="P:CoreWPF.Utilites.UnixTime.Local">
             <summary>
-            Преобразовывает Unix Timestamp в объект класса DateTime
+            Разница во времени согласно текущему часовому поясу, с учётом летнего времени.
             </summary>
-            <param name="milliseconds">Принимает Unix Timestamp (в секундах)</param>
-            <returns>Возвращает объект класса DateTime</returns>
         </member>
-        <member name="M:CoreWPF.Utilites.UnixTime.ToDateTime(System.String,System.TimeZoneInfo)">
+        <member name="P:CoreWPF.Utilites.UnixTime.UTC">
             <summary>
-            Переводит строку определенного формата в <see cref="T:System.DateTime"/>
+            Разница во времени по UTC.
             </summary>
-            <param name="string_time">Принимает строку в формате "%год%-%месяц%-%день%Т%часы%:%минуты%:%секунды%"</param>
-            <returns>Возвращает <see cref="T:System.DateTime"/> принятой строки</returns>
-            <exception cref="T:System.ArgumentException"/>
         </member>
-        <member name="M:CoreWPF.Utilites.UnixTime.ToString(System.Double,System.TimeZoneInfo)">
+        <member name="M:CoreWPF.Utilites.UnixTime.CurrentUnixTimestamp">
             <summary>
-            Преобразовывает Unix Timestamp в строчное представление времени
+            Вычисляет Unix Timestamp текущего времени в милисекундах; для вычисления используется смещение времени по <see cref="P:CoreWPF.Utilites.UnixTime.UTC"/>.
             </summary>
-            <param name="seconds">Принимает Unix Timestamp</param>
-            <returns>Возвращает строчное представление времени</returns>
+            <returns>Возвращает Unix Timestamp (в милисекундах) текущего времени.</returns>
         </member>
-        <member name="M:CoreWPF.Utilites.UnixTime.ToUnixTimestamp(System.DateTime)">
+        <member name="M:CoreWPF.Utilites.UnixTime.CurrentDateTimeOffset(System.TimeSpan)">
             <summary>
-            Преобразовывает <see cref="T:System.DateTime"/> в Unix Timestamp
+            Вычисляет <see cref="T:System.DateTimeOffset"/> текущего времени.
             </summary>
-            <param name="date_time">>Принимает <see cref="T:System.DateTime"/></param>
-            <returns>Возвращает Unix Timestamp</returns>
+            <param name="timezone">Необходимое смещение во времени по часовому поясу.</param>
+            <returns>Возвращает <see cref="T:System.DateTimeOffset"/> текущего времени.</returns>
         </member>
-        <member name="M:CoreWPF.Utilites.UnixTime.CurrentUnixTimestamp(System.TimeZoneInfo)">
+        <member name="M:CoreWPF.Utilites.UnixTime.ToDateTimeOffset(System.Double,System.TimeSpan)">
             <summary>
-            Вычисляет текущее время
+            Конвертирует Unix Timestamp в <see cref="T:System.DateTimeOffset"/>.
             </summary>
-            <returns>Возвращает Unix Timestamp текущего времени</returns>
+            <param name="unixtimestamp">Unix Timestamp в милисекундах со смещением времени по <see cref="P:CoreWPF.Utilites.UnixTime.UTC"/>.</param>
+            <param name="timezone">Необходимое смещение во времени по часовому поясу.</param>
+            <returns>Возвращает <see cref="T:System.DateTimeOffset"/> с указанным смещением во времени по часовому поясу.</returns>
         </member>
-        <member name="M:CoreWPF.Utilites.UnixTime.CurrentString(System.TimeZoneInfo)">
+        <member name="M:CoreWPF.Utilites.UnixTime.ToUnixTimestamp(System.DateTimeOffset)">
             <summary>
-            Вычисляет текущее время
+            Конвертирует <see cref="T:System.DateTimeOffset"/> в Unix Timestamp.
             </summary>
-            <returns>Возвращает строкое представление текущего времени</returns>
+            <param name="datetime"><see cref="T:System.DateTimeOffset"/> для работы.</param>
+            <returns>Возвращает Unix Timestamp в милисекундах со смещением времени по <see cref="P:CoreWPF.Utilites.UnixTime.UTC"/>.</returns>
         </member>
-        <member name="M:CoreWPF.Utilites.UnixTime.CurrentDateTime(System.TimeZoneInfo)">
+        <member name="T:CoreWPF.Utilites.UnixTimeConverter">
             <summary>
-            Вычисляет текущее время
+            Класс для двустороннего конвертирования Unix Timestamp - <see cref="T:System.String"/>; реализует <see cref="T:System.Windows.Data.IValueConverter"/>.
             </summary>
-            <returns>Возвращает <see cref="T:System.DateTime"/> текущего времени</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.UnixTimeConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Конвертация Unix Timestamp в <see cref="T:System.String"/>; используется смещение во времени по <see cref="P:CoreWPF.Utilites.UnixTime.Local"/>.
+            </summary>
+            <param name="value">Unix Timestamp в формате <see cref="T:System.Double"/> со смещением во времени по <see cref="P:CoreWPF.Utilites.UnixTime.UTC"/>.</param>
+            <param name="targetType">Не используется в текущем методе; можно передать null.</param>
+            <param name="parameter">Не используется в текущем методе; можно передать null.</param>
+            <param name="culture">Не используется в текущем методе; можно передать null.</param>
+            <returns>Возвращает соответствующую строку со смещение во времени по <see cref="P:CoreWPF.Utilites.UnixTime.Local"/>; если введен не <see cref="T:System.Double"/>, возвращает <see cref="F:System.Windows.DependencyProperty.UnsetValue"/>.</returns>
+        </member>
+        <member name="M:CoreWPF.Utilites.UnixTimeConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Конвертация <see cref="T:System.String"/> в <see cref="T:System.DateTimeOffset"/>.
+            </summary>
+            <param name="value">Строка в формате: <code>год.месяц.день часы:минуты:секунды часовой:пояс</code></param>
+            <param name="targetType">Не используется в текущем методе; можно передать null.</param>
+            <param name="parameter">Не используется в текущем методе; можно передать null.</param>
+            <param name="culture">Не используется в текущем методе; можно передать null.</param>
+            <returns>Возвращает <see cref="T:System.DateTimeOffset"/>; если строка имеет неверный формат, возвращает <see cref="F:System.Windows.DependencyProperty.UnsetValue"/>.</returns>
         </member>
         <member name="T:CoreWPF.Utilites.VisibilityBoolConverter">
             <summary>

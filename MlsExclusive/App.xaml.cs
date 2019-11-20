@@ -1,5 +1,8 @@
-﻿using MlsExclusive.Utilites;
+﻿using CoreWPF.Utilites;
+using MlsExclusive.Utilites;
 using Newtonsoft.Json;
+using Offer;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -15,11 +18,14 @@ namespace MlsExclusive
         /// </summary>
         public static string UserPath { get; set; }
 
+        public static TimeSpan Timezone = UnixTime.Local;
+
         /// <summary>
         /// Задает <see cref="UserPath"/> по умолчанию.
         /// </summary>
         public App()
         {
+            OfferCategory.AddNewCategory("пол-дома");
             UserPath = "Data/user.json";
         }
 

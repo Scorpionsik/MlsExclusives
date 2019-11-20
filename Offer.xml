@@ -1,0 +1,272 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Offer</name>
+    </assembly>
+    <members>
+        <member name="T:Offer.DateTimeString">
+            <summary>
+            Класс для преобразования даты и времени в необходимый строчный формат.
+            </summary>
+        </member>
+        <member name="M:Offer.DateTimeString.ToString(System.DateTimeOffset)">
+            <summary>
+            Конвертирует экземпляр <see cref="T:System.DateTimeOffset"/> в необходимый формат строки.
+            </summary>
+            <param name="date_time">Значение для конвертирования.</param>
+            <returns>Возвращает строку в формате "YYYY-MM-DDTHH:mm:ss+00:00".</returns>
+        </member>
+        <member name="M:Offer.DateTimeString.ToDateTimeOffset(System.String)">
+            <summary>
+            Конвертирует строку в формате "YYYY-MM-DDTHH:mm:ss+00:00" в экземпляр <see cref="T:System.DateTimeOffset"/>.
+            </summary>
+            <remarks>
+            Перед обработкой сначала строка будет проверена методом <see cref="M:Offer.DateTimeString.TestFormatString(System.String)"/>.
+            </remarks>
+            <param name="date_time">Значение для конвертирования.</param>
+            <returns>Возвращает экземпляр <see cref="T:System.DateTimeOffset"/>.</returns>
+            <exception cref="T:System.ArgumentException"/>
+        </member>
+        <member name="M:Offer.DateTimeString.CurrentString">
+            <summary>
+            Метод для получения текущей даты в необходимом формате.
+            </summary>
+            <returns>Возвращает строку с текущей датой-временем в формате "YYYY-MM-DDTHH:mm:ss+00:00".</returns>
+        </member>
+        <member name="M:Offer.DateTimeString.TestFormatString(System.String)">
+            <summary>
+            Проверяет строку на соответствие необходимому формату.
+            </summary>
+            <param name="value">Строка на проверку.</param>
+            <returns>Возвращает true, если строка соответствует формату "YYYY-MM-DDTHH:mm:ss+00:00".</returns>
+        </member>
+        <member name="T:Offer.OfferBase">
+            <summary>
+            Базовое представление объявления
+            </summary>
+            <remarks>
+            Изначально ориентирован на формат XML Яндекс.Недвижимость
+            </remarks>
+        </member>
+        <member name="P:Offer.OfferBase.Internal_id">
+            <summary>
+            Обязательное поле, должно быть уникальным для каждого объявления. Может состоять из цифр, латинских и кириллических букв, знаков.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Type">
+            <summary>
+            Обязательное поле, обозначает тип сделки.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Category">
+            <summary>
+            Обязательное поле, обозначающее категорию объекта (квартира, дом, гараж и прочее).
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Creation_date">
+            <summary>
+            Обязательное поле; дата создания объявления.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Last_update_date">
+            <summary>
+            Обязательное поле; дата последнего обновления объявления.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Country">
+            <summary>
+            Обязательное поле, обозначающее страну, где продается объект.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Locality_name">
+            <summary>
+            Обязательное поле, обозначающее город, где продается объект.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.District">
+            <summary>
+            Обязательное поле, обозначающее район, где продается объект.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Address">
+            <summary>
+            Обязательное поле, обозначающее улицу, где продается объект.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Rooms">
+            <summary>
+            Количество комнат.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Floor">
+            <summary>
+            Этаж, на котором находится объект.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Floors_total">
+            <summary>
+            Этажность дома с обьъектом.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.SqAll">
+            <summary>
+            Общая площадь.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.SqLive">
+            <summary>
+            Жилая площадь.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.SqKitchen">
+            <summary>
+            Площадь кухни.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.SqArea">
+            <summary>
+            Площадь участка.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.PriceValue">
+            <summary>
+            Обязательное поле, обозначающее числовое значение цены.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.PriceCurrency">
+            <summary>
+            Обязательное поле, обозначающее тип валюты.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Description">
+            <summary>
+            Обязательное поле, обозначающее описание объекта.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Phones">
+            <summary>
+            Телефоны агента, который работает с объектом.
+            </summary>
+        </member>
+        <member name="P:Offer.OfferBase.Photos">
+            <summary>
+            Фотографии объекта.
+            </summary>
+        </member>
+        <member name="M:Offer.OfferBase.#ctor">
+            <summary>
+            Инициализация значений по умолчанию.
+            </summary>
+        </member>
+        <member name="M:Offer.OfferBase.#ctor(System.String,Offer.OfferType,Offer.OfferCategory,System.DateTimeOffset,System.DateTimeOffset,System.String,System.String,System.String,System.String,System.Int32,Offer.PriceCurrency,System.String)">
+            <summary>
+            Инициализация объекта с указанием обязательных полей.
+            </summary>
+            <param name="id">Уникальный идентификатор объекта.</param>
+            <param name="type">Тип сделки.</param>
+            <param name="category">Категория объекта.</param>
+            <param name="creation_date">Дата создания объявления.</param>
+            <param name="last_update_date">Дата последнего обновления объявления.</param>
+            <param name="country">Страна, где находится объект.</param>
+            <param name="locality_name">Город, где находится объект.</param>
+            <param name="district">Район, где находится объект.</param>
+            <param name="address">Адрес, где находится объект.</param>
+            <param name="priceValue">Стоимость объекта.</param>
+            <param name="priceCurrency">Тип валюты.</param>
+            <param name="description">Текст объявления.</param>
+        </member>
+        <member name="M:Offer.OfferBase.GetYandexDoc(System.Collections.Generic.IEnumerable{Offer.OfferBase})">
+            <summary>
+            Из текущего объявления формирует документ в формате XML Яндекс.Недвижимость.
+            </summary>
+            <param name="offers">Объявления для записи.</param>
+            <returns>Возвращает документ в формате XML Яндекс.Недвижимость.</returns>
+        </member>
+        <member name="M:Offer.OfferBase.GetOfferType(Offer.OfferType)">
+            <summary>
+            Преобразовывает <see cref="T:Offer.OfferType"/> в строку.
+            </summary>
+            <param name="type">Экземпляр <see cref="T:Offer.OfferType"/> для распознания.</param>
+            <returns>Возвращает строку, соответствующую полученному значению.</returns>
+        </member>
+        <member name="M:Offer.OfferBase.FirstUpper(System.String)">
+            <summary>
+            Делает первую букву заглавной.
+            </summary>
+            <param name="str">Строка для работы.</param>
+            <returns>Возвращает ту же строку, но первая буква будет заглавной.</returns>
+            <exception cref="T:System.ArgumentNullException"/>
+        </member>
+        <member name="T:Offer.OfferCategory">
+            <summary>
+            Определяет категорию объекта
+            </summary>
+        </member>
+        <member name="P:Offer.OfferCategory.Categories">
+            <summary>
+            Статическая коллекция категорий объектов
+            </summary>
+        </member>
+        <member name="P:Offer.OfferCategory.Select_category">
+            <summary>
+            Выбранная категория из коллекции
+            </summary>
+        </member>
+        <member name="M:Offer.OfferCategory.#cctor">
+            <summary>
+            Инициализация базовых значений коллекции
+            </summary>
+        </member>
+        <member name="M:Offer.OfferCategory.#ctor(System.String)">
+            <summary>
+            Инициализация и установка категории в текущем экземпляре <see cref="T:Offer.OfferCategory"/> 
+            </summary>
+            <param name="category">Принимает название категории; производится поиск по введенному значению, найденный результат назначается для <see cref="P:Offer.OfferCategory.Select_category"/>.</param>
+        </member>
+        <member name="M:Offer.OfferCategory.AddNewCategory(System.String)">
+            <summary>
+            Добавляет новую категорию в коллекцию <see cref="P:Offer.OfferCategory.Categories"/>.
+            </summary>
+            <remarks>
+            Новая категория пока не сохраняется после перезагрузки приложения
+            </remarks>
+            <param name="catecory">Принимает название новой категории</param>
+        </member>
+        <member name="M:Offer.OfferCategory.SetCategory(System.String)">
+            <summary>
+            Устанавивает категорию в текущем экземпляре <see cref="T:Offer.OfferCategory"/>.
+            </summary>
+            <param name="category">Принимает название категории; производится поиск по введенному значению, найденный результат назначается для <see cref="P:Offer.OfferCategory.Select_category"/>.</param>
+        </member>
+        <member name="T:Offer.PriceCurrency">
+            <summary>
+            Тип валюты в объявлении.
+            </summary>
+        </member>
+        <member name="F:Offer.PriceCurrency.USD">
+            <summary>
+            Валюта в долларах.
+            </summary>
+        </member>
+        <member name="F:Offer.PriceCurrency.GRN">
+            <summary>
+            Валюта в гривнах.
+            </summary>
+        </member>
+        <member name="T:Offer.OfferType">
+            <summary>
+            Варианты типов объявления
+            </summary>
+        </member>
+        <member name="F:Offer.OfferType.Sell">
+            <summary>
+            Объявление о продаже
+            </summary>
+        </member>
+        <member name="F:Offer.OfferType.Rent">
+            <summary>
+            Объявление о аренде
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -3,6 +3,7 @@ using CoreWPF.MVVM.Interfaces;
 using CoreWPF.Utilites;
 using MlsExclusive.Utilites.Enums;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace MlsExclusive.Models
@@ -10,9 +11,11 @@ namespace MlsExclusive.Models
     [Serializable]
     public class MlsOffer : Model, IModel
     {
-        public int Id { get; private set; }
-        public MlsMode Mode { get; private set; }
-        public string Changes { get; private set; }
+        public int Id { get; set; }
+        public MlsMode Mode { get; set; }
+        public string Changes { get; set; }
+        public event Action Event_DontUpdate;
+
 
         private string link;
         public string Link
@@ -26,31 +29,54 @@ namespace MlsExclusive.Models
             }
         }
 
-        public OfferStatus Status { get; private set; }
-        public int RoomCount { get; private set; }
-        public string Type { get; private set; }
-        public string District { get; private set; }
-        public string Guidemark { get; private set; }
-        public string Street { get; private set; }
-        public double Price { get; private set; }
-        public int Floor { get; private set; }
-        public int Floors { get; private set; }
-        public int SqAll { get; private set; }
-        public int SqLive { get; private set; }
-        public int SqKitchen { get; private set; }
-        public int SqArea { get; private set; }
-        public string BalconyType { get; private set; }
-        public string LiveStatus { get; private set; }
-        public string Agency { get; private set; }
-        public string RoomsType { get; private set; }
-        public string Materials { get; private set; }
-        public string BathroomType { get; private set; }
-        public string GasValue { get; private set; }
-        public string SewerageValue { get; private set; }
-        public string BathroomValue { get; private set; }
-        public ListExt<string> Phones { get; private set; }
-        public ListExt<string> Photos { get; private set; }
-        public string Date { get; private set; }
+        public OfferStatus Status { get; set; }
+        public int RoomCount { get; set; }
+        public string Type { get; set; }
+        public string District { get; set; }
+        public string Guidemark { get; set; }
+        public string Street { get; set; }
+        public double Price { get; set; }
+        public int Floor { get; set; }
+        public int Floors { get; set; }
+        public int SqAll { get; set; }
+        public int SqLive { get; set; }
+        public int SqKitchen { get; set; }
+        public int SqArea { get; set; }
+        public string BalconyType { get; set; }
+        public string LiveStatus { get; set; }
+        public string Agency { get; set; }
+        public string RoomsType { get; set; }
+        public string Materials { get; set; }
+        public string BathroomType { get; set; }
+        public string GasValue { get; set; }
+        public string SewerageValue { get; set; }
+        public string BathroomValue { get; set; }
+        public List<string> Phones { get; set; }
+        public List<string> Photos { get; set; }
+        public string Description
+        {
+            get
+            {
+                string tmp_send = "В продаже ";
+
+                if (RoomCount > 0) tmp_send += RoomCount + "-комн. ";
+
+                tmp_send += Type;
+
+                if (Guidemark != null && Guidemark != "") tmp_send += ", ориентир: " + Guidemark;
+                if (Materials != null && Materials != "") tmp_send += ", материал: " + Materials;
+                if (LiveStatus != null && LiveStatus != "") tmp_send += ", состояние: " + LiveStatus;
+                if (BalconyType != null && BalconyType != "") tmp_send += ", балкон: " + BalconyType;
+                if (RoomsType != null && RoomsType != "") tmp_send += ", комнаты " + RoomsType;
+                if (BathroomType != null && BathroomType != "") tmp_send += ", санузел: " + BathroomType;
+                if (BathroomValue != null && BathroomValue != "") tmp_send += ", тип санузла: " + BathroomValue;
+                if (SewerageValue != null && SewerageValue != "") tmp_send += ", канализация: " + SewerageValue;
+                if (GasValue != null && GasValue != "") tmp_send += ", газ: " + GasValue;
+
+                return tmp_send + ".";
+            }
+        }
+        public string Date { get; set; }
 
         public MlsOffer(string mls_string, MlsMode mode)
         {
@@ -125,14 +151,14 @@ namespace MlsExclusive.Models
                 try
                 {
                     values[17] = values[17].Remove(values[17].Length - 1);
-                    this.Phones = new ListExt<string>(values[17].Split(','));
+                    this.Phones = new List<string>(values[17].Split(','));
                 }
-                catch { this.Phones = new ListExt<string>(); }
+                catch { this.Phones = new List<string>(); }
                 if(values[18] != @"https://mls.kh.ua/photo/.jpg")
                 {
-                    this.Photos = new ListExt<string>(values[18].Split(','));
+                    this.Photos = new List<string>(values[18].Split(','));
                 }
-                else this.Photos = new ListExt<string>();
+                else this.Photos = new List<string>();
                 this.Date = values[19];
                 this.Id = Convert.ToInt32(values[20]);
             }
@@ -170,14 +196,14 @@ namespace MlsExclusive.Models
                 try
                 {
                     values[19] = values[19].Remove(values[19].Length - 1);
-                    this.Phones = new ListExt<string>(values[19].Split(','));
+                    this.Phones = new List<string>(values[19].Split(','));
                 }
-                catch { this.Phones = new ListExt<string>(); }
+                catch { this.Phones = new List<string>(); }
                 if (values[20] != @"https://mls.kh.ua/photo/.jpg")
                 {
-                    this.Photos = new ListExt<string>(values[20].Split(','));
+                    this.Photos = new List<string>(values[20].Split(','));
                 }
-                else this.Photos = new ListExt<string>();
+                else this.Photos = new List<string>();
                 this.Date = values[21];
 
                 this.Id = Convert.ToInt32(values[22]);
@@ -330,7 +356,7 @@ namespace MlsExclusive.Models
                     if (this.Status != OfferStatus.Modify)
                     {
                         this.Status = OfferStatus.Modify;
-                        this.Command_select_model?.Execute(null);
+                        this.Command_select_model?.Execute();
                     }
 
                 }
@@ -338,8 +364,9 @@ namespace MlsExclusive.Models
                 {
                     if (this.Status != OfferStatus.NoChanges)
                     {
+                        if (this.Status != OfferStatus.Delete) this.Command_select_model?.Execute();
+                        else if (this.Status == OfferStatus.Delete) this.Event_DontUpdate?.Invoke();
                         this.Status = OfferStatus.NoChanges;
-                        this.Command_select_model?.Execute(null);
                     }
                 }
             }
@@ -348,6 +375,7 @@ namespace MlsExclusive.Models
         public void SetDeleteStatus()
         {
             this.Status = OfferStatus.Delete;
+            this.Command_select_model?.Execute();
         }
 
         public RelayCommand<string> Command_OpenLink

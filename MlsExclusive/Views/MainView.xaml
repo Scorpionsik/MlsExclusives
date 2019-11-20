@@ -23,16 +23,12 @@
         <ToolBar Grid.Row="0" Header="Меню: " VerticalAlignment="Top" Background="{StaticResource MlsAbsoluteLightGreen}" BorderThickness="0">
             <Button Content="Загрузить из МЛС" Command="{Binding Path=Command_LoadMls}"/>
             <Separator />
-            <Button Content="Записать в формате Яндекс-недвижимость..."/>
+            <Button Content="Записать в формате Яндекс-недвижимость..." Command="{Binding Path=Command_SaveInFile}"/>
             <Separator />
             <Button Command="{Binding Path=Command_SaveChanges}" Content="Сохранить результаты работы"/>
             <Separator />
             <Button Content="Настройки"/>
             <Separator />
-            <Button Content="One" Command="{Binding Path=One}"/>
-            <Button Content="Two" Command="{Binding Path=Two}"/>
-            <Button Content="Clear" Command="{Binding Path=Clear}"/>
-            <Button Content="Infinite" Command="{Binding Path=Infinite}"/>
         </ToolBar>
         <!--конец Панель управления-->
         <!--Фильтры-->
@@ -106,11 +102,23 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel LastChildFill="False">
+                                <Grid DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Vertical" Grid.Column="0">
+                                        <TextBlock Text="{Binding StringFormat=Обновлён: {0}, Path=Last_update_date}" FontSize="12px"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                                        <TextBlock Text="{Binding StringFormat=Объектов: {0}, Path=Offers.Count}" FontSize="12px"/>
+                                        <TextBlock Text=" "/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Path=StatusString}" FontSize="12px" FontWeight="Bold"/>
+                                    </StackPanel>
+                                    
+                                </Grid>
                                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock TextAlignment="Center" Text="{Binding Path=Name}" FontSize="20px" FontWeight="Bold"/>
-                                    <TextBlock Text=" (" FontSize="14px" FontWeight="Bold"/>
-                                    <TextBlock TextAlignment="Center" Text="{Binding Path=Offers.Count}" FontSize="14px" FontWeight="Bold"/>
-                                    <TextBlock Text=" шт.)" FontSize="14px" FontWeight="Bold"/>
                                     <TextBlock TextAlignment="Center" Visibility="{Binding Path=IsChanges, Converter={StaticResource Bool-Visibility}}" Text="*" FontSize="20px" FontWeight="Bold"/>
                                 </StackPanel>
                                 <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
@@ -310,9 +318,9 @@
                                         </StackPanel>
                                         <!--конец Характеристики-->
 
-                                        <StackPanel Orientation="Vertical" Grid.Column="2">
+                                        <DockPanel LastChildFill="False" Grid.Column="2">
                                             <!--Фотографии-->
-                                            <Expander IsExpanded="False">
+                                            <Expander IsExpanded="False" DockPanel.Dock="Top">
                                                 <Expander.Header>
                                                     <TextBlock Text="{Binding StringFormat=Фото: {0}, Path=Photos.Count}" FontWeight="Bold"/>
                                                 </Expander.Header>
@@ -340,12 +348,13 @@
                                             </Expander>
                                             <!--конец Фотографии-->
                                             <!--Изменения-->
-                                            <StackPanel Orientation="Vertical">
+                                            <StackPanel DockPanel.Dock="Bottom" Orientation="Vertical">
+                                                <TextBox Text="{Binding Path=Description, Mode=OneTime}" IsReadOnly="True" TextWrapping="Wrap" HorizontalAlignment="Stretch"/>
                                                 <TextBlock Text="Изменения:" FontWeight="Bold"/>
                                                 <TextBlock Text="{Binding Path=Changes}"/>
                                             </StackPanel>
                                             <!--конец Изменения-->
-                                        </StackPanel>
+                                        </DockPanel>
                                     </Grid>
                                 </Grid>
                             </DataTemplate>
@@ -363,7 +372,9 @@
             </StatusBarItem>
             <StatusBarItem  HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding StringFormat=Отображается: {0}, Path=Current_offers.Count}"/>
+                    <TextBlock Text="{Binding StringFormat=Отображается объектов: {0}, Path=Current_offers.Count}"/>
+                    <Label Margin="5 0 5 0" Width="1" Background="DarkGray"/>
+                    <TextBlock Text="{Binding StringFormat=Всего агенств: {0}, Path=Agencys.Count}"/>
                     <Label Margin="5 0 5 0" Width="1" Background="DarkGray"/>
                     <TextBlock Text="{Binding StringFormat=Последнее обновление: {0}, Path=CurrentUpdateTime}"/>
                 </StackPanel>
