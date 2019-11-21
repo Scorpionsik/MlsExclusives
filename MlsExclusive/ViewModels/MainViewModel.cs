@@ -13,6 +13,7 @@ using CoreWPF.Windows.Enums;
 using Offer;
 using System.Xml;
 using Microsoft.Win32;
+using MlsExclusive.Views;
 
 namespace MlsExclusive.ViewModels
 {
@@ -265,10 +266,12 @@ namespace MlsExclusive.ViewModels
                 try
                 {
                     MlsServer.GetFeeds();
+                    if (MlsServer.Flats.Length == 0 || MlsServer.Houses.Length == 0) throw new ArgumentException("Ошибка загрузки фидов!");
                 }
-                catch(System.Net.WebException ex)
+                catch(Exception ex)
                 {
-                    this.StatusBar.SetAsync(ex.Status.ToString() + ": " + ex.Message, StatusString.LongTime);
+                    this.StatusBar.SetAsync(ex.Message, StatusString.LongTime);
+                    this.Unblock = true;
                     return;
                 }
 
@@ -407,6 +410,18 @@ namespace MlsExclusive.ViewModels
                         this.SaveChangesMethod();
                         this.StatusBar.SetAsync("Сохранение успешно завершено!", StatusString.LongTime);
 
+                });
+            }
+        }
+
+        public RelayCommand Command_ShowSettings
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    SettingsView window = new SettingsView();
+                    window.Show();
                 });
             }
         }

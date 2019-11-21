@@ -1,0 +1,60 @@
+﻿<window:DialogWindowExt x:Class="MlsExclusive.Views.SettingsView"
+        xmlns:window="clr-namespace:CoreWPF.Windows;assembly=CoreWPF"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        WindowStyle="ToolWindow"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d"
+        Title="{Binding Path=Title}" Height="175" Width="420">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <GroupBox Margin="5 0 5 0" Header="Настройки авторизации в МЛС">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.Resources>
+                    <Style TargetType="Label">
+                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Height" Value="20"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                </Grid.Resources>
+                <Label Grid.Column="0" Grid.Row="0" Content="Логин:"/>
+                <Label Grid.Column="0" Grid.Row="1" Content="Пароль:"/>
+                <Label Grid.Column="0" Grid.Row="2" Content="User agent:" ToolTip="User agent можно посмотреть в вашем текущем браузере (или ищите в интернете - User Agent)."/>
+                <TextBox Text="{Binding Path=Login}" Grid.Column="1" Grid.Row="0"/>
+                <TextBox Text="{Binding Path=Password}" Grid.Column="1" Grid.Row="1"/>
+                <TextBox Text="{Binding Path=User_agent}" Grid.Column="1" Grid.Row="2" ToolTip="User agent можно посмотреть в вашем текущем браузере (или ищите в интернете - User Agent)."/>
+            </Grid>
+        </GroupBox>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="2.5 5 2.5 5"/>
+                </Style>
+            </Grid.Resources>
+            <Button Content="Сохранить" Grid.Column="0" Command="{Binding Path=Command_save}"/>
+            <Button Content="Отмена" Grid.Column="1" Command="{Binding Path=Command_close}"/>
+        </Grid>
+    </Grid>
+</window:DialogWindowExt>

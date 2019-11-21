@@ -27,7 +27,7 @@
             <Separator />
             <Button Command="{Binding Path=Command_SaveChanges}" Content="Сохранить результаты работы"/>
             <Separator />
-            <Button Content="Настройки"/>
+            <Button Content="Настройки..." Command="{Binding Path=Command_ShowSettings}"/>
             <Separator />
         </ToolBar>
         <!--конец Панель управления-->
