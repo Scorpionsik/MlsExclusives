@@ -19,9 +19,6 @@ namespace MlsExclusive.ViewModels
 {
     public class MainViewModel : ViewModel
     {
-        //private bool filterBlock = false;
-        //private bool modeBlock = true;
-
         public bool Unblock { get; private set; }
 
         public StatusString StatusBar { get; private set; }
@@ -36,11 +33,7 @@ namespace MlsExclusive.ViewModels
             {
                 this.select_filter = value;
                 this.OnPropertyChanged("Select_filter");
-                //чтобы не запрашивать несколько раз Current_offers при первом запуске
-                //if (this.filterBlock)
                     this.OnPropertyChanged("Current_offers");
-                //else this.filterBlock = true;
-                //---
             }
         }
 
@@ -54,11 +47,7 @@ namespace MlsExclusive.ViewModels
             {
                 this.select_mode = value;
                 this.OnPropertyChanged("Select_mode");
-                //чтобы не запрашивать несколько раз Current_offers при первом запуске
-                //if (this.modeBlock)
                     this.OnPropertyChanged("Current_offers");
-                //else this.modeBlock = true;
-                //---
             }
         }
 

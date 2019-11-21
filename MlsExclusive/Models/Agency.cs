@@ -18,6 +18,7 @@ namespace MlsExclusive.Models
             private set
             {
                 this.status = value;
+                this.IsChanges = true;
                 this.OnPropertyChanged("Status");
                 this.OnPropertyChanged("StatusString");
             }
@@ -32,6 +33,7 @@ namespace MlsExclusive.Models
             }
         }
 
+        private double last_update_stamp_backup;
         private double last_update_stamp;
         public double Last_update_stamp
         {
@@ -95,7 +97,11 @@ namespace MlsExclusive.Models
             private set
             {
                 this.ischanges = value;
-                if(this.ischanges) this.Last_update_stamp = UnixTime.CurrentUnixTimestamp();
+                if (this.ischanges)
+                {
+                    this.last_update_stamp_backup = this.last_update_stamp;
+                    this.Last_update_stamp = UnixTime.CurrentUnixTimestamp();
+                }
                 this.OnPropertyChanged("IsChanges");
             }
         }
@@ -117,6 +123,7 @@ namespace MlsExclusive.Models
         {
             this.status = AgencyStatus.New;
             this.last_update_stamp = UnixTime.CurrentUnixTimestamp();
+            this.last_update_stamp_backup = this.last_update_stamp;
             this.ischanges = true;
             this.isload = true;
             this.ispicload = false;
@@ -169,7 +176,11 @@ namespace MlsExclusive.Models
 
         private void DontUpdate()
         {
-            if (this.IsChanges) this.IsChanges = false;
+            if (this.IsChanges)
+            {
+                this.IsChanges = false;
+                this.last_update_stamp = this.last_update_stamp_backup;
+            }
         }
 
         public void SetOldStatus()
