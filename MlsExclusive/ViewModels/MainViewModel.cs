@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using CoreWPF.Windows.Enums;
 using Offer;
 using System.Xml;
@@ -19,7 +18,16 @@ namespace MlsExclusive.ViewModels
 {
     public class MainViewModel : ViewModel
     {
-        public bool Unblock { get; private set; }
+        private bool unblock;
+        public bool Unblock
+        {
+            get { return this.unblock; }
+            private set
+            {
+                this.unblock = value;
+                this.OnPropertyChanged("Unblock");
+            }
+        }
 
         public StatusString StatusBar { get; private set; }
 
@@ -132,6 +140,11 @@ namespace MlsExclusive.ViewModels
             this.LoadAllAgency();
         }
 
+        private string PriceSpaceConverter()
+        {
+            throw new NotImplementedException();
+        }
+
         private void SelectFromCheckBox(Model model)
         {
             if(model is Agency agency && this.Select_agency != agency)
@@ -201,7 +214,7 @@ namespace MlsExclusive.ViewModels
                                     OfferType.Sell,
                                     new OfferCategory(offer.Type),
                                     tmp_date,
-                                    tmp_date,
+                                    UnixTime.ToDateTimeOffset(agency.Last_update_stamp, App.Timezone),
                                     "Украина",
                                     "Харьков",
                                     offer.District,
@@ -230,16 +243,18 @@ namespace MlsExclusive.ViewModels
                 }
 
                 XmlDocument yandexDoc = OfferBase.GetYandexDoc(tmp_offer);
-                this.StatusBar.SetAsync("Документ создан, выбираем папку...", StatusString.Infinite);
+
+                this.StatusBar.SetAsync("Документ сформирован, выбираем папку...", StatusString.Infinite);
                 SaveFileDialog window = new SaveFileDialog();
                 window.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-                window.Title = "Сохранение МЛС фида...";
-                window.FileName = "mls_feed.xml";
+
+                window.Title = "Сохранение документа в формате Яндекс.недвижимость...";
+                window.FileName = "mls_feed.yrl";
                 if ((bool)window.ShowDialog())
                 {
                     this.StatusBar.SetAsync("Идёт сохранение, пожалуйста подождите...", StatusString.Infinite);
                     yandexDoc.Save(window.FileName);
-                    this.StatusBar.SetAsync("Сохранение успешно завершено! Записано объектов: " + tmp_offer.Count(), StatusString.LongTime);
+                    this.StatusBar.SetAsync("Сохранение успешно завершено! Записано объектов: " + tmp_offer.Count(), StatusString.LongTime + StatusString.LongTime);
                 }
                 else this.StatusBar.SetAsync("Отмена операции, документ не сохранён...", StatusString.LongTime);
             });
@@ -247,132 +262,158 @@ namespace MlsExclusive.ViewModels
 
         private void LoadMlsMethod()
         {
-            /*await Task.Run(() =>
-            {*/
-                this.Unblock = false;
-                this.Select_agency = null;
-                this.StatusBar.SetAsync("Загружаем из МЛС...", StatusString.Infinite);
+            this.Select_agency = null;
+
+            #region load mls feed
+            this.StatusBar.SetAsync("Загружаем из МЛС...", StatusString.Infinite);
+            try
+            {
+                MlsServer.GetFeeds();
+                if (MlsServer.Flats.Length == 0 || MlsServer.Houses.Length == 0)
+                {
+                    string message = "Ошибка загрузки фидов:";
+                    if (MlsServer.Flats.Length == 0) message += " Не загружены квартиры!";
+                    if (MlsServer.Houses.Length == 0) message += " Не загружены дома!";
+                    throw new ArgumentException(message);
+                }
+            }
+            catch(Exception ex)
+            {
+                this.StatusBar.SetAsync(ex.Message, StatusString.LongTime + StatusString.LongTime);
+                this.Unblock = true;
+                return;
+            }
+            #endregion
+
+            #region check feed
+            this.StatusBar.SetAsync("Обработка объектов...", StatusString.Infinite);
+
+            //get new objects
+            ListExt<Agency> tmp_agencys = new ListExt<Agency>();
+            for(int i = 0; i < 2; i++)
+            {
+                string current_feed = "";
+                MlsMode current_mode = MlsMode.Flat;
+
+                if(i == 0)
+                {
+                    current_feed = MlsServer.Flats;
+                    current_mode = MlsMode.Flat;
+                }
+                else if(i == 1)
+                {
+                    current_feed = MlsServer.Houses;
+                    current_mode = MlsMode.House;
+                }
+
+                foreach(string feed_offer in current_feed.Split('\n'))
+                {
+                    if (feed_offer != null && feed_offer.Length > 0)
+                    {
+                        MlsOffer mls_offer = new MlsOffer(feed_offer, current_mode);
+                        Agency feed_agency = new Agency(mls_offer.Agency);
+                        try
+                        {
+                            feed_agency = tmp_agencys.FindFirst(new Func<Agency, bool>(obj =>
+                            {
+                                if (obj.Name == feed_agency.Name) return true;
+                                else return false;
+                            }));
+                        }
+                        catch
+                        {
+                            feed_agency.UpdateBindings(this.SelectFromCheckBox);
+                            tmp_agencys.Add(feed_agency);
+                        }
+                        finally
+                        {
+                            feed_agency.AddOffer(mls_offer);
+                        }
+                    }
+                }
+            }
+            //remove old objects with Delete status
+            for(int agency_i = 0; agency_i < this.Agencys.Count; agency_i++)
+            {
+                if (this.Agencys[agency_i].Status == AgencyStatus.New) this.Agencys[agency_i].SetOldStatus();
+                for (int offer_i = 0; offer_i < this.Agencys[agency_i].Offers.Count; offer_i++)
+                {
+                    if(this.Agencys[agency_i].Offers[offer_i].Status == OfferStatus.Delete)
+                    {
+                        this.Agencys[agency_i].Offers.RemoveAt(offer_i);
+                        offer_i--;
+                    }
+                }
+            }
+
+            //equal old and new objects
+            bool isNewAgency = false;
+            foreach(Agency mls_agency in tmp_agencys)
+            {
                 try
                 {
-                    MlsServer.GetFeeds();
-                    if (MlsServer.Flats.Length == 0 || MlsServer.Houses.Length == 0) throw new ArgumentException("Ошибка загрузки фидов!");
+                    Agency current_agency = this.Agencys.FindFirst(new Func<Agency, bool>(obj =>
+                    {
+                        if (obj.Name == mls_agency.Name) return true;
+                        else return false;
+                    }));
+
+                    foreach(MlsOffer current_offer in current_agency.Offers)
+                    {
+                        try
+                        {
+                            MlsOffer mls_offer = mls_agency.Offers.FindFirst(new Func<MlsOffer, bool>(obj =>
+                            {
+                                return obj.Equals(current_offer);
+                            }));
+                            current_offer.Merge(mls_offer);
+                        }
+                        catch
+                        {
+                            current_offer.SetDeleteStatus();
+                        }
+                    }
                 }
-                catch(Exception ex)
+                catch
                 {
-                    this.StatusBar.SetAsync(ex.Message, StatusString.LongTime);
-                    this.Unblock = true;
-                    return;
+                    this.InvokeInMainThread(() =>
+                    {
+                        this.AddAgency(mls_agency);
+                    });
+                    if (!isNewAgency) isNewAgency = true;
                 }
+            }
+            #endregion
 
-                this.StatusBar.SetAsync("Обработка объектов...", StatusString.Infinite);
-           // });
-
-            /*await Task.Run(() =>
-            {
-                this.InvokeInMainThread(() =>
-                {*/
-                    //search and delete
-                    for (int agency_i = 0; agency_i < this.Agencys.Count; agency_i++)
-                    {
-                        this.Agencys[agency_i].SetOldStatus();
-                        for (int offer_i = 0; offer_i < this.Agencys[agency_i].Offers.Count; offer_i++)
-                        {
-                            if (this.Agencys[agency_i].Offers[offer_i].Status == OfferStatus.Delete)
-                            {
-                                this.Agencys[agency_i].Offers.Remove(this.Agencys[agency_i].Offers[offer_i]);
-                                offer_i--;
-                                continue;
-                            }
-                            this.Agencys[agency_i].Offers[offer_i].SetDeleteStatus();
-                        }
-                    }
-                    bool new_agencys = false;
-                    for (int i = 0; i < 2; i++)
-                    {
-
-                        //add new
-                        MlsMode select_mode;
-                        string select_offers;
-
-                        if (i == 0)
-                        {
-                            select_mode = MlsMode.Flat;
-                            select_offers = MlsServer.Flats;
-                        }
-                        else
-                        {
-                            select_mode = MlsMode.House;
-                            select_offers = MlsServer.Houses;
-                        }
-
-                        
-                        foreach (string offer in select_offers.Split('\n'))
-                        {
-                            try
-                            {
-                                if (offer != "")
-                                {
-                                    MlsOffer newOffer = new MlsOffer(offer, select_mode);
-                                    Agency current_agency;
-                                    try
-                                    {
-                                        current_agency = this.Agencys.FindFirst(new Func<Agency, bool>(agency =>
-                                        {
-                                            if (agency.Name.ToLower().Contains(newOffer.Agency.ToLower())) return true;
-                                            else return false;
-                                        }));
-                                        current_agency.AddOffer(newOffer);
-                                    }
-                                    catch(Exception ex)
-                                    {
-                                        current_agency = new Agency(newOffer.Agency);
-                                        if (!new_agencys) new_agencys = true;
-                                        this.AddAgency(current_agency);
-                                        current_agency.AddOffer(newOffer);
-                                    }
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                //write in error-log code here
-                                string id_error;
-                                if (select_mode == MlsMode.Flat) id_error = offer.Split('\t')[20];
-                                else id_error = offer.Split('\t')[22];
-                                Debug.Print(UnixTime.CurrentDateTimeOffset(UnixTime.Local).ToString() + " - Mode: " + select_mode + ", Id: " + id_error + ", Message:" + e.Message);
-                            }
-                        }
-
-                        this.OnPropertyChanged("Agencys");
-                    }
-            //});
-
-            //  });
-
-            /*  await Task.Run(() =>
-              {*/
-                string status = "Готово!";
-                if (new_agencys) status += " Добавлены новые агенства!";
-                this.StatusBar.SetAsync(status, StatusString.LongTime);
-                this.OnPropertyChanged("CurrentUpdateTime");
-                this.Unblock = true;
-           // });
+            #region finish
+            string status = "Готово!";
+            if (isNewAgency) status += " Добавлены новые агенства!";
+            this.StatusBar.SetAsync(status, StatusString.LongTime + StatusString.LongTime);
+            this.OnPropertyChanged("CurrentUpdateTime");
+            #endregion
         }
 
         public override WindowClose CloseMethod()
         {
+            this.StatusBar.SetAsync("Идёт сохранение, пожалуйста подождите!", StatusString.Infinite);
             this.SaveChangesMethod();
             return base.CloseMethod();
         }
-        
+
+        #region Команды
         public RelayCommand Command_LoadMls
         {
             get
             {
                 return new RelayCommand(obj =>
                 {
-                    this.LoadMlsMethod();
-                },
-                (obj) => this.Unblock
+                    Task.Run(() =>
+                    {
+                        this.Unblock = false;
+                        this.LoadMlsMethod();
+                        this.Unblock = true;
+                    });
+                }
                 );
             }
         }
@@ -394,10 +435,14 @@ namespace MlsExclusive.ViewModels
             {
                 return new RelayCommand(obj =>
                 {
-
+                    Task.Run(() =>
+                    {
+                        this.Unblock = false;
                         this.StatusBar.SetAsync("Идёт сохранение результатов работы...", StatusString.LongTime);
                         this.SaveChangesMethod();
                         this.StatusBar.SetAsync("Сохранение успешно завершено!", StatusString.LongTime);
+                        this.Unblock = true;
+                    });
 
                 });
             }
@@ -414,5 +459,6 @@ namespace MlsExclusive.ViewModels
                 });
             }
         }
+        #endregion
     }
 }

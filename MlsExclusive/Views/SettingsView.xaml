@@ -8,6 +8,7 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
+        Background="{StaticResource MlsAbsoluteLightGreen}"
         Title="{Binding Path=Title}" Height="175" Width="420">
     <Grid>
         <Grid.RowDefinitions>

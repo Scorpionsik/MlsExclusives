@@ -14,8 +14,6 @@ namespace MlsExclusive.Models
         public int Id { get; set; }
         public MlsMode Mode { get; set; }
         public string Changes { get; set; }
-        public event Action Event_DontUpdate;
-
 
         private string link;
         public string Link
@@ -29,7 +27,17 @@ namespace MlsExclusive.Models
             }
         }
 
-        public OfferStatus Status { get; set; }
+        private OfferStatus status;
+        public OfferStatus Status
+        {
+            get { return this.status; }
+            set
+            {
+                this.status = value;
+                this.Command_select_model?.Execute();
+            }
+        }
+
         public int RoomCount { get; set; }
         public string Type { get; set; }
         public string District { get; set; }
@@ -105,8 +113,16 @@ namespace MlsExclusive.Models
             this.Street = values[4];
 
             this.Price = Convert.ToDouble(values[5].Replace('.',',')) * Convert.ToDouble(1000);
-            this.Floor = Convert.ToInt32(values[6].Split('/')[0]);
-            this.Floors = Convert.ToInt32(values[6].Split('/')[1]);
+            try
+            {
+                this.Floor = Convert.ToInt32(values[6].Split('/')[0]);
+                this.Floors = Convert.ToInt32(values[6].Split('/')[1]);
+            }
+            catch
+            {
+                this.Floor = 0;
+                this.Floors = 0;
+            }
 
             try
             {
@@ -356,7 +372,6 @@ namespace MlsExclusive.Models
                     if (this.Status != OfferStatus.Modify)
                     {
                         this.Status = OfferStatus.Modify;
-                        this.Command_select_model?.Execute();
                     }
 
                 }
@@ -364,8 +379,6 @@ namespace MlsExclusive.Models
                 {
                     if (this.Status != OfferStatus.NoChanges)
                     {
-                        if (this.Status != OfferStatus.Delete) this.Command_select_model?.Execute();
-                        else if (this.Status == OfferStatus.Delete) this.Event_DontUpdate?.Invoke();
                         this.Status = OfferStatus.NoChanges;
                     }
                 }
@@ -375,7 +388,6 @@ namespace MlsExclusive.Models
         public void SetDeleteStatus()
         {
             this.Status = OfferStatus.Delete;
-            this.Command_select_model?.Execute();
         }
 
         public RelayCommand<string> Command_OpenLink
@@ -404,9 +416,10 @@ namespace MlsExclusive.Models
                     string tmp_copy = "";
                     foreach (string image in this.Photos)
                     {
-                        tmp_copy += image + "\n";
+                        tmp_copy += image + "\r\n";
                     }
-                    tmp_copy += "\n\n" + this.District + ", " + this.Guidemark + ", " + this.Street;
+                    if (this.Photos.Count > 0) tmp_copy += "\r\n\r\n";
+                    tmp_copy += this.District + ", " + this.Guidemark + ", " + this.Street;
                     Clipboard.SetText(tmp_copy);
                 },
                 (obj) => this.Photos != null

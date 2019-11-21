@@ -28,12 +28,11 @@ namespace MlsExclusive.Models
         {
             get
             {
-                if (this.Status == AgencyStatus.New) return "Новый!";
+                if (this.Status == AgencyStatus.New) return "Новое агенство!";
                 else return "";
             }
         }
 
-        private double last_update_stamp_backup;
         private double last_update_stamp;
         public double Last_update_stamp
         {
@@ -99,7 +98,6 @@ namespace MlsExclusive.Models
                 this.ischanges = value;
                 if (this.ischanges)
                 {
-                    this.last_update_stamp_backup = this.last_update_stamp;
                     this.Last_update_stamp = UnixTime.CurrentUnixTimestamp();
                 }
                 this.OnPropertyChanged("IsChanges");
@@ -123,7 +121,6 @@ namespace MlsExclusive.Models
         {
             this.status = AgencyStatus.New;
             this.last_update_stamp = UnixTime.CurrentUnixTimestamp();
-            this.last_update_stamp_backup = this.last_update_stamp;
             this.ischanges = true;
             this.isload = true;
             this.ispicload = false;
@@ -144,7 +141,6 @@ namespace MlsExclusive.Models
         private void SetBindings(MlsOffer offer)
         {
             offer.Event_select_model = new Action<Model>(this.SetBindings);
-            offer.Event_DontUpdate += new Action(this.DontUpdate);
         }
 
         public void AddOffer(MlsOffer offer)
@@ -172,15 +168,6 @@ namespace MlsExclusive.Models
         private void SetBindings(Model model)
         {
             if (!this.IsChanges) this.IsChanges = true;
-        }
-
-        private void DontUpdate()
-        {
-            if (this.IsChanges)
-            {
-                this.IsChanges = false;
-                this.last_update_stamp = this.last_update_stamp_backup;
-            }
         }
 
         public void SetOldStatus()

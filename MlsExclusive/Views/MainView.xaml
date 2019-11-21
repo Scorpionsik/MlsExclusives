@@ -5,12 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:window="clr-namespace:CoreWPF.Windows;assembly=CoreWPF"
         xmlns:corewpf="clr-namespace:CoreWPF.Utilites;assembly=CoreWPF"
+        xmlns:converter="clr-namespace:MlsExclusive.Utilites.Converters"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         WindowState="Maximized"
         Title="{Binding Path=Title}" Height="450" Width="800">
     <window:WindowExt.Resources>
         <corewpf:VisibilityBoolConverter x:Key="Bool-Visibility"/>
+        <converter:OfferStatusConverter x:Key="OfferStatus"/>
+        <converter:MlsModeConverter x:Key="MlsMode"/>
+        <converter:FirstCharUpConverter x:Key="FirstCharUp"/>
+        <converter:PriceSpaceConverter x:Key="PriceSpace"/>
     </window:WindowExt.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -20,21 +25,53 @@
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
         <!--Панель управления-->
-        <ToolBar Grid.Row="0" Header="Меню: " VerticalAlignment="Top" Background="{StaticResource MlsAbsoluteLightGreen}" BorderThickness="0">
-            <Button Content="Загрузить из МЛС" Command="{Binding Path=Command_LoadMls}"/>
+        <ToolBar IsEnabled="{Binding Path=Unblock}" Grid.Row="0" Header="Меню: " VerticalAlignment="Top" Background="{StaticResource MlsAbsoluteLightGreen}" BorderThickness="0">
+            <Button Command="{Binding Path=Command_LoadMls}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/load.ico"/>
+                        <TextBlock Text=" "/>
+                        <TextBlock Text="Загрузить из МЛС"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
             <Separator />
-            <Button Content="Записать в формате Яндекс-недвижимость..." Command="{Binding Path=Command_SaveInFile}"/>
+            <Button Command="{Binding Path=Command_SaveInFile}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/yrl.ico"/>
+                        <TextBlock Text=" "/>
+                        <TextBlock Text="Записать в формате Яндекс-недвижимость..."/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
             <Separator />
-            <Button Command="{Binding Path=Command_SaveChanges}" Content="Сохранить результаты работы"/>
+            <Button Command="{Binding Path=Command_SaveChanges}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/save.ico"/>
+                        <TextBlock Text=" "/>
+                        <TextBlock Text="Сохранить результаты работы"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
             <Separator />
-            <Button Content="Настройки..." Command="{Binding Path=Command_ShowSettings}"/>
+            <Button Command="{Binding Path=Command_ShowSettings}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/settings.ico"/>
+                        <TextBlock Text=" "/>
+                        <TextBlock Text="Настройки..."/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
             <Separator />
         </ToolBar>
         <!--конец Панель управления-->
         <!--Фильтры-->
         <DockPanel Grid.Row="1" LastChildFill="False" Background="{StaticResource MlsLightGreen}">
             <Label DockPanel.Dock="Left" Content="Фильтры: " Margin="5 2 0 0"/>
-            <ListBox ItemsSource="{Binding Path=Filters}" SelectedItem="{Binding Path=Select_filter}">
+            <ListBox IsEnabled="{Binding Path=Unblock}" ItemsSource="{Binding Path=Filters}" SelectedItem="{Binding Path=Select_filter}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Horizontal"/>
@@ -75,7 +112,7 @@
                     <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <!--Таблица агенств-->
-                <ListBox Grid.Column="0" ItemsSource="{Binding Path=Agencys}" SelectedItem="{Binding Path=Select_agency}" Background="{StaticResource MlsDarkGreen}">
+                <ListBox IsEnabled="{Binding Path=Unblock}" Grid.Column="0" ItemsSource="{Binding Path=Agencys}" SelectedItem="{Binding Path=Select_agency}" Background="{StaticResource MlsDarkGreen}">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -122,8 +159,8 @@
                                     <TextBlock TextAlignment="Center" Visibility="{Binding Path=IsChanges, Converter={StaticResource Bool-Visibility}}" Text="*" FontSize="20px" FontWeight="Bold"/>
                                 </StackPanel>
                                 <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
-                                    <CheckBox DockPanel.Dock="Left" Content="Сохранять в файл" IsChecked="{Binding Path=IsLoad}"/>
-                                    <CheckBox DockPanel.Dock="Right" Content="Сохранять фото" IsEnabled="{Binding Path=IsLoad}" IsChecked="{Binding Path=IsPicLoad}"/>
+                                    <CheckBox DockPanel.Dock="Left" Content="Сохранять в файл" ToolTip="Сохранять объекты этого агенства при выгрузках (в файл и тд)." IsChecked="{Binding Path=IsLoad}"/>
+                                    <CheckBox DockPanel.Dock="Right" Content="Сохранять фото" ToolTip="Сохранять фото объектов при выгрузках (в файл и тд)." IsEnabled="{Binding Path=IsLoad}" IsChecked="{Binding Path=IsPicLoad}"/>
                                 </DockPanel>
                             </DockPanel>
                         </DataTemplate>
@@ -139,7 +176,7 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <!--Режим-->
-                    <ListBox Background="{StaticResource MlsLightGreen}" Grid.Row="0" ItemsSource="{Binding Path=Modes}" SelectedItem="{Binding Path=Select_mode}">
+                    <ListBox Background="{StaticResource MlsLightGreen}" Grid.Row="0" ItemsSource="{Binding Path=Modes}" BorderThickness="0" SelectedItem="{Binding Path=Select_mode}">
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <UniformGrid Columns="2" Rows="1" />
@@ -151,7 +188,7 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
                                             <Border Background="{TemplateBinding Background}">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.FontWeight="Bold"/>
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsSelected" Value="True">
@@ -163,6 +200,11 @@
                                 </Setter>
                             </Style>
                         </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource MlsMode}}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
                     </ListBox>
                     <!--конец Режим-->
                     <!--Таблица объектов выбранного агенства-->
@@ -201,18 +243,21 @@
                                         <Grid Grid.Row="0" Background="{StaticResource MlsGreen}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>
-                                                <ColumnDefinition Width="3*"/>
+                                                <ColumnDefinition/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition/>
                                                 <RowDefinition/>
                                             </Grid.RowDefinitions>
-                                            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.RowSpan="2" TextAlignment="Left" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Status}"/>
-                                            <TextBlock Grid.Column="1" Grid.Row="0" TextAlignment="Center" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Type}"/>
+                                            <StackPanel Orientation="Vertical" Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Center">
+                                                <TextBlock TextAlignment="Left" FontSize="14px" Text="Статус:"/>
+                                                <TextBlock TextAlignment="Left" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Status, Converter={StaticResource OfferStatus}}"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Grid.Row="0" TextAlignment="Center" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Type, Converter={StaticResource FirstCharUp}}"/>
                                             <TextBlock Grid.Column="1" Grid.Row="1" TextAlignment="Center" FontSize="14px" FontWeight="Bold" Text="{Binding StringFormat=комнат: {0}, Path=RoomCount}"/>
                                             <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Grid.Column="2" Grid.RowSpan="2" HorizontalAlignment="Right">
-                                                <TextBlock TextAlignment="Right" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Price}"/>
+                                                <TextBlock TextAlignment="Right" FontSize="18px" FontWeight="Bold" Text="{Binding Path=Price, Converter={StaticResource PriceSpace}}"/>
                                                 <TextBlock TextAlignment="Right" FontSize="18px" FontWeight="Bold" Text=" $"/>
                                             </StackPanel>
                                         </Grid>
@@ -322,7 +367,10 @@
                                             <!--Фотографии-->
                                             <Expander IsExpanded="False" DockPanel.Dock="Top">
                                                 <Expander.Header>
-                                                    <TextBlock Text="{Binding StringFormat=Фото: {0}, Path=Photos.Count}" FontWeight="Bold"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding StringFormat=Фото: {0}, Path=Photos.Count}" FontWeight="Bold"/>
+                                                        <Button Padding="5 0 5 0" Margin="10 0 0 0" Content="Копировать фото" Command="{Binding Path=Command_CopyToClipboardsImages}"/>
+                                                    </StackPanel>
                                                 </Expander.Header>
                                                 <ListBox ItemsSource="{Binding Path=Photos}">
                                                 <i:Interaction.Behaviors>
