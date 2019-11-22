@@ -36,12 +36,12 @@
                         <Setter Property="VerticalAlignment" Value="Center"/>
                     </Style>
                 </Grid.Resources>
-                <Label Grid.Column="0" Grid.Row="0" Content="Логин:"/>
-                <Label Grid.Column="0" Grid.Row="1" Content="Пароль:"/>
-                <Label Grid.Column="0" Grid.Row="2" Content="User agent:" ToolTip="User agent можно посмотреть в вашем текущем браузере (или ищите в интернете - User Agent)."/>
-                <TextBox Text="{Binding Path=Login}" Grid.Column="1" Grid.Row="0"/>
-                <TextBox Text="{Binding Path=Password}" Grid.Column="1" Grid.Row="1"/>
-                <TextBox Text="{Binding Path=User_agent}" Grid.Column="1" Grid.Row="2" ToolTip="User agent можно посмотреть в вашем текущем браузере (или ищите в интернете - User Agent)."/>
+                <Label Grid.Column="0" Grid.Row="0" Content="Логин:" ToolTip="Логин для авторизации на сервере МЛС."/>
+                <Label Grid.Column="0" Grid.Row="1" Content="Пароль:" ToolTip="Пароль для авторизации на сервере МЛС."/>
+                <Label Grid.Column="0" Grid.Row="2" Content="User agent:" ToolTipService.ShowDuration="60000" ToolTip="Используется для запросов в МЛС сервер; User agent можно посмотреть в вашем текущем браузере (или ищите в интернете - User Agent)."/>
+                <TextBox Text="{Binding Path=Login}" Grid.Column="1" Grid.Row="0" ToolTip="Логин для авторизации на сервере МЛС."/>
+                <TextBox Text="{Binding Path=Password}" Grid.Column="1" Grid.Row="1" ToolTip="Пароль для авторизации на сервере МЛС."/>
+                <TextBox Text="{Binding Path=User_agent}" Grid.Column="1" Grid.Row="2" ToolTipService.ShowDuration="60000" ToolTip="Используется для запросов в МЛС сервер; User agent можно посмотреть в вашем текущем браузере (или ищите в интернете - User Agent)."/>
             </Grid>
         </GroupBox>
         <Grid Grid.Row="1">

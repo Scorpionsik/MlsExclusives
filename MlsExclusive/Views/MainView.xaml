@@ -36,7 +36,7 @@
                 </Button.Content>
             </Button>
             <Separator />
-            <Button Command="{Binding Path=Command_SaveInFile}">
+            <Button Command="{Binding Path=Command_SaveInFile}" ToolTipService.ShowDuration="60000" ToolTip="Выгрузка в базу (Система - Импорт Yandex), работает криво (впрочем как и остальные вариации подобных выгрузок). Использовать сформированный файл данной опцией только на свой страх и риск.">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/yrl.ico"/>
@@ -66,11 +66,21 @@
                 </Button.Content>
             </Button>
             <Separator />
+            <Button Command="{Binding Path=Command_GoGoMls}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/ie.ico"/>
+                        <TextBlock Text=" "/>
+                        <TextBlock Text="Перейти на mls.kh.ua..."/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Separator />
         </ToolBar>
         <!--конец Панель управления-->
         <!--Фильтры-->
         <DockPanel Grid.Row="1" LastChildFill="False" Background="{StaticResource MlsLightGreen}">
-            <Label DockPanel.Dock="Left" Content="Фильтры: " Margin="5 2 0 0"/>
+            <Label DockPanel.Dock="Left" Content="Показать: " Margin="5 2 0 0"/>
             <ListBox IsEnabled="{Binding Path=Unblock}" ItemsSource="{Binding Path=Filters}" SelectedItem="{Binding Path=Select_filter}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -115,6 +125,7 @@
                 <ListBox IsEnabled="{Binding Path=Unblock}" Grid.Column="0" ItemsSource="{Binding Path=Agencys}" SelectedItem="{Binding Path=Select_agency}" Background="{StaticResource MlsDarkGreen}">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                           
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             <Setter Property="Margin" Value="3"/>
                             <Setter Property="Template">
@@ -211,6 +222,13 @@
                     <ListBox Grid.Row="1" ItemsSource="{Binding Path=Current_offers}" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                <!--Select ListBoxItem if inner element is focused-->
+                                <Style.Triggers>
+                                    <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                        <Setter Property="IsSelected" Value="True"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                                <!--end Select ListBoxItem if inner element is focused-->
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -301,11 +319,11 @@
                                                 </StackPanel>
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="Ориентир: " FontWeight="Bold"/>
-                                                    <TextBlock Text="{Binding Path=Guidemark}"/>
+                                                    <TextBlock Width="100" TextWrapping="Wrap" Text="{Binding Path=Guidemark}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                                                     <TextBlock FontWeight="Bold" Text="Улица: "/>
-                                                    <TextBox IsReadOnly="True" Text="{Binding Path=Street}"/>
+                                                    <TextBox IsReadOnly="True" Width="100" TextWrapping="Wrap" Text="{Binding Path=Street}"/>
                                                 </StackPanel>
                                             </StackPanel>
                                             <StackPanel Margin="0 0 0 10"/>
@@ -316,6 +334,20 @@
                                                     <TextBlock Text="/"/>
                                                     <TextBlock Text="{Binding Path=Floors}"/>
                                                 </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock FontWeight="Bold" Text="Площадь: "/>
+                                                    <TextBlock Text="{Binding Path=SqAll}"/>
+                                                    <TextBlock Text=" / "/>
+                                                    <TextBlock Text="{Binding Path=SqLive}"/>
+                                                    <TextBlock Text=" / "/>
+                                                    <TextBlock Text="{Binding Path=SqKitchen}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock FontWeight="Bold" Text="Участок: "/>
+                                                    <TextBlock Text="{Binding Path=SqArea}"/>
+                                                    <TextBlock Text=" соток."/>
+                                                </StackPanel>
+                                                <StackPanel Margin="0 0 0 10"/>
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="Балкон: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=BalconyType}"/>

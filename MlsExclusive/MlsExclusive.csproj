@@ -150,5 +150,8 @@
     <Resource Include="Data\icons\settings.ico" />
     <Resource Include="Data\icons\yrl.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Data\icons\ie.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -131,6 +131,5 @@ namespace MlsExclusive.Utilites
                 MessageBox.Show(ex.Message, "Ошибка МЛС сервера!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
     }
 }

@@ -1,12 +1,19 @@
 ﻿using CoreWPF.MVVM;
 using CoreWPF.Utilites;
 using MlsExclusive.Utilites;
+using MlsExclusive.Views;
 
 namespace MlsExclusive.ViewModels
 {
+    /// <summary>
+    /// Логика для <see cref="SettingsView"/>.
+    /// </summary>
     public class SettingsViewModel : ViewModel
     {
         private string login;
+        /// <summary>
+        /// Поле для логина.
+        /// </summary>
         public string Login
         {
             get { return this.login; }
@@ -18,6 +25,9 @@ namespace MlsExclusive.ViewModels
         }
 
         private string password;
+        /// <summary>
+        /// Поле для пароля.
+        /// </summary>
         public string Password
         {
             get { return this.password; }
@@ -29,6 +39,9 @@ namespace MlsExclusive.ViewModels
         }
 
         private string user_agent;
+        /// <summary>
+        /// Поле для User agent.
+        /// </summary>
         public string User_agent
         {
             get { return this.user_agent; }
@@ -39,6 +52,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Инициализация логики окна <see cref="SettingsView"/>.
+        /// </summary>
         public SettingsViewModel()
         {
             this.Title = "Настройки";
@@ -49,6 +65,9 @@ namespace MlsExclusive.ViewModels
             this.user_agent = current_user.user_agent;
         }
 
+        /// <summary>
+        /// Команда для сохранения внесённых изменений из полей текущего окна в объект <see cref="User"/>.
+        /// </summary>
         public override RelayCommand Command_save
         {
             get

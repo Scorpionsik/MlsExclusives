@@ -30,7 +30,7 @@ namespace MlsExclusive
         }
 
         /// <summary>
-        /// Получить информацию для фидов
+        /// Получить информацию для авторизации и дальнейшей загрузки фидов
         /// </summary>
         /// <returns>Структура <see cref="User"/> с данными для фидов</returns>
         public static User GetUser()
@@ -40,7 +40,7 @@ namespace MlsExclusive
         }
 
         /// <summary>
-        /// Задает информацию для фидов и записывает её в файл конфигурации
+        /// Задает информацию о авторизации для фидов и записывает её в файл конфигурации
         /// </summary>
         /// <param name="user">Структура <see cref="User"/> с данными для фидов</param>
         public static void SetUser(User user)

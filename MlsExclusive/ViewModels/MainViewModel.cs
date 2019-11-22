@@ -16,9 +16,18 @@ using MlsExclusive.Views;
 
 namespace MlsExclusive.ViewModels
 {
+    /// <summary>
+    /// Логика для <see cref="MainView"/>.
+    /// </summary>
     public class MainViewModel : ViewModel
     {
         private bool unblock;
+        /// <summary>
+        /// Флаг, отмечающий, заблокирован интерфейс окна или нет.
+        /// </summary>
+        /// <remarks>
+        /// true, если не заблокирован, иначе false.
+        /// </remarks>
         public bool Unblock
         {
             get { return this.unblock; }
@@ -29,11 +38,20 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Обновляемая строка для статус-бара окна.
+        /// </summary>
         public StatusString StatusBar { get; private set; }
 
+        /// <summary>
+        /// Коллекция фильтров для отображения объявлений.
+        /// </summary>
         public Dictionary<string, Func<MlsOffer, bool>> Filters { get; private set; }
 
         private KeyValuePair<string, Func<MlsOffer, bool>> select_filter;
+        /// <summary>
+        /// Выбранный фильтр из коллекции <see cref="Filters"/>.
+        /// </summary>
         public KeyValuePair<string, Func<MlsOffer, bool>> Select_filter
         {
             get { return this.select_filter; }
@@ -45,9 +63,15 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Коллекция фильтров для отображения, из какого фида взято объявления.
+        /// </summary>
         public ListExt<MlsMode> Modes { get; private set; }
 
         private MlsMode select_mode;
+        /// <summary>
+        /// Выбранный фильтр из коллекции <see cref="Modes"/>.
+        /// </summary>
         public MlsMode Select_mode
         {
             get { return this.select_mode; }
@@ -59,9 +83,15 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Коллекция агенств.
+        /// </summary>
         public ListExt<Agency> Agencys { get; private set; }
 
         private Agency select_agency;
+        /// <summary>
+        /// Выьранное агенство из коллекции <see cref="Agencys"/>.
+        /// </summary>
         public Agency Select_agency
         {
             get { return this.select_agency; }
@@ -73,6 +103,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Возвращает время последней выгрузки из МЛС. 
+        /// </summary>
         public string CurrentUpdateTime
         {
             get
@@ -81,6 +114,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Отображаемая коллекция объявлений; при отображении учитываются <see cref="Select_agency"/>, <see cref="Select_mode"/> и <see cref="Select_filter"/>.
+        /// </summary>
         public ListExt<MlsOffer> Current_offers
         {
             get
@@ -99,6 +135,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Инициализация логики окна <see cref="MainView"/>.
+        /// </summary>
         public MainViewModel()
         {
             this.Title = "МЛС Эксклюзивы";
@@ -138,49 +177,46 @@ namespace MlsExclusive.ViewModels
             this.Agencys = new ListExt<Agency>();
 
             this.LoadAllAgency();
-        }
+        } //---конструктор MainViewModel
 
-        private string PriceSpaceConverter()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void SelectFromCheckBox(Model model)
-        {
-            if(model is Agency agency && this.Select_agency != agency)
-            {
-                this.Select_agency = agency;
-            }
-        }
-
+        /// <summary>
+        /// Добавляет новое агенство в коллекцию <see cref="Agencys"/>, предварительно обновив привязки для этого агенства.
+        /// </summary>
+        /// <param name="agency"><see cref="Agency"/> для добавления.</param>
         public void AddAgency(Agency agency)
         {
             if (agency != null)
             {
-                agency.UpdateBindings(this.SelectFromCheckBox);
+                agency.UpdateBindings(this.SelectChangesForAgency);
                 this.Agencys.Add(agency);
             }
         }
 
+        /// <summary>
+        /// Вызывается в конструкторе, загружает <see cref="Agency"/> из сохранений в коллекцию <see cref="Agencys"/>.
+        /// </summary>
         private void LoadAllAgency()
         {
-                if (this.Agencys.Count == 0)
+            if (this.Agencys.Count == 0)
+            {
+                this.Unblock = false;
+                if (!Directory.Exists("Data/agencys/")) Directory.CreateDirectory("Data/agencys/");
+
+                string[] files = Directory.GetFiles("Data/agencys/", "*.agency");
+
+                foreach (string file_path in files)
                 {
-                    this.Unblock = false;
-                    if (!Directory.Exists("Data/agencys/")) Directory.CreateDirectory("Data/agencys/");
-
-                    string[] files = Directory.GetFiles("Data/agencys/", "*.agency");
-
-                    foreach (string file_path in files)
-                    {
-                        Agency agency = Agency.Deserialize(file_path);
-                        //agency.SetOldStatus();
-                        this.AddAgency(agency);
-                    }
-                    this.Unblock = true;
+                    Agency agency = Agency.Deserialize(file_path);
+                    //agency.SetOldStatus();
+                    this.AddAgency(agency);
                 }
+                this.Unblock = true;
+            }
         }
 
+        /// <summary>
+        /// Метод для сохранения <see cref="Agency"/> из коллекции <see cref="Agencys"/> в файлы.
+        /// </summary>
         private void SaveChangesMethod()
         {
             foreach (Agency agency in this.Agencys)
@@ -192,6 +228,9 @@ namespace MlsExclusive.ViewModels
             }   
         }
 
+        /// <summary>
+        /// Метод формирует файл .yrl из <see cref="Agencys"/>, из тех объявлений, в чьих <see cref="MlsOffer.Link"/> пустые значения.
+        /// </summary>
         private async void SaveInFileMethod()
         {
             await Task.Run(() =>
@@ -206,7 +245,7 @@ namespace MlsExclusive.ViewModels
                     {
                         foreach (MlsOffer offer in agency.Offers)
                         {
-                            if (offer.Status == OfferStatus.New)
+                            if (offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net"))
                             {
                                 DateTimeOffset tmp_date = new DateTimeOffset(int.Parse(offer.Date.Split('-')[0]), int.Parse(offer.Date.Split('-')[1]), int.Parse(offer.Date.Split('-')[2]), 0, 0, 0, new TimeSpan());
 
@@ -258,8 +297,11 @@ namespace MlsExclusive.ViewModels
                 }
                 else this.StatusBar.SetAsync("Отмена операции, документ не сохранён...", StatusString.LongTime);
             });
-        }
+        } //---метод SaveInFileMethod
 
+        /// <summary>
+        /// Метод загружает фиды из МЛС и обрабатывает полученные результаты.
+        /// </summary>
         private void LoadMlsMethod()
         {
             this.Select_agency = null;
@@ -322,7 +364,7 @@ namespace MlsExclusive.ViewModels
                         }
                         catch
                         {
-                            feed_agency.UpdateBindings(this.SelectFromCheckBox);
+                            feed_agency.UpdateBindings(this.SelectChangesForAgency);
                             tmp_agencys.Add(feed_agency);
                         }
                         finally
@@ -391,8 +433,24 @@ namespace MlsExclusive.ViewModels
             this.StatusBar.SetAsync(status, StatusString.LongTime + StatusString.LongTime);
             this.OnPropertyChanged("CurrentUpdateTime");
             #endregion
+        } //---метод LoadMlsMethod
+
+        /// <summary>
+        /// Метод, передаваемый в события агенства; срабатывает если <see cref="Agency.IsLoad"/> или <see cref="Agency.IsPicLoad"/> были изменены.
+        /// </summary>
+        /// <param name="model"><see cref="Agency"/>, которое должно быть назначено для <see cref="Select_agency"/>.</param>
+        private void SelectChangesForAgency(Model model)
+        {
+            if(model != null && model is Agency agency && agency != this.Select_agency)
+            {
+                this.Select_agency = agency;
+            }
         }
 
+        /// <summary>
+        /// Сохраняет результаты работы программы перед её закрытием. 
+        /// </summary>
+        /// <returns></returns>
         public override WindowClose CloseMethod()
         {
             this.StatusBar.SetAsync("Идёт сохранение, пожалуйста подождите!", StatusString.Infinite);
@@ -401,6 +459,9 @@ namespace MlsExclusive.ViewModels
         }
 
         #region Команды
+        /// <summary>
+        /// Команда для кнопки, запускающая метод <see cref="LoadMlsMethod"/> (загрузка и обработка фидов из МЛС) в отдельном потоке.
+        /// </summary>
         public RelayCommand Command_LoadMls
         {
             get
@@ -418,6 +479,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Команда для кнопки, запускающая асинхронный метод <see cref="SaveInFileMethod"/> (сохранение объявлений в файл .yrl).
+        /// </summary>
         public RelayCommand Command_SaveInFile
         {
             get
@@ -428,7 +492,10 @@ namespace MlsExclusive.ViewModels
                 });
             }
         }
-        
+
+        /// <summary>
+        /// Команда для кнопки, запускающая метод <see cref="SaveChangesMethod"/> (сохранение результатов работы) в отдельном потоке.
+        /// </summary>
         public RelayCommand Command_SaveChanges
         {
             get
@@ -448,6 +515,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Команда для открытия окна настроек (<see cref="SettingsView"/>).
+        /// </summary>
         public RelayCommand Command_ShowSettings
         {
             get
@@ -456,6 +526,20 @@ namespace MlsExclusive.ViewModels
                 {
                     SettingsView window = new SettingsView();
                     window.Show();
+                });
+            }
+        }
+
+        /// <summary>
+        /// Команда для перехода на сайт МЛС.
+        /// </summary>
+        public RelayCommand Command_GoGoMls
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    System.Diagnostics.Process.Start("https://mls.kh.ua");
                 });
             }
         }

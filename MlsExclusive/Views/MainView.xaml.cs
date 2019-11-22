@@ -8,6 +8,9 @@ namespace MlsExclusive.Views
     /// </summary>
     public partial class MainView : WindowExt
     {
+        /// <summary>
+        /// Инициализация окна.
+        /// </summary>
         public MainView()
         {
             InitializeComponent();

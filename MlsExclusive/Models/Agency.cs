@@ -5,13 +5,21 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows.Data;
+using MlsExclusive.ViewModels;
 
 namespace MlsExclusive.Models
 {
+    /// <summary>
+    /// Модель агенства, с необходимым инструментарием.
+    /// </summary>
     [Serializable]
     public class Agency : Model
     {
         private AgencyStatus status;
+        /// <summary>
+        /// Флаг, отмечающий, новое агенство добавлено в приложение или нет.
+        /// </summary>
         public AgencyStatus Status
         {
             get { return this.status; }
@@ -24,6 +32,12 @@ namespace MlsExclusive.Models
             }
         }
 
+        /// <summary>
+        /// Возвращает <see cref="Status"/> в соответствующей вариации строки.
+        /// </summary>
+        /// <remarks>
+        /// Свойство используется вместо соответствующего <see cref="IValueConverter"/>, до того как было принято решение использовать их; оставлено для совместимости со старыми сохранениями.
+        /// </remarks>
         public string StatusString
         {
             get
@@ -34,6 +48,9 @@ namespace MlsExclusive.Models
         }
 
         private double last_update_stamp;
+        /// <summary>
+        /// Время, когда в последний раз агенство или его объекты были обновлены (флаг <see cref="IsChanges"/> устанавливался в true).
+        /// </summary>
         public double Last_update_stamp
         {
             get
@@ -48,6 +65,9 @@ namespace MlsExclusive.Models
             }
         }
 
+        /// <summary>
+        /// Возвращает <see cref="Last_update_stamp"/> в формате <see cref="DateTimeOffset.ToString"/> (используется смещение во времени, взятое из <see cref="App.Timezone"/>).
+        /// </summary>
         public string Last_update_date
         {
             get
@@ -57,6 +77,12 @@ namespace MlsExclusive.Models
         }
 
         private bool isload;
+        /// <summary>
+        /// Флаг, отмечающий, нужно ли сохранять объекты текущего агенства при выгрузках. <para>Внмание: если флаг установлен в false, он также установит <see cref="IsPicLoad"/> в false.</para>
+        /// </summary>
+        /// <remarks>
+        /// true, если нужно сохранять, иначе false.
+        /// </remarks>
         public bool IsLoad
         {
             get { return this.isload; }
@@ -68,13 +94,18 @@ namespace MlsExclusive.Models
                     this.IsPicLoad = false;
                 }
                 if (!this.IsChanges) this.IsChanges = true;
-                //чтобы при нажатии на CheckBox было выбрано агенство-хозяин CheckBox
-                this.Command_select_model?.Execute(null);
+                this.Command_select_model?.Execute();
                 this.OnPropertyChanged("IsLoad");
             }
         }
 
         private bool ispicload;
+        /// <summary>
+        /// Флаг, отмечающий, сохранять ли фотографии объектов при выгрузках.
+        /// </summary>
+        /// <remarks>
+        /// true, если нужно сохранять, иначе false.
+        /// </remarks>
         public bool IsPicLoad
         {
             get { return this.ispicload; }
@@ -83,13 +114,18 @@ namespace MlsExclusive.Models
 
                 this.ispicload = value;
                 if(!this.IsChanges)this.IsChanges = true;
-                //чтобы при нажатии на CheckBox было выбрано агенство-хозяин CheckBox
-                this.Command_select_model?.Execute(null);
+                this.Command_select_model?.Execute();
                 this.OnPropertyChanged("IsPicLoad");
             }
         }
 
         private bool ischanges;
+        /// <summary>
+        /// Флаг, отмечающий, есть ли изменения в свойствах агенства или внутри объектов.
+        /// </summary>
+        /// <remarks>
+        /// true, если изменения есть, иначе false.
+        /// </remarks>
         public bool IsChanges
         {
             get { return this.ischanges; }
@@ -105,6 +141,9 @@ namespace MlsExclusive.Models
         }
 
         private string name;
+        /// <summary>
+        /// Название агенства.
+        /// </summary>
         public string Name
         {
             get { return this.name; }
@@ -115,8 +154,15 @@ namespace MlsExclusive.Models
             }
         }
 
+        /// <summary>
+        /// Объекты, которые выставило текущее агенство.
+        /// </summary>
         public ListExt<MlsOffer> Offers { get; private set; }
 
+        /// <summary>
+        /// Экземпляр класса с указанным названием.
+        /// </summary>
+        /// <param name="name">Название агенства.</param>
         public Agency(string name)
         {
             this.status = AgencyStatus.New;
@@ -128,6 +174,10 @@ namespace MlsExclusive.Models
             this.Offers = new ListExt<MlsOffer>();
         }
 
+        /// <summary>
+        /// Метод для обновления привязок объектов к агенству.
+        /// </summary>
+        /// <param name="event_select_model">Метод, полученный из <see cref="MainViewModel"/> для обновления выбранного агенства.</param>
         public void UpdateBindings(Action<Model> event_select_model)
         {
             this.Event_select_model = new Action<Model>(event_select_model);
@@ -138,11 +188,19 @@ namespace MlsExclusive.Models
             this.Offers.CollectionChanged += new NotifyCollectionChangedEventHandler(this.SetBindings);
         }
 
+        /// <summary>
+        /// Привязывает событие обновления объекта (<see cref="SetBindings(Model)"/>) для <see cref="MlsOffer"/>.
+        /// </summary>
+        /// <param name="offer"><see cref="MlsOffer"/>, к которому будет осуществена привязка.</param>
         private void SetBindings(MlsOffer offer)
         {
             offer.Event_select_model = new Action<Model>(this.SetBindings);
         }
 
+        /// <summary>
+        /// Метод добавляет новый объект или обновляет существующий, если был получен повтор.
+        /// </summary>
+        /// <param name="offer">Объект для добавления/обновления в коллекции <see cref="Offers"/>.</param>
         public void AddOffer(MlsOffer offer)
         {
             try
@@ -160,21 +218,39 @@ namespace MlsExclusive.Models
             }
         }
 
+        /// <summary>
+        /// Метод для события обновления объекта, привязывается к <see cref="Offers"/>, событие CollectionChanged.
+        /// </summary>
+        /// <param name="obj">Не используется в текущем методе.</param>
+        /// <param name="e">Не используется в текущем методе.</param>
         private void SetBindings(object obj, NotifyCollectionChangedEventArgs e)
         {
             if (!this.IsChanges) this.IsChanges = true;
         }
 
+        /// <summary>
+        /// Метод для события обновления объекта, привязывается к <see cref="MlsOffer"/> в коллекции <see cref="Offers"/>.
+        /// </summary>
+        /// <param name="model">Не используется в текущем методе.</param>
         private void SetBindings(Model model)
         {
             if (!this.IsChanges) this.IsChanges = true;
         }
 
+        /// <summary>
+        /// Устанавливает <see cref="Status"/> в <see cref="AgencyStatus.Old"/>.
+        /// </summary>
         public void SetOldStatus()
         {
             if (this.Status == AgencyStatus.New) this.Status = AgencyStatus.Old;
         }
 
+        /// <summary>
+        /// Статический метод, сериализует <see cref="Agency"/> в файл *.agency, где * равна <see cref="Agency.Name"/>.
+        /// </summary>
+        /// <param name="agency"><see cref="Agency"/> для сериализации.</param>
+        /// <param name="folder_path">Папка для сохранения сериализованного <see cref="Agency"/>.</param>
+        /// <returns>Возвращает полный путь к сериализованному <see cref="Agency"/>.</returns>
         public static string Serialize(Agency agency, string folder_path)
         {
             if (folder_path.Contains("\\") && folder_path[folder_path.Length - 1] != '\\') folder_path = folder_path + "\\";
@@ -190,10 +266,17 @@ namespace MlsExclusive.Models
             return folder_path + agency.Name + ".agency";
         }
 
+        /// <summary>
+        /// Статический метод, десериализует <see cref="Agency"/> из файла.
+        /// </summary>
+        /// <param name="path">Путь к файлу *.agency для десериализации</param>
+        /// <returns>возвращает десериализованный <see cref="Agency"/>.</returns>
         public static Agency Deserialize(string path)
         {
             if (File.Exists(path))
             {
+                if (!path.Contains(".agency")) return null;
+
                 BinaryFormatter formatter = new BinaryFormatter();
                 using (FileStream fs = new FileStream(path, FileMode.Open))
                 {

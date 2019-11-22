@@ -1,6 +1,7 @@
 ﻿using CoreWPF.MVVM;
 using CoreWPF.MVVM.Interfaces;
 using CoreWPF.Utilites;
+using MlsExclusive.Utilites;
 using MlsExclusive.Utilites.Enums;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,31 @@ using System.Windows;
 
 namespace MlsExclusive.Models
 {
+    /// <summary>
+    /// Модель МЛС объявлений, с необходимым инструментарием.
+    /// </summary>
     [Serializable]
     public class MlsOffer : Model, IModel
     {
+        /// <summary>
+        /// Id текущего объявления в МЛС базе.
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Флаг, отмечающий, из какого фида было взято текущее объявление.
+        /// </summary>
         public MlsMode Mode { get; set; }
+
+        /// <summary>
+        /// Хранит историю изменений в объявлении.
+        /// </summary>
         public string Changes { get; set; }
 
         private string link;
+        /// <summary>
+        /// Ссылка на текущее объявление в базе АН Города.
+        /// </summary>
         public string Link
         {
             get { return this.link; }
@@ -28,6 +46,9 @@ namespace MlsExclusive.Models
         }
 
         private OfferStatus status;
+        /// <summary>
+        /// Статус объявления.
+        /// </summary>
         public OfferStatus Status
         {
             get { return this.status; }
@@ -38,29 +59,124 @@ namespace MlsExclusive.Models
             }
         }
 
+        /// <summary>
+        /// Количество комнат в объекте. 
+        /// </summary>
         public int RoomCount { get; set; }
+
+        /// <summary>
+        /// Тип недвижимости (квартира, дом, участок и тд).
+        /// </summary>
         public string Type { get; set; }
+
+        /// <summary>
+        /// Район, в котором находится объект.
+        /// </summary>
         public string District { get; set; }
+
+        /// <summary>
+        /// Ориентир, по которому можно отыскать объект.
+        /// </summary>
         public string Guidemark { get; set; }
+
+        /// <summary>
+        /// Улица, на которой находится объект.
+        /// </summary>
         public string Street { get; set; }
+
+        /// <summary>
+        /// Цена за объект.
+        /// </summary>
         public double Price { get; set; }
+
+        /// <summary>
+        /// Этаж, на котором находится объект.
+        /// </summary>
         public int Floor { get; set; }
+
+        /// <summary>
+        /// Этажность дома с объектом.
+        /// </summary>
         public int Floors { get; set; }
+
+        /// <summary>
+        /// Общая площадь объекта.
+        /// </summary>
         public int SqAll { get; set; }
+
+        /// <summary>
+        /// Жилая площадь объекта.
+        /// </summary>
         public int SqLive { get; set; }
+
+        /// <summary>
+        /// Площадь кухни объекта.
+        /// </summary>
         public int SqKitchen { get; set; }
+
+        /// <summary>
+        /// Площадь участка объекта (актуально для фидов <see cref="MlsMode.House"/>).
+        /// </summary>
         public int SqArea { get; set; }
+
+        /// <summary>
+        /// Тип/количество балконов у объекта.
+        /// </summary>
         public string BalconyType { get; set; }
+
+        /// <summary>
+        /// Состояние для жилья.
+        /// </summary>
         public string LiveStatus { get; set; }
+
+        /// <summary>
+        /// Агенство, выставившее текущее объявление.
+        /// </summary>
         public string Agency { get; set; }
+
+        /// <summary>
+        /// Планировка комнат.
+        /// </summary>
         public string RoomsType { get; set; }
+
+        /// <summary>
+        /// Материал, из которого построено здание, где находится объект.
+        /// </summary>
         public string Materials { get; set; }
+
+        /// <summary>
+        /// Тип санузла (раздельный, совмещённый и тд).
+        /// </summary>
         public string BathroomType { get; set; }
+
+        /// <summary>
+        /// Как проведён газ к объекту (актуально для фидов <see cref="MlsMode.House"/>).
+        /// </summary>
         public string GasValue { get; set; }
+
+        /// <summary>
+        /// Как проведена канализация к объекту (актуально для фидов <see cref="MlsMode.House"/>).
+        /// </summary>
         public string SewerageValue { get; set; }
+
+        /// <summary>
+        /// Где находится санузел у объекта (актуально для фидов <see cref="MlsMode.House"/>).
+        /// </summary>
         public string BathroomValue { get; set; }
+
+        /// <summary>
+        /// Телефоны агента, выставившего объявление.
+        /// </summary>
         public List<string> Phones { get; set; }
+
+        /// <summary>
+        /// Фотографии объекта.
+        /// </summary>
         public List<string> Photos { get; set; }
+
+        /// <summary>
+        /// Описание объекта; поскольку в фидах МЛС описания нету, оно формируется из параметров, указанных в объявлении.
+        /// </summary>
         public string Description
         {
             get
@@ -84,10 +200,24 @@ namespace MlsExclusive.Models
                 return tmp_send + ".";
             }
         }
+
+        /// <summary>
+        /// Дата создания объявления.
+        /// </summary>
         public string Date { get; set; }
 
+        /// <summary>
+        /// Формирует объявление, исходя из фида и <see cref="MlsMode"/>.
+        /// </summary>
+        /// <param name="mls_string">Принимает фид для обработки; фиды можно получить из <see cref="MlsServer"/>.</param>
+        /// <param name="mode">Откуда был получен фид.</param>
+        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="ArgumentException"/>
         public MlsOffer(string mls_string, MlsMode mode)
         {
+            if (mls_string == null) throw new ArgumentNullException("Фид не объявлен!", "mls_string");
+            else if (mls_string.Length == 0) throw new ArgumentException("Передана пустая строка!", "mls_string");
+
             this.Mode = mode;
             this.Status = OfferStatus.New;
             this.Link = "";
@@ -224,13 +354,23 @@ namespace MlsExclusive.Models
 
                 this.Id = Convert.ToInt32(values[22]);
             }
-        }
+        } //---конструктор MlsOffer
 
+        /// <summary>
+        /// Не используется, необходим для реализации <see cref="IModel"/>.
+        /// </summary>
+        /// <returns>Триггерит исключение.</returns>
+        /// <exception cref="NotImplementedException"/>
         public IModel Clone()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Сравнивает <see cref="MlsOffer"/> с текущим экземпляром.
+        /// </summary>
+        /// <param name="model"><see cref="MlsOffer"/> для сравнения.</param>
+        /// <returns>Если <see cref="MlsOffer.Id"/> и <see cref="MlsOffer.Mode"/> равны, вернет true, иначе false; если в параметре передан не <see cref="MlsOffer"/>, вернет false</returns>
         public bool Equals(IModel model)
         {
             if (model is MlsOffer offer)
@@ -241,6 +381,12 @@ namespace MlsExclusive.Models
             else return false;
         }
 
+        /// <summary>
+        /// Сравнивает <see cref="MlsOffer"/> с текущим экземпляром; 
+        /// если они равны, производит поиск изменений; при их наличии, применяет изменения к текущему экземпляру и меняет <see cref="Status"/> на <see cref="OfferStatus.Modify"/>;
+        /// если изменений нет,  меняет <see cref="Status"/> на <see cref="OfferStatus.NoChanges"/>.
+        /// </summary>
+        /// <param name="model"></param>
         public void Merge(IModel model)
         {
             if(this.Equals(model))
@@ -383,13 +529,19 @@ namespace MlsExclusive.Models
                     }
                 }
             }
-        }
+        } //---метод Equals
 
+        /// <summary>
+        /// Устанавливает <see cref="Status"/> текущего объявления на <see cref="OfferStatus.Delete"/>.
+        /// </summary>
         public void SetDeleteStatus()
         {
             this.Status = OfferStatus.Delete;
         }
 
+        /// <summary>
+        /// Команда для кнопки, открывающая строку с объявлением в базе АН Города в браузере.
+        /// </summary>
         public RelayCommand<string> Command_OpenLink
         {
             get
@@ -407,6 +559,9 @@ namespace MlsExclusive.Models
             }
         }
 
+        /// <summary>
+        /// Команда для кнопки, копирующая в буфер обмена Windows ссылки на фотографии и адрес текущего объявления.
+        /// </summary>
         public RelayCommand Command_CopyToClipboardsImages
         {
             get
