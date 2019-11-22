@@ -253,7 +253,7 @@ namespace MlsExclusive.ViewModels
                                     OfferType.Sell,
                                     new OfferCategory(offer.Type),
                                     tmp_date,
-                                    UnixTime.ToDateTimeOffset(agency.Last_update_stamp, App.Timezone),
+                                    UnixTime.ToDateTimeOffset(offer.Last_update_stamp, App.Timezone),
                                     "Украина",
                                     "Харьков",
                                     offer.District,

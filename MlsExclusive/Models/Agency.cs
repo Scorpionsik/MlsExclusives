@@ -189,12 +189,13 @@ namespace MlsExclusive.Models
         }
 
         /// <summary>
-        /// Привязывает событие обновления объекта (<see cref="SetBindings(Model)"/>) для <see cref="MlsOffer"/>.
+        /// Привязывает события для <see cref="MlsOffer"/>.
         /// </summary>
         /// <param name="offer"><see cref="MlsOffer"/>, к которому будет осуществена привязка.</param>
         private void SetBindings(MlsOffer offer)
         {
             offer.Event_select_model = new Action<Model>(this.SetBindings);
+            offer.Event_select_model += new Action<Model>(offer.UpdateDate);
         }
 
         /// <summary>

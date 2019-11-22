@@ -120,7 +120,7 @@ namespace MlsExclusive.Models
         public int SqArea { get; set; }
 
         /// <summary>
-        /// Тип/количество балконов у объекта.
+        /// Тип/количество балконов у объекта (актуально для фидов <see cref="MlsMode.Flat"/>).
         /// </summary>
         public string BalconyType { get; set; }
 
@@ -135,7 +135,7 @@ namespace MlsExclusive.Models
         public string Agency { get; set; }
 
         /// <summary>
-        /// Планировка комнат.
+        /// Планировка комнат (актуально для фидов <see cref="MlsMode.Flat"/>).
         /// </summary>
         public string RoomsType { get; set; }
 
@@ -206,6 +206,38 @@ namespace MlsExclusive.Models
         /// </summary>
         public string Date { get; set; }
 
+        private double last_update_stamp;
+        /// <summary>
+        /// Unix timestamp последнего обновления из МЛС
+        /// </summary>
+        public double Last_update_stamp
+        {
+            get { return this.last_update_stamp; }
+            set
+            {
+                this.last_update_stamp = value;
+                this.OnPropertyChanged("Last_update_stamp");
+                this.OnPropertyChanged("Last_update_date");
+            }
+        }
+
+        /// <summary>
+        /// Конвертирует <see cref="Last_update_stamp"/> в соответствующую строку.
+        /// </summary>
+        public string Last_update_date
+        {
+            get
+            {
+                DateTimeOffset tmp_date = UnixTime.ToDateTimeOffset(this.Last_update_stamp, App.Timezone);
+                string month = tmp_date.Month.ToString();
+                string day = tmp_date.Day.ToString();
+
+                if (month.Length == 1) month = "0" + month;
+                if (day.Length == 1) day = "0" + day;
+                return tmp_date.Year + "-" + month + "-" + day;
+            }
+        }
+
         /// <summary>
         /// Формирует объявление, исходя из фида и <see cref="MlsMode"/>.
         /// </summary>
@@ -221,6 +253,7 @@ namespace MlsExclusive.Models
             this.Mode = mode;
             this.Status = OfferStatus.New;
             this.Link = "";
+            this.last_update_stamp = 0;
             string[] old_values = mls_string.Split('\t');
             ListExt<string> values = new ListExt<string>();
             foreach(string s in old_values)
@@ -355,6 +388,15 @@ namespace MlsExclusive.Models
                 this.Id = Convert.ToInt32(values[22]);
             }
         } //---конструктор MlsOffer
+
+        /// <summary>
+        /// Метод для обновления даты последнего обновления из МЛС.
+        /// </summary>
+        /// <param name="model">Не используется в текущем методе.</param>
+        public void UpdateDate(Model model)
+        {
+            this.Last_update_stamp = UnixTime.CurrentUnixTimestamp();
+        }
 
         /// <summary>
         /// Не используется, необходим для реализации <see cref="IModel"/>.
