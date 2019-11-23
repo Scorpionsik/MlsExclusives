@@ -155,9 +155,24 @@ namespace MlsExclusive.Models
         }
 
         /// <summary>
-        /// Объекты, которые выставило текущее агенство.
+        /// Объявления, которые выставило текущее агенство.
         /// </summary>
         public ListExt<MlsOffer> Offers { get; private set; }
+
+        [NonSerialized]
+        private MlsOffer select_offer;
+        /// <summary>
+        /// Выбранное объявление из коллекции <see cref="Offers"/>.
+        /// </summary>
+        public MlsOffer Select_offer
+        {
+            get { return this.select_offer; }
+            set
+            {
+                this.select_offer = value;
+                this.OnPropertyChanged("Select_offer");
+            }
+        }
 
         /// <summary>
         /// Экземпляр класса с указанным названием.
@@ -194,8 +209,21 @@ namespace MlsExclusive.Models
         /// <param name="offer"><see cref="MlsOffer"/>, к которому будет осуществена привязка.</param>
         private void SetBindings(MlsOffer offer)
         {
-            offer.Event_select_model = new Action<Model>(this.SetBindings);
-            offer.Event_select_model += new Action<Model>(offer.UpdateDate);
+            offer.Event_select_model = new Action<Model>(this.SetSelectOffer);
+            offer.Event_UpdateMlsOffer += new Action<Model>(this.SetBindings);
+            offer.Event_UpdateMlsOffer += new Action<Model>(offer.UpdateDate);
+        }
+
+        /// <summary>
+        /// Привязывается к событию Event_select_model у <see cref="MlsOffer"/>; обновляет выбранное объявление.
+        /// </summary>
+        /// <param name="model"><see cref="MlsOffer"/> для работы.</param>
+        private void SetSelectOffer(Model model)
+        {
+            if(model != null && model is MlsOffer offer && this.Select_offer != offer)
+            {
+                this.Select_offer = offer;
+            }
         }
 
         /// <summary>

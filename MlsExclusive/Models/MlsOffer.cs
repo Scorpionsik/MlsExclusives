@@ -6,6 +6,7 @@ using MlsExclusive.Utilites.Enums;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Linq;
 
 namespace MlsExclusive.Models
 {
@@ -40,9 +41,27 @@ namespace MlsExclusive.Models
             set
             {
                 this.link = value;
-                this.Command_select_model?.Execute(null);
+                //this.Command_select_model?.Execute();
+                this.event_UpdateMlsOffer?.Invoke(null);
                 this.OnPropertyChanged("Link");
             }
+        }
+
+        private event Action<Model> event_UpdateMlsOffer;
+        /// <summary>
+        /// Событие срабатывает при обновлении информации в объявлении.
+        /// </summary>
+        /// <remarks>
+        /// Использование <see cref="Action{Model}"/> вместо <see cref="Action"/> обосновано обратной совместимостью со старыми сохранениями
+        /// (ранее вместо этого ивента использовался <see cref="Model.Event_select_model"/>, который принимает в качестве параметра <see cref="Model"/>, но в текущей реализации также не использовал передаваемый параметр).
+        /// </remarks>
+        public event Action<Model> Event_UpdateMlsOffer
+        {
+            add {
+                this.event_UpdateMlsOffer -= value;
+                this.event_UpdateMlsOffer += value;
+            }
+            remove { this.event_UpdateMlsOffer -= value; }
         }
 
         private OfferStatus status;
@@ -55,7 +74,8 @@ namespace MlsExclusive.Models
             set
             {
                 this.status = value;
-                this.Command_select_model?.Execute();
+                //this.Command_select_model?.Execute();
+                this.event_UpdateMlsOffer?.Invoke(null);
             }
         }
 

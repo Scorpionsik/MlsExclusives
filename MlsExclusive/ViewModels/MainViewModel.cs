@@ -166,7 +166,7 @@ namespace MlsExclusive.ViewModels
             }));
             this.Filters.Add("Без ссылок", new Func<MlsOffer, bool>(offer =>
             {
-                if (offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net")) return true;
+                if (offer.Status != OfferStatus.Delete && (offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net"))) return true;
                 else return false;
             }));
             this.select_filter = this.Filters.ElementAt(0);

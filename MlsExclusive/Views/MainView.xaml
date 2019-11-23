@@ -219,16 +219,9 @@
                     </ListBox>
                     <!--конец Режим-->
                     <!--Таблица объектов выбранного агенства-->
-                    <ListBox Grid.Row="1" ItemsSource="{Binding Path=Current_offers}" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Path=Current_offers}" SelectedItem="{Binding Path=Select_agency.Select_offer}" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                                <!--Select ListBoxItem if inner element is focused-->
-                                <Style.Triggers>
-                                    <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                        <Setter Property="IsSelected" Value="True"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                                <!--end Select ListBoxItem if inner element is focused-->
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -248,6 +241,13 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
+                                    <!--Команда для выделения родительского объекта-->
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding Path=Command_select_model}" CommandParameter="{Binding}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                    <!--конец Команда для выделения родительского объекта-->
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="70"/>
                                         <RowDefinition/>
