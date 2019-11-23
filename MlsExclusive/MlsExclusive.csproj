@@ -74,13 +74,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Utilites\Converters\OfferContextMenuConverter.cs" />
     <Compile Include="Utilites\Converters\PriceSpaceConverter.cs" />
     <Compile Include="Utilites\Converters\MlsModeConverter.cs" />
     <Compile Include="Utilites\Converters\FirstCharUpConverter.cs" />
     <Compile Include="Utilites\Converters\OfferStatusConverter.cs" />
+    <Compile Include="Utilites\Enums\WriteStatus.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\WriteSelectViewModel.cs" />
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WriteSelectView.xaml.cs">
+      <DependentUpon>WriteSelectView.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -104,6 +110,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WriteSelectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -51,11 +51,11 @@
             </Grid.ColumnDefinitions>
             <Grid.Resources>
                 <Style TargetType="Button">
-                    <Setter Property="Margin" Value="2.5 5 2.5 5"/>
+                    <Setter Property="Margin" Value="5 5 5 5"/>
                 </Style>
             </Grid.Resources>
-            <Button Content="Сохранить" Grid.Column="0" Command="{Binding Path=Command_save}"/>
-            <Button Content="Отмена" Grid.Column="1" Command="{Binding Path=Command_close}"/>
+            <Button Content="Сохранить" IsDefault="True" Grid.Column="0" Command="{Binding Path=Command_save}"/>
+            <Button Content="Отмена" IsCancel="True" Grid.Column="1" Command="{Binding Path=Command_close}"/>
         </Grid>
     </Grid>
 </window:DialogWindowExt>

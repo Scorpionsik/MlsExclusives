@@ -231,15 +231,20 @@ namespace MlsExclusive.ViewModels
         /// <summary>
         /// Метод формирует файл .yrl из <see cref="Agencys"/>, из тех объявлений, в чьих <see cref="MlsOffer.Link"/> пустые значения.
         /// </summary>
-        private async void SaveInFileMethod()
+        /// <param name="write_status">Режим записи.</param>
+        private async void SaveInFileMethod(WriteStatus write_status)
         {
             await Task.Run(() =>
             {
                 this.StatusBar.SetAsync("Идёт создание документа, пожалуйста подождите...", StatusString.Infinite);
 
+                ListExt<Agency> agencys = new ListExt<Agency>();
                 List<OfferBase> tmp_offer = new List<OfferBase>();
 
-                foreach(Agency agency in this.Agencys)
+                if (write_status == WriteStatus.All) agencys.AddRange(this.Agencys);
+                else if (write_status == WriteStatus.Select) agencys.Add(this.Select_agency);
+
+                foreach(Agency agency in agencys)
                 {
                     if (agency.IsLoad)
                     {
@@ -288,12 +293,18 @@ namespace MlsExclusive.ViewModels
                 window.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
                 window.Title = "Сохранение документа в формате Яндекс.недвижимость...";
-                window.FileName = "mls_feed.yrl";
+                window.FileName = "mls_feed";
+                if (write_status == WriteStatus.Select) window.FileName += "_" + this.Select_agency.Name.Replace(" ", "");
+                window.FileName += ".yrl";
                 if ((bool)window.ShowDialog())
                 {
                     this.StatusBar.SetAsync("Идёт сохранение, пожалуйста подождите...", StatusString.Infinite);
                     yandexDoc.Save(window.FileName);
-                    this.StatusBar.SetAsync("Сохранение успешно завершено! Записано объектов: " + tmp_offer.Count(), StatusString.LongTime + StatusString.LongTime);
+
+                    string tmp_status = "Сохранение успешно завершено!";
+                    if (write_status == WriteStatus.Select) tmp_status += " (агенство " + this.Select_agency.Name + ")";
+
+                    this.StatusBar.SetAsync(tmp_status + " Записано объектов: " + tmp_offer.Count(), StatusString.LongTime + StatusString.LongTime);
                 }
                 else this.StatusBar.SetAsync("Отмена операции, документ не сохранён...", StatusString.LongTime);
             });
@@ -488,7 +499,16 @@ namespace MlsExclusive.ViewModels
             {
                 return new RelayCommand(obj =>
                 {
-                    this.SaveInFileMethod();
+                    if (this.Select_agency != null)
+                    {
+                        WriteSelectView window = new WriteSelectView(this.Select_agency.Name);
+                        if ((bool)window.Show())
+                        {
+                            this.SaveInFileMethod(window.Result);
+                        }
+                        else this.StatusBar.SetAsync("Отмена записи...", StatusString.LongTime);
+                    }
+                    else this.SaveInFileMethod(WriteStatus.All);
                 });
             }
         }
