@@ -33,6 +33,8 @@ namespace MlsExclusive.Utilites.Converters
                         return "Без изменений";
                     case OfferStatus.Delete:
                         return "Удалён";
+                    case OfferStatus.Incorrect:
+                        return "Некорректное";
                 }
                 return "";
             }

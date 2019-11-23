@@ -76,6 +76,7 @@ namespace MlsExclusive.Models
                 this.status = value;
                 //this.Command_select_model?.Execute();
                 this.event_UpdateMlsOffer?.Invoke(null);
+                this.OnPropertyChanged("Status");
             }
         }
 
@@ -276,7 +277,7 @@ namespace MlsExclusive.Models
             this.last_update_stamp = 0;
             string[] old_values = mls_string.Split('\t');
             ListExt<string> values = new ListExt<string>();
-            foreach(string s in old_values)
+            foreach (string s in old_values)
             {
                 values.Add(s.Replace("\"", ""));
             }
@@ -295,7 +296,7 @@ namespace MlsExclusive.Models
             this.Guidemark = values[3];
             this.Street = values[4];
 
-            this.Price = Convert.ToDouble(values[5].Replace('.',',')) * Convert.ToDouble(1000);
+            this.Price = Convert.ToDouble(values[5].Replace('.', ',')) * Convert.ToDouble(1000);
             try
             {
                 this.Floor = Convert.ToInt32(values[6].Split('/')[0]);
@@ -353,7 +354,7 @@ namespace MlsExclusive.Models
                     this.Phones = new List<string>(values[17].Split(','));
                 }
                 catch { this.Phones = new List<string>(); }
-                if(values[18] != @"https://mls.kh.ua/photo/.jpg")
+                if (values[18] != @"https://mls.kh.ua/photo/.jpg")
                 {
                     this.Photos = new List<string>(values[18].Split(','));
                 }
@@ -451,12 +452,13 @@ namespace MlsExclusive.Models
         /// <param name="model"></param>
         public void Merge(IModel model)
         {
-            if(this.Equals(model))
+            if (this.Status != OfferStatus.Incorrect && this.Equals(model))
             {
                 MlsOffer offer = model as MlsOffer;
+
                 this.Changes = "";
 
-                if(this.Price != offer.Price)
+                if (this.Price != offer.Price)
                 {
                     this.Changes += "Цена ";
                     if (this.Price > offer.Price) this.Changes += "упала: ";
@@ -467,7 +469,7 @@ namespace MlsExclusive.Models
                     this.Price = offer.Price;
                 }
 
-                if(this.RoomCount != offer.RoomCount)
+                if (this.RoomCount != offer.RoomCount)
                 {
                     this.Changes += "Кол-во комнат: " + this.RoomCount + " -- > " + offer.RoomCount + "\n";
                     this.RoomCount = offer.RoomCount;
@@ -563,13 +565,13 @@ namespace MlsExclusive.Models
                     this.Changes += "Наличие санузла: " + this.BathroomValue + " -- > " + offer.BathroomValue + "\n";
                     this.BathroomValue = offer.BathroomValue;
                 }
-               
-                foreach(string phone in offer.Phones)
+
+                foreach (string phone in offer.Phones)
                 {
                     if (!this.Phones.Contains(phone)) this.Phones.Add(phone);
                 }
 
-                foreach(string photo in offer.Photos)
+                foreach (string photo in offer.Photos)
                 {
                     if (!this.Photos.Contains(photo)) this.Photos.Add(photo);
                 }
@@ -641,6 +643,28 @@ namespace MlsExclusive.Models
                 },
                 (obj) => this.Photos != null
                 );
+            }
+        }
+
+        public RelayCommand Command_SetIncorrectStatus
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    this.Status = OfferStatus.Incorrect;
+                });
+            }
+        }
+
+        public RelayCommand Command_SetNoChangesStatus
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    this.Status = OfferStatus.NoChanges;
+                });
             }
         }
     }

@@ -26,6 +26,11 @@ namespace MlsExclusive.Utilites.Enums
         /// <summary>
         /// После последней выгрузки из МЛС текущее объявление не было найдено в фидах <see cref="MlsServer"/>.
         /// </summary>
-        Delete
+        Delete,
+
+        /// <summary>
+        /// Данное объявление не подходит для обработки (устанавливается только вручную).
+        /// </summary>
+        Incorrect
     }
 }

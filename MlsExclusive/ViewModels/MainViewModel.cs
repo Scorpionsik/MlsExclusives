@@ -166,7 +166,7 @@ namespace MlsExclusive.ViewModels
             }));
             this.Filters.Add("Без ссылок", new Func<MlsOffer, bool>(offer =>
             {
-                if (offer.Status != OfferStatus.Delete && (offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net"))) return true;
+                if ((offer.Status != OfferStatus.Delete && offer.Status != OfferStatus.Incorrect) && (offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net"))) return true;
                 else return false;
             }));
             this.select_filter = this.Filters.ElementAt(0);
@@ -245,7 +245,7 @@ namespace MlsExclusive.ViewModels
                     {
                         foreach (MlsOffer offer in agency.Offers)
                         {
-                            if (offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net"))
+                            if ((offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net")) && offer.Status != OfferStatus.Incorrect)
                             {
                                 DateTimeOffset tmp_date = new DateTimeOffset(int.Parse(offer.Date.Split('-')[0]), int.Parse(offer.Date.Split('-')[1]), int.Parse(offer.Date.Split('-')[2]), 0, 0, 0, new TimeSpan());
 

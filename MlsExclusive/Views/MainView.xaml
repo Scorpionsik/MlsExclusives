@@ -16,6 +16,7 @@
         <converter:MlsModeConverter x:Key="MlsMode"/>
         <converter:FirstCharUpConverter x:Key="FirstCharUp"/>
         <converter:PriceSpaceConverter x:Key="PriceSpace"/>
+        <converter:OfferContextMenuConverter x:Key="ContextMenu"/>
     </window:WindowExt.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -259,6 +260,12 @@
                                         </Grid.RowDefinitions>
                                         <!--Заголовок-->
                                         <Grid Grid.Row="0" Background="{StaticResource MlsGreen}">
+                                            <Grid.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Command="{Binding Path=Command_SetIncorrectStatus}" Header="Установить как некорректное объявление" Visibility="{Binding Path=Status, Converter={StaticResource ContextMenu}, ConverterParameter=incorrect}"/>
+                                                    <MenuItem Command="{Binding Path=Command_SetNoChangesStatus}" Header="Установить для объявления статус Без изменений."  Visibility="{Binding Path=Status, Converter={StaticResource ContextMenu}}"/>
+                                                </ContextMenu>
+                                            </Grid.ContextMenu>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>
                                                 <ColumnDefinition/>
