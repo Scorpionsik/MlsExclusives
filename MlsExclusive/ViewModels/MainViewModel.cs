@@ -267,7 +267,7 @@ namespace MlsExclusive.ViewModels
                     {
                         foreach (MlsOffer offer in agency.Offers)
                         {
-                            if ((offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net")) && offer.Status != OfferStatus.Incorrect)
+                            if ((offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net")) && (offer.Status != OfferStatus.Incorrect && offer.Status != OfferStatus.Delete))
                             {
                                 DateTimeOffset tmp_date = new DateTimeOffset(int.Parse(offer.Date.Split('-')[0]), int.Parse(offer.Date.Split('-')[1]), int.Parse(offer.Date.Split('-')[2]), 0, 0, 0, new TimeSpan());
 
