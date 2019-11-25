@@ -84,6 +84,22 @@ namespace MlsExclusive.ViewModels
         }
 
         /// <summary>
+        /// Добавляет в заголовок название выбранного агенства.
+        /// </summary>
+        public override string Title
+        {
+            get
+            {
+                string tmp_send = base.Title;
+
+                if (this.Select_agency != null) tmp_send += ": выбран " + this.Select_agency.Name;
+
+                return tmp_send;
+            }
+            set => base.Title = value;
+        }
+
+        /// <summary>
         /// Коллекция агенств.
         /// </summary>
         public ListExt<Agency> Agencys { get; private set; }
@@ -100,6 +116,7 @@ namespace MlsExclusive.ViewModels
                 this.select_agency = value;
                 this.OnPropertyChanged("Select_agency");
                 this.OnPropertyChanged("Current_offers");
+                this.OnPropertyChanged("Title");
             }
         }
 
