@@ -13,6 +13,8 @@ using Offer;
 using System.Xml;
 using Microsoft.Win32;
 using MlsExclusive.Views;
+using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace MlsExclusive.ViewModels
 {
@@ -38,10 +40,59 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        private bool unlockFlags;
+        public bool UnlockFlags
+        {
+            get { return this.unlockFlags; }
+            set
+            {
+                this.unlockFlags = value;
+                this.OnPropertyChanged("UnlockFlags");
+            }
+        }
+
+        private event Action<MlsOffer> event_ScrollIntoCurrentOffers;
+        public event Action<MlsOffer> Event_ScrollIntoCurrentOffers
+        {
+            add
+            {
+                this.event_ScrollIntoCurrentOffers -= value;
+                this.event_ScrollIntoCurrentOffers += value;
+            }
+            remove
+            {
+                this.event_ScrollIntoCurrentOffers -= value;
+            }
+        }
+
         /// <summary>
         /// Обновляемая строка для статус-бара окна.
         /// </summary>
         public StatusString StatusBar { get; private set; }
+
+        private string search_string;
+        public string Search_string
+        {
+            get { return this.search_string; }
+            set
+            {
+                this.search_string = value;
+                this.OnPropertyChanged("Search_string");
+            }
+        }
+
+        public ListExt<MainSearchMode> SearchModes { get; private set; }
+
+        private MainSearchMode select_Searchmode;
+        public MainSearchMode Select_Searchmode
+        {
+            get { return this.select_Searchmode; }
+            set
+            {
+                this.select_Searchmode = value;
+                this.OnPropertyChanged("Select_Searchmode");
+            }
+        }
 
         /// <summary>
         /// Коллекция фильтров для отображения объявлений.
@@ -92,7 +143,7 @@ namespace MlsExclusive.ViewModels
             {
                 string tmp_send = base.Title;
 
-                if (this.Select_agency != null) tmp_send += ": выбран " + this.Select_agency.Name;
+                if (this.Select_agency != null) tmp_send += ": выбрано агенство " + this.Select_agency.Name;
 
                 return tmp_send;
             }
@@ -159,7 +210,8 @@ namespace MlsExclusive.ViewModels
         {
             this.Title = "МЛС Эксклюзивы";
             this.StatusBar = new StatusString();
-            this.Unblock = true;
+            this.unblock = true;
+            this.unlockFlags = false;
 
             this.Filters = new Dictionary<string, Func<MlsOffer, bool>>();
             this.Filters.Add("Все", new Func<MlsOffer, bool>(offer =>
@@ -189,6 +241,8 @@ namespace MlsExclusive.ViewModels
             this.select_filter = this.Filters.ElementAt(0);
 
             this.Modes = new ListExt<MlsMode>(Enum.GetValues(typeof(MlsMode)).Cast<MlsMode>());
+            this.SearchModes = new ListExt<MainSearchMode>(Enum.GetValues(typeof(MainSearchMode)).Cast<MainSearchMode>());
+            this.select_Searchmode = MainSearchMode.Text;
             this.select_mode = MlsMode.Flat;
 
             this.Agencys = new ListExt<Agency>();
@@ -271,9 +325,13 @@ namespace MlsExclusive.ViewModels
                             {
                                 DateTimeOffset tmp_date = new DateTimeOffset(int.Parse(offer.Date.Split('-')[0]), int.Parse(offer.Date.Split('-')[1]), int.Parse(offer.Date.Split('-')[2]), 0, 0, 0, new TimeSpan());
 
+                                string current_type = offer.Type;
+                                if (current_type == "гостинка" || current_type == "подселение") current_type = "квартира";
+                                else if(current_type == "пол-дома") current_type = "дом";
+
                                 OfferBase tmp_send = new OfferBase(offer.Id.ToString(),
                                     OfferType.Sell,
-                                    new OfferCategory(offer.Type),
+                                    new OfferCategory(current_type),
                                     tmp_date,
                                     UnixTime.ToDateTimeOffset(offer.Last_update_stamp, App.Timezone),
                                     "Украина",
@@ -526,7 +584,9 @@ namespace MlsExclusive.ViewModels
                         else this.StatusBar.SetAsync("Отмена записи...", StatusString.LongTime);
                     }
                     else this.SaveInFileMethod(WriteStatus.All);
-                });
+                }
+                
+                );
             }
         }
 
@@ -578,6 +638,144 @@ namespace MlsExclusive.ViewModels
                 {
                     System.Diagnostics.Process.Start("https://mls.kh.ua");
                 });
+            }
+        }
+
+        public RelayCommand<string> Command_SetUnlockFlag
+        {
+            get
+            {
+                return new RelayCommand<string>(obj =>
+                {
+                    switch (obj)
+                    {
+                        case "true":
+                            this.UnlockFlags = true;
+                            break;
+                        case "false":
+                            this.UnlockFlags = false;
+                            break;
+                    }
+                    foreach(Agency a in this.Agencys)
+                    {
+                        a.UnlockFlags = this.UnlockFlags;
+                    }
+                },
+                (obj) => obj != null && (obj == "true" || obj == "false")
+                );
+            }
+        }
+
+        public RelayCommand<string> Command_searchInCurrentOffers
+        {
+            get
+            {
+                return new RelayCommand<string>(search =>
+                {
+                    int startIndex = 0, allSteps = this.Select_agency.Offers.Count;
+                    bool finish = false;
+                    if (this.Select_agency.Select_offer != null) startIndex = this.Select_agency.Offers.IndexOf(this.Select_agency.Select_offer) + 1;
+
+                    for (int step = 0; step < allSteps && !finish; step++, startIndex++)
+                    {
+                        if (startIndex >= allSteps) startIndex = 0;
+                        
+
+                        switch (this.Select_Searchmode)
+                        {
+                            case MainSearchMode.Price:
+                                double price = -1;
+                                try
+                                {
+                                    price = Convert.ToDouble(search.Replace(" ","").Replace("$",""));
+                                }
+                                catch
+                                {
+                                    MessageBox.Show("Введен неверный формат цены!", "Ошибка поиска!", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    finish = true;
+                                }
+
+                                if (!finish)
+                                {
+                                    if (this.Select_agency.Offers[startIndex].Price == price)
+                                    {
+                                        if (this.Select_mode != this.Select_agency.Offers[startIndex].Mode) this.Select_mode = this.Select_agency.Offers[startIndex].Mode;
+                                        this.Select_agency.Select_offer = this.Select_agency.Offers[startIndex];
+                                        finish = true;
+                                    }
+                                }
+                                break;
+                            case MainSearchMode.Text:
+                                if (this.Select_agency.Offers[startIndex].Description.ToLower().Contains(search.ToLower()))
+                                {
+                                    if (this.Select_mode != this.Select_agency.Offers[startIndex].Mode) this.Select_mode = this.Select_agency.Offers[startIndex].Mode;
+                                    this.Select_agency.Select_offer = this.Select_agency.Offers[startIndex];
+                                    finish = true;
+                                }
+                                break;
+                            case MainSearchMode.Id:
+                                int id = -1;
+                                try
+                                {
+                                    id = Convert.ToInt32(search.Replace("yandex", "").Replace("_", "").Replace(" ",""));
+                                }
+                                catch
+                                {
+                                    MessageBox.Show("Введен неверный ID!", "Ошибка поиска!", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    finish = true;
+                                }
+
+                                if (!finish)
+                                {
+                                    if(this.Select_agency.Offers[startIndex].Id == id)
+                                    {
+                                        if (this.Select_mode != this.Select_agency.Offers[startIndex].Mode) this.Select_mode = this.Select_agency.Offers[startIndex].Mode;
+                                        this.Select_agency.Select_offer = this.Select_agency.Offers[startIndex];
+                                        finish = true;
+                                    }
+                                }
+                                break;
+                        }
+                    }
+
+                    if (!finish) this.StatusBar.SetAsync("По вашему запросу ничего не найдено!", StatusString.LongTime);
+                    else
+                    {
+                        this.event_ScrollIntoCurrentOffers?.Invoke(this.Select_agency.Select_offer);
+                        this.StatusBar.SetAsync("Найдено!", StatusString.ShortTime);
+                    }
+                },
+                (search) => (search != null && search.Length > 0) && 
+                (this.Select_agency != null && this.Select_agency.Offers != null && this.Select_agency.Offers.Count > 0) &&
+                ((this.Select_Searchmode == MainSearchMode.Price && new Regex(@"^[\d \$]+$").IsMatch(search)) || 
+                (this.Select_Searchmode == MainSearchMode.Text) || 
+                (this.Select_Searchmode == MainSearchMode.Id && new Regex(@"^(yandex)?[_]{0,2}[\d]+[ ]*$").IsMatch(search)))
+                );
+            }
+                
+        }
+
+        public RelayCommand<string> Command_AutoSwitchFindMode
+        {
+            get
+            {
+                return new RelayCommand<string>(obj =>
+                {
+                    if (new Regex(@"^[\d \$]+$").IsMatch(obj))
+                    {
+                        if (this.Select_Searchmode != MainSearchMode.Price) this.Select_Searchmode = MainSearchMode.Price;
+                    }
+                    else if (new Regex(@"^(yandex)?[_]{0,2}[\d]+[ ]*$").IsMatch(obj))
+                    {
+                        if(this.Select_Searchmode != MainSearchMode.Id) this.Select_Searchmode = MainSearchMode.Id;
+                    }
+                    else
+                    {
+                        if (this.Select_Searchmode != MainSearchMode.Text) this.Select_Searchmode = MainSearchMode.Text;
+                    }
+                },
+                (obj) => obj != null && obj.Length > 0
+                );
             }
         }
         #endregion

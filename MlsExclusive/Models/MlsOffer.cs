@@ -407,6 +407,7 @@ namespace MlsExclusive.Models
                 this.Date = values[21];
 
                 this.Id = Convert.ToInt32(values[22]);
+                MlsOffer.FixWrongValues(this);
             }
         } //---конструктор MlsOffer
 
@@ -601,6 +602,159 @@ namespace MlsExclusive.Models
         public void SetDeleteStatus()
         {
             this.Status = OfferStatus.Delete;
+        }
+
+        public static void FixWrongValues(MlsOffer offer)
+        {
+            //районы
+            switch (offer.District)
+            {
+                case "Шатиловка":
+                case "Павловка":
+                    offer.District = "Сосновая Горка";
+                    break;
+                case "Москалевка":
+                case "З-д Шевченко":
+                    offer.District = "Завод Шевченко";
+                    break;
+                case "Березовка":
+                    offer.District = "Харьковский р-н";
+                    break;
+                case "м. пл. Восстания":
+                case "м. Спортивная":
+                    offer.District = "Гагарина проспект";
+                    break;
+                case "Лысая Гора":
+                    offer.District = "Холодная Гора";
+                    break;
+                case "Хроли":
+                    offer.District = "ХТЗ";
+                    break;
+                case "Б.Даниловка":
+                    offer.District = "Большая Даниловка";
+                    break;
+                case "Госпром":
+                case "Нагорный район":
+                    offer.District = "Центр";
+                    break;
+            }
+
+            //улицы
+            switch (offer.Street)
+            {
+                case "Пушкинская":
+                case "Пушкинская ул":
+                    offer.Street = "Пушкинская (" + offer.District + ")";
+                    break;
+                case "Ньютона":
+                case "Ньютона ул.":
+                    offer.Street = "Ньютона (" + offer.District + ")";
+                    break;
+                case "Плехановская":
+                case "Плехановская ул.":
+                    offer.Street = "Плехановская (" + offer.District + ")";
+                    break;
+                case "Лугова":
+                case "Лугова ул.":
+                    offer.Street = "Лугова (" + offer.District + ")";
+                    break;
+                case "Ударный пер.":
+                    offer.Street = "Ударный пер. (" + offer.District + ")";
+                    break;
+                case "Вяловская":
+                case "Вяловская ул.":
+                    offer.Street = "Вяловская (" + offer.District + ")";
+                    break;
+                case "Садовая":
+                case "Садовая ул.":
+                    offer.Street = "Садовая (" + offer.District + ")";
+                    break;
+                case "Садовый пер.":
+                    offer.Street = "Садовый пер. (" + offer.District + ")";
+                    break;
+                case "Интернациональная":
+                case "Интернациональная ул.":
+                    offer.Street = "Интернациональная (" + offer.District + ")";
+                    break;
+                case "Студёный пер.":
+                    offer.Street = "Студёный пер. (" + offer.District + ")";
+                    break;
+                case "Корчагинцев ул. Амосова":
+                    offer.Street = "Амосова ул.";
+                    break;
+                case "Подсолнечный взд.":
+                    offer.Street = "Подсолнечный въезд";
+                    break;
+                case "Ленина ул. Сумской шлях":
+                    if(offer.Guidemark.Contains("Солоницевка")) offer.Street = "Сумской шлях ул. (Солоницевка пгт.)";
+                    break;
+                case "Ильича ул. Чуйковская":
+                    offer.Street = "Чуйковская ул.";
+                    break;
+                case "Блюхера ул. Валентиновская":
+                    offer.Street = "Валентиновская ул.";
+                    break;
+                case "Омский 1-й взд.":
+                    offer.Street = "Омский 1-ый въезд";
+                    break;
+                case "Луначарского Независимости":
+                    if (offer.District.Contains("Мерефа")) offer.Street = "Луначарского ул. (Мерефа)";
+                    break;
+                case "Лебединская":
+                case "Лебединская ул.":
+                    offer.Street = "Лебединская ул.";
+                    break;
+                case "Вальтера":
+                case "Вальтера ул.":
+                    offer.Street = "Академика Вальтера ул.";
+                    break;
+                case "Гв. Широнинцев":
+                case "Гв. Широнинцев ул.":
+                    if (offer.District.Contains("Салтовка")) offer.Street = "Гвардейцев Широнинцев ул. (Салтовка)";
+                    else offer.Street = "Гвардейцев Широнинцев ул. (Северная Салтовка)";
+                    break;
+                case "Г. Сталинграда пр.":
+                    offer.Street = "Героев Сталинграда пр. (" + offer.District + ")";
+                    break;
+                case "Садовый прзд.":
+                    offer.Street = "Садовый проезд";
+                    break;
+                case "Ленина пр. Науки":
+                    offer.Street = "Науки просп.("+ offer.District +")";
+                    break;
+                case "23 Августа":
+                case "23 Августа ул.":
+                    if (offer.District.Contains("Павлово Поле")) offer.Street = "23 Августа ул.";
+                    break;
+                case "Тракторостроителей пр.":
+                    offer.Street = "Тракторостроителей просп.";
+                    break;
+                case "Дача 55":
+                case "Дача 55 ул.":
+                    offer.Street = "Дача 55 ул.";
+                    break;
+                case "Ак. Павлова ул.":
+                case "Ак. Павлова":
+                    if (offer.District.Contains("Салтовка")) offer.Street = "Академика Павлова ул. (Салтовка)";
+                    break;
+                case "Московский пр.":
+                    if (offer.District.Contains("Гагарина проспект")) offer.Street = "Московский пр. (Гагарина проспект)";
+                    break;
+                case "Полтавский Шлях":
+                    offer.Street = offer.Street + " (" + offer.District + ")";
+                    break;
+                case "Песочин":
+                case "Чайковка":
+                case "Циркуны":
+                case "Коротыч":
+                    offer.Street = "";
+                    break;
+                default:
+                    offer.Street = offer.Street.Replace(" ул.", "");
+                    break;
+            }
+
+
         }
 
         /// <summary>

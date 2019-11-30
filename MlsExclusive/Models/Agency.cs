@@ -16,6 +16,18 @@ namespace MlsExclusive.Models
     [Serializable]
     public class Agency : Model
     {
+        private bool unlockFlags;
+        public bool UnlockFlags
+        {
+            get { return this.unlockFlags; }
+            set
+            {
+                this.unlockFlags = value;
+                this.OnPropertyChanged("UnlockFlags");
+            }
+        }
+
+
         private AgencyStatus status;
         /// <summary>
         /// Флаг, отмечающий, новое агенство добавлено в приложение или нет.
@@ -181,6 +193,7 @@ namespace MlsExclusive.Models
         public Agency(string name)
         {
             this.status = AgencyStatus.New;
+            this.unlockFlags = false;
             this.last_update_stamp = UnixTime.CurrentUnixTimestamp();
             this.ischanges = true;
             this.isload = true;
@@ -199,6 +212,7 @@ namespace MlsExclusive.Models
             foreach(MlsOffer offer in this.Offers)
             {
                 this.SetBindings(offer);
+                MlsOffer.FixWrongValues(offer);
             }
             this.Offers.CollectionChanged += new NotifyCollectionChangedEventHandler(this.SetBindings);
         }
@@ -315,6 +329,14 @@ namespace MlsExclusive.Models
                 }
             }
             else return null;
+        }
+
+        public RelayCommand Command_blockIsPicLoad
+        {
+            get
+            {
+                return new RelayCommand(obj => { }, (obj) => this.IsLoad);
+            }
         }
     }
 }

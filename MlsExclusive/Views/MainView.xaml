@@ -17,6 +17,8 @@
         <converter:FirstCharUpConverter x:Key="FirstCharUp"/>
         <converter:PriceSpaceConverter x:Key="PriceSpace"/>
         <converter:OfferContextMenuConverter x:Key="ContextMenu"/>
+        <converter:ContextMenuAgencyConverter x:Key="ContextMenuAgency"/>
+        <converter:MainSearchModeConverter x:Key="SearchConvert"/>
     </window:WindowExt.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -79,10 +81,11 @@
             <Separator />
         </ToolBar>
         <!--конец Панель управления-->
-        <!--Фильтры-->
-        <DockPanel Grid.Row="1" LastChildFill="False" Background="{StaticResource MlsLightGreen}">
+        
+        <DockPanel Grid.Row="1" LastChildFill="True" Background="{StaticResource MlsLightGreen}">
+            <!--Фильтры-->
             <Label DockPanel.Dock="Left" Content="Показать: " Margin="5 2 0 0"/>
-            <ListBox IsEnabled="{Binding Path=Unblock}" ItemsSource="{Binding Path=Filters}" SelectedItem="{Binding Path=Select_filter}">
+            <ListBox DockPanel.Dock="Left" IsEnabled="{Binding Path=Unblock}" ItemsSource="{Binding Path=Filters}" SelectedItem="{Binding Path=Select_filter}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Horizontal"/>
@@ -112,8 +115,34 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <!--конец Фильтры-->
+            <!--Поиск-->
+            <DockPanel DockPanel.Dock="Left" LastChildFill="True">
+                <Label DockPanel.Dock="Left" Margin="10 2 0 0" Content="Искать по:"/>
+                <ComboBox Height="20" DockPanel.Dock="Left" ItemsSource="{Binding Path=SearchModes}" SelectedItem="{Binding Path=Select_Searchmode}">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock TextAlignment="Center" Text="{Binding Converter={StaticResource SearchConvert}}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Height="20" IsDefault="True" DockPanel.Dock="Right" Content="Искать" Command="{Binding Path=Command_searchInCurrentOffers}" CommandParameter="{Binding Path=Search_string}"/>
+                <TextBox Height="20" VerticalAlignment="Center" Text="{Binding Path=Search_string, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding Path=Search_string}" ToolTipService.ShowDuration="60000">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="TextChanged">
+                            <i:InvokeCommandAction Command="{Binding Path=Command_AutoSwitchFindMode}" CommandParameter="{Binding Path=Search_string}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
+            </DockPanel>
+            <!--конец Поиск-->
         </DockPanel>
-        <!--конец Фильтры-->
+        
         <!--Таблицы-->
         <Border Grid.Row="2" BorderBrush="{StaticResource MlsGreen}" BorderThickness="1">
             <Grid>
@@ -124,6 +153,20 @@
                 </Grid.ColumnDefinitions>
                 <!--Таблица агенств-->
                 <ListBox IsEnabled="{Binding Path=Unblock}" Grid.Column="0" ItemsSource="{Binding Path=Agencys}" SelectedItem="{Binding Path=Select_agency}" Background="{StaticResource MlsDarkGreen}">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Разблокировать флаги" Command="{Binding Path=Command_SetUnlockFlag}" Visibility="{Binding Path=UnlockFlags, Converter={StaticResource ContextMenuAgency}, ConverterParameter=unlock}" CommandParameter="true">
+                                <MenuItem.Icon>
+                                    <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/true.ico"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Заблокировать флаги" Command="{Binding Path=Command_SetUnlockFlag}" Visibility="{Binding Path=UnlockFlags, Converter={StaticResource ContextMenuAgency}, ConverterParameter=lock}" CommandParameter="false">
+                                <MenuItem.Icon>
+                                    <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/false.ico"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                            
@@ -149,6 +192,7 @@
                         </Style>
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>
+                        <!--Шаблон элемента агенства-->
                         <DataTemplate>
                             <DockPanel LastChildFill="False">
                                 <Grid DockPanel.Dock="Top">
@@ -171,11 +215,12 @@
                                     <TextBlock TextAlignment="Center" Visibility="{Binding Path=IsChanges, Converter={StaticResource Bool-Visibility}}" Text="*" FontSize="20px" FontWeight="Bold"/>
                                 </StackPanel>
                                 <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
-                                    <CheckBox DockPanel.Dock="Left" Content="Сохранять в файл" ToolTip="Сохранять объекты этого агенства при выгрузках (в файл и тд)." IsChecked="{Binding Path=IsLoad}"/>
-                                    <CheckBox DockPanel.Dock="Right" Content="Сохранять фото" ToolTip="Сохранять фото объектов при выгрузках (в файл и тд)." IsEnabled="{Binding Path=IsLoad}" IsChecked="{Binding Path=IsPicLoad}"/>
+                                    <CheckBox IsEnabled="{Binding Path=UnlockFlags}" DockPanel.Dock="Left" Content="Сохранять в файл" ToolTip="Сохранять объекты этого агенства при выгрузках (в файл и тд)." IsChecked="{Binding Path=IsLoad}"/>
+                                    <CheckBox DockPanel.Dock="Right" Content="Сохранять фото" ToolTip="Сохранять фото объектов при выгрузках (в файл и тд)." IsEnabled="{Binding Path=UnlockFlags}" Command="{Binding Path=Command_blockIsPicLoad}" IsChecked="{Binding Path=IsPicLoad}"/>
                                 </DockPanel>
                             </DockPanel>
                         </DataTemplate>
+                        <!--конец Шаблон элемента агенства-->
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <!--конец Таблица агенств-->
@@ -220,7 +265,7 @@
                     </ListBox>
                     <!--конец Режим-->
                     <!--Таблица объектов выбранного агенства-->
-                    <ListBox Grid.Row="1" ItemsSource="{Binding Path=Current_offers}" SelectedItem="{Binding Path=Select_agency.Select_offer}" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox x:Name="CurrentOffers" Grid.Row="1" ItemsSource="{Binding Path=Current_offers}" SelectedItem="{Binding Path=Select_agency.Select_offer}" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                                 <Setter Property="Template">
@@ -262,8 +307,16 @@
                                         <Grid Grid.Row="0" Background="{StaticResource MlsGreen}">
                                             <Grid.ContextMenu>
                                                 <ContextMenu>
-                                                    <MenuItem Command="{Binding Path=Command_SetIncorrectStatus}" Header="Установить как некорректное объявление" Visibility="{Binding Path=Status, Converter={StaticResource ContextMenu}, ConverterParameter=incorrect}"/>
-                                                    <MenuItem Command="{Binding Path=Command_SetNoChangesStatus}" Header="Установить для объявления статус Без изменений."  Visibility="{Binding Path=Status, Converter={StaticResource ContextMenu}}"/>
+                                                    <MenuItem Command="{Binding Path=Command_SetIncorrectStatus}" Header="Установить как некорректное объявление" Visibility="{Binding Path=Status, Converter={StaticResource ContextMenu}, ConverterParameter=incorrect}">
+                                                        <MenuItem.Icon>
+                                                            <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/false.ico"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Command="{Binding Path=Command_SetNoChangesStatus}" Header="Установить для объявления статус Без изменений."  Visibility="{Binding Path=Status, Converter={StaticResource ContextMenu}}">
+                                                        <MenuItem.Icon>
+                                                            <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/true.ico"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
                                                 </ContextMenu>
                                             </Grid.ContextMenu>
                                             <Grid.ColumnDefinitions>
@@ -305,35 +358,35 @@
                                         <StackPanel Orientation="Vertical" Grid.Column="0">
 
                                             <StackPanel Orientation="Vertical">
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=Date}">
                                                     <TextBlock Text="Дата добавления: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=Date}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=Last_update_date}">
                                                     <TextBlock Text="Дата обновления: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=Last_update_date}"/>
                                                 </StackPanel>
                                                 <StackPanel Margin="0 0 0 10"/>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=Materials}">
                                                     <TextBlock Text="Материал: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=Materials}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=LiveStatus}">
                                                     <TextBlock Text="Состояние: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=LiveStatus}"/>
                                                 </StackPanel>
                                             </StackPanel>
                                             <StackPanel Margin="0 0 0 10"/>
                                             <StackPanel Orientation="Vertical">
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=District}">
                                                     <TextBlock Text="Район: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=District}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=Guidemark}">
                                                     <TextBlock Text="Ориентир: " FontWeight="Bold"/>
                                                     <TextBlock Width="100" TextWrapping="Wrap" Text="{Binding Path=Guidemark}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" ToolTip="{Binding Path=Street}">
                                                     <TextBlock FontWeight="Bold" Text="Улица: "/>
                                                     <TextBox IsReadOnly="True" Width="100" TextWrapping="Wrap" Text="{Binding Path=Street}"/>
                                                 </StackPanel>
@@ -360,28 +413,28 @@
                                                     <TextBlock Text=" соток."/>
                                                 </StackPanel>
                                                 <StackPanel Margin="0 0 0 10"/>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=BalconyType}">
                                                     <TextBlock Text="Балкон: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=BalconyType}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=BathroomType}">
                                                     <TextBlock Text="Санузел: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=BathroomType}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=RoomsType}">
                                                     <TextBlock Text="Комнаты: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=RoomsType}"/>
                                                 </StackPanel>
                                                 <StackPanel Margin="0 0 0 10"/>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=GasValue}">
                                                     <TextBlock Text="Газ: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=GasValue}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=SewerageValue}">
                                                     <TextBlock Text="Канализация: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=SewerageValue}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=BathroomValue}">
                                                     <TextBlock Text="Наличие санузла: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=BathroomValue}"/>
                                                 </StackPanel>

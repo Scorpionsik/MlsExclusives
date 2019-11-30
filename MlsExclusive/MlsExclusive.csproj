@@ -74,11 +74,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Utilites\Converters\ContextMenuAgencyConverter.cs" />
     <Compile Include="Utilites\Converters\OfferContextMenuConverter.cs" />
+    <Compile Include="Utilites\Converters\MainSearchModeConverter.cs" />
     <Compile Include="Utilites\Converters\PriceSpaceConverter.cs" />
     <Compile Include="Utilites\Converters\MlsModeConverter.cs" />
     <Compile Include="Utilites\Converters\FirstCharUpConverter.cs" />
     <Compile Include="Utilites\Converters\OfferStatusConverter.cs" />
+    <Compile Include="Utilites\Enums\MainSearchMode.cs" />
     <Compile Include="Utilites\Enums\WriteStatus.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\WriteSelectViewModel.cs" />
@@ -162,6 +165,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Data\icons\ie.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Data\icons\false.ico" />
+    <Resource Include="Data\icons\true.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
