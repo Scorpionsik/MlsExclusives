@@ -307,81 +307,94 @@ namespace MlsExclusive.ViewModels
         {
             await Task.Run(() =>
             {
-                this.StatusBar.SetAsync("Идёт создание документа, пожалуйста подождите...", StatusString.Infinite);
-
-                ListExt<Agency> agencys = new ListExt<Agency>();
-                List<OfferBase> tmp_offer = new List<OfferBase>();
-
-                if (write_status == WriteStatus.All) agencys.AddRange(this.Agencys);
-                else if (write_status == WriteStatus.Select) agencys.Add(this.Select_agency);
-
-                foreach(Agency agency in agencys)
+                if (write_status == WriteStatus.Select && !this.Select_agency.IsLoad)
                 {
-                    if (agency.IsLoad)
+                    this.StatusBar.SetAsync("Для выбранного агенства (" + this.Select_agency.Name + ") установлен флаг запрета выгрузки, отмена записи...", StatusString.LongTime + StatusString.LongTime);
+                }
+                else
+                {
+                    this.StatusBar.SetAsync("Идёт создание документа, пожалуйста подождите...", StatusString.Infinite);
+
+                    ListExt<Agency> agencys = new ListExt<Agency>();
+                    List<OfferBase> tmp_offer = new List<OfferBase>();
+
+                    if (write_status == WriteStatus.All) agencys.AddRange(this.Agencys);
+                    else if (write_status == WriteStatus.Select) agencys.Add(this.Select_agency);
+
+                    foreach (Agency agency in agencys)
                     {
-                        foreach (MlsOffer offer in agency.Offers)
+                        if (agency.IsLoad)
                         {
-                            if ((offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net")) && (offer.Status != OfferStatus.Incorrect && offer.Status != OfferStatus.Delete))
+                            foreach (MlsOffer offer in agency.Offers)
                             {
-                                DateTimeOffset tmp_date = new DateTimeOffset(int.Parse(offer.Date.Split('-')[0]), int.Parse(offer.Date.Split('-')[1]), int.Parse(offer.Date.Split('-')[2]), 0, 0, 0, new TimeSpan());
-
-                                string current_type = offer.Type;
-                                if (current_type == "гостинка" || current_type == "подселение") current_type = "квартира";
-                                else if(current_type == "пол-дома") current_type = "дом";
-
-                                OfferBase tmp_send = new OfferBase(offer.Id.ToString(),
-                                    OfferType.Sell,
-                                    new OfferCategory(current_type),
-                                    tmp_date,
-                                    UnixTime.ToDateTimeOffset(offer.Last_update_stamp, App.Timezone),
-                                    "Украина",
-                                    "Харьков",
-                                    offer.District,
-                                    offer.Street,
-                                    Convert.ToInt32(offer.Price),
-                                    PriceCurrency.USD,
-                                    offer.Description
-                                    )
+                                if ((offer.Link == null || offer.Link.Length == 0 || !offer.Link.Contains("newcab.bee.th1.vps-private.net")) && (offer.Status != OfferStatus.Incorrect && offer.Status != OfferStatus.Delete))
                                 {
-                                    SqAll = offer.SqAll,
-                                    SqLive = offer.SqLive,
-                                    SqKitchen = offer.SqKitchen,
-                                    SqArea = offer.SqArea,
-                                    Rooms = offer.RoomCount,
-                                    Floor = offer.Floor,
-                                    Floors_total = offer.Floors,
-                                };
+                                    DateTimeOffset tmp_date = new DateTimeOffset(int.Parse(offer.Date.Split('-')[0]), int.Parse(offer.Date.Split('-')[1]), int.Parse(offer.Date.Split('-')[2]), 0, 0, 0, new TimeSpan());
 
-                                tmp_send.Phones.AddRange(offer.Phones);
-                                if (agency.IsPicLoad) tmp_send.Photos.AddRange(offer.Photos);
+                                    string current_type = offer.Type;
+                                    if (current_type == "гостинка" || current_type == "подселение") current_type = "квартира";
+                                    else if (current_type == "пол-дома") current_type = "дом";
 
-                                tmp_offer.Add(tmp_send);
+                                    OfferBase tmp_send = new OfferBase(offer.Id.ToString(),
+                                        OfferType.Sell,
+                                        new OfferCategory(current_type),
+                                        tmp_date,
+                                        UnixTime.ToDateTimeOffset(offer.Last_update_stamp, App.Timezone),
+                                        "Украина",
+                                        "Харьков",
+                                        offer.District,
+                                        offer.Street,
+                                        Convert.ToInt32(offer.Price),
+                                        PriceCurrency.USD,
+                                        offer.Description
+                                        )
+                                    {
+                                        SqAll = offer.SqAll,
+                                        SqLive = offer.SqLive,
+                                        SqKitchen = offer.SqKitchen,
+                                        SqArea = offer.SqArea,
+                                        Rooms = offer.RoomCount,
+                                        Floor = offer.Floor,
+                                        Floors_total = offer.Floors,
+                                    };
+
+                                    tmp_send.Phones.AddRange(offer.Phones);
+                                    if (agency.IsPicLoad) tmp_send.Photos.AddRange(offer.Photos);
+
+                                    tmp_offer.Add(tmp_send);
+                                }
                             }
                         }
                     }
+
+                    if (tmp_offer.Count == 0)
+                    {
+                        this.StatusBar.SetAsync("Документ пустой, отмена записи...", StatusString.LongTime + StatusString.LongTime);
+                    }
+                    else
+                    {
+                        XmlDocument yandexDoc = OfferBase.GetYandexDoc(tmp_offer);
+                        this.StatusBar.SetAsync("Документ сформирован, выбираем папку...", StatusString.Infinite);
+                        SaveFileDialog window = new SaveFileDialog();
+                        window.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+                        window.Title = "Сохранение документа в формате Яндекс.недвижимость...";
+                        window.FileName = "mls_feed";
+                        if (write_status == WriteStatus.Select) window.FileName += "_" + this.Select_agency.Name.Replace(" ", "");
+                        window.FileName += ".yrl";
+                        if ((bool)window.ShowDialog())
+                        {
+                            this.StatusBar.SetAsync("Идёт сохранение, пожалуйста подождите...", StatusString.Infinite);
+                            yandexDoc.Save(window.FileName);
+
+                            string tmp_status = "Сохранение успешно завершено!";
+                            if (write_status == WriteStatus.Select) tmp_status += " (агенство " + this.Select_agency.Name + ")";
+
+                            this.StatusBar.SetAsync(tmp_status + " Записано объектов: " + tmp_offer.Count(), StatusString.LongTime + StatusString.LongTime);
+                        }
+                        else this.StatusBar.SetAsync("Отмена операции, документ не сохранён...", StatusString.LongTime);
+                    }
                 }
-
-                XmlDocument yandexDoc = OfferBase.GetYandexDoc(tmp_offer);
-
-                this.StatusBar.SetAsync("Документ сформирован, выбираем папку...", StatusString.Infinite);
-                SaveFileDialog window = new SaveFileDialog();
-                window.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-
-                window.Title = "Сохранение документа в формате Яндекс.недвижимость...";
-                window.FileName = "mls_feed";
-                if (write_status == WriteStatus.Select) window.FileName += "_" + this.Select_agency.Name.Replace(" ", "");
-                window.FileName += ".yrl";
-                if ((bool)window.ShowDialog())
-                {
-                    this.StatusBar.SetAsync("Идёт сохранение, пожалуйста подождите...", StatusString.Infinite);
-                    yandexDoc.Save(window.FileName);
-
-                    string tmp_status = "Сохранение успешно завершено!";
-                    if (write_status == WriteStatus.Select) tmp_status += " (агенство " + this.Select_agency.Name + ")";
-
-                    this.StatusBar.SetAsync(tmp_status + " Записано объектов: " + tmp_offer.Count(), StatusString.LongTime + StatusString.LongTime);
-                }
-                else this.StatusBar.SetAsync("Отмена операции, документ не сохранён...", StatusString.LongTime);
             });
         } //---метод SaveInFileMethod
 

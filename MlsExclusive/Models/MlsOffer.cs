@@ -630,6 +630,9 @@ namespace MlsExclusive.Models
                 case "Хроли":
                     offer.District = "ХТЗ";
                     break;
+                case "Индустриальная":
+                    if (offer.Guidemark == "м. Масельского") offer.District = "ХТЗ";
+                    break;
                 case "Б.Даниловка":
                     offer.District = "Большая Даниловка";
                     break;
@@ -642,6 +645,10 @@ namespace MlsExclusive.Models
             //улицы
             switch (offer.Street)
             {
+                case "Мира":
+                case "Мира ул.":
+                    offer.Street = "Мира (" + offer.District + ")";
+                    break;
                 case "Пушкинская":
                 case "Пушкинская ул":
                     offer.Street = "Пушкинская (" + offer.District + ")";
