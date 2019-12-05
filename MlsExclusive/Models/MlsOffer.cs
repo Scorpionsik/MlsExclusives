@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace MlsExclusive.Models
 {
@@ -645,6 +646,18 @@ namespace MlsExclusive.Models
             //улицы
             switch (offer.Street)
             {
+                case "50-летия СССР пр. Льва Ландау":
+                case "50-летия СССР пр. Льва Ландау ул.":
+                    offer.Street = "50-летия СССР пр. Льва Ландау (" + offer.District + ")";
+                    break;
+                case "Постышева пр. Любови Малой":
+                case "Постышева пр. Любови Малой ул.":
+                    offer.Street = "Постышева пр. Любови Малой (" + offer.District + ")";
+                    break;
+                case "Клочковская":
+                case "Клочковская ул.":
+                    offer.Street = "Клочковская (" + offer.District + ")";
+                    break;
                 case "Мира":
                 case "Мира ул.":
                     offer.Street = "Мира (" + offer.District + ")";
@@ -764,6 +777,12 @@ namespace MlsExclusive.Models
 
         }
 
+        public static bool CheckLinkMethod(string link)
+        {
+            if (link != null && link.Length > 0 && new Regex(@"^http[s]?\:\/\/newcab.bee.th1.vps-private.net\/node\/[\d]+$").IsMatch(link.ToLower())) return true;
+            else return false;
+        }
+
         /// <summary>
         /// Команда для кнопки, открывающая строку с объявлением в базе АН Города в браузере.
         /// </summary>
@@ -779,7 +798,7 @@ namespace MlsExclusive.Models
                     }
                     catch { }
                 },
-                (obj) => obj != null && obj.Length > 0 && obj.ToLower().Contains("newcab.bee.th1.vps-private.net")
+                (obj) => MlsOffer.CheckLinkMethod(obj)
                 );
             }
         }
