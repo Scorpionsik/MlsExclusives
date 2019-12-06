@@ -105,7 +105,6 @@
     <Compile Include="Utilites\Enums\AgencyStatus.cs" />
     <Compile Include="Utilites\Enums\MlsMode.cs" />
     <Compile Include="Utilites\Enums\OfferStatus.cs" />
-    <Compile Include="Utilites\UpdateTime.cs" />
     <Compile Include="Utilites\MlsServer.cs" />
     <Compile Include="Utilites\User.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

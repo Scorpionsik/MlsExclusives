@@ -193,7 +193,7 @@ namespace MlsExclusive.ViewModels
         {
             get
             {
-                return UpdateTime.Get().ToString();
+                return MlsServer.GetUpdateTime().ToString();
             }
         }
 

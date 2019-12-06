@@ -13,6 +13,11 @@ namespace MlsExclusive.Utilites
     public static class MlsServer
     {
         /// <summary>
+        /// Путь, где хранится значение последней выгрузки из МЛС в формате Unix Timestamp.
+        /// </summary>
+        private const string UnixTimestampPath = "Data/last_update.time";
+
+        /// <summary>
         /// Строка-фид с квартирами
         /// </summary>
         public static string Flats { get; private set; }
@@ -124,12 +129,30 @@ namespace MlsExclusive.Utilites
                 Flats = feeds[0];
                 Houses = feeds[1];
 
-                UpdateTime.Set(UnixTime.CurrentUnixTimestamp());
+                MlsServer.SetUpdateTime(UnixTime.CurrentUnixTimestamp());
             }
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message, "Ошибка МЛС сервера!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        /// <summary>
+        /// Возвращает время последней выгрузки из МЛС.
+        /// </summary>
+        /// <returns>Возвращает время последней выгрузки из МЛС в формате <see cref="DateTimeOffset"/>.</returns>
+        public static DateTimeOffset GetUpdateTime()
+        {
+            return UnixTime.ToDateTimeOffset(Convert.ToDouble(File.ReadAllText(UnixTimestampPath)), App.Timezone);
+        }
+
+        /// <summary>
+        /// Устанавливает время последней выгрузки из МЛС.
+        /// </summary>
+        /// <param name="timestamp">Unix Timestamp со смещением во времени по <see cref="UnixTime.UTC"/>.</param>
+        private static void SetUpdateTime(double timestamp)
+        {
+            File.WriteAllText(UnixTimestampPath, timestamp.ToString());
         }
     }
 }
