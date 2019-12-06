@@ -1,4 +1,5 @@
 ﻿using CoreWPF.Utilites;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net;
@@ -12,6 +13,11 @@ namespace MlsExclusive.Utilites
     /// </summary>
     public static class MlsServer
     {
+        /// <summary>
+        /// Путь к файлу-конфигурации для фидов МЛС
+        /// </summary>
+        private const string UserPath = "Data/user.json";
+
         /// <summary>
         /// Путь, где хранится значение последней выгрузки из МЛС в формате Unix Timestamp.
         /// </summary>
@@ -28,7 +34,7 @@ namespace MlsExclusive.Utilites
         public static string Houses { get; private set; }
 
         /// <summary>
-        /// Инициализация
+        /// Инициализация.
         /// </summary>
         static MlsServer()
         {
@@ -45,7 +51,7 @@ namespace MlsExclusive.Utilites
             {
                 MlsServer.Flats = "";
                 MlsServer.Houses = "";
-                User user = App.GetUser();
+                User user = MlsServer.GetUser();
                 string login = user.login;
                 string pass = user.password;
                 string session = "";
@@ -153,6 +159,26 @@ namespace MlsExclusive.Utilites
         private static void SetUpdateTime(double timestamp)
         {
             File.WriteAllText(UnixTimestampPath, timestamp.ToString());
+        }
+
+        /// <summary>
+        /// Получить информацию для авторизации и дальнейшей загрузки фидов
+        /// </summary>
+        /// <returns>Структура <see cref="User"/> с данными для фидов</returns>
+        public static User GetUser()
+        {
+            string json = File.ReadAllText(UserPath);
+            return JsonConvert.DeserializeObject<User>(json);
+        }
+
+        /// <summary>
+        /// Задает информацию о авторизации для фидов и записывает её в файл конфигурации
+        /// </summary>
+        /// <param name="user">Структура <see cref="User"/> с данными для фидов</param>
+        public static void SetUser(User user)
+        {
+            string json = JsonConvert.SerializeObject(user);
+            File.WriteAllText(UserPath, json);
         }
     }
 }

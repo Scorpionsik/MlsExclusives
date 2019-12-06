@@ -58,7 +58,7 @@ namespace MlsExclusive.ViewModels
         public SettingsViewModel()
         {
             this.Title = "Настройки";
-            User current_user = App.GetUser();
+            User current_user = MlsServer.GetUser();
 
             this.login = current_user.login;
             this.password = current_user.password;
@@ -74,7 +74,7 @@ namespace MlsExclusive.ViewModels
             {
                 return new RelayCommand(obj =>
                 {
-                    App.SetUser(new User(this.Login, this.Password, this.User_agent));
+                    MlsServer.SetUser(new User(this.Login, this.Password, this.User_agent));
                     base.Command_save?.Execute();
                 });
             }
