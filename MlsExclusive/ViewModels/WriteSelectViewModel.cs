@@ -14,7 +14,7 @@ namespace MlsExclusive.ViewModels
     public class WriteSelectViewModel : ViewModel
     {
         /// <summary>
-        /// Коллекция статусов записи; <see cref="KeyValuePair.Key"/> является описанием, а <see cref="KeyValuePair.Value"/> - элементом <see cref="WriteStatus"/>.
+        /// Коллекция статусов записи; Key является строковым описанием, а Value - элементом <see cref="WriteStatus"/>.
         /// </summary>
         public Dictionary<string, WriteStatus> Statuses { get; private set; }
 

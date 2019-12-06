@@ -6,7 +6,6 @@ using MlsExclusive.Utilites.Enums;
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace MlsExclusive.Models
@@ -212,7 +211,7 @@ namespace MlsExclusive.Models
                 if (Guidemark != null && Guidemark != "") tmp_send += ", ориентир: " + Guidemark;
                 if (Materials != null && Materials != "") tmp_send += ", материал: " + Materials;
                 if (LiveStatus != null && LiveStatus != "") tmp_send += ", состояние: " + LiveStatus;
-                if (BalconyType != null && BalconyType != "") tmp_send += ", балкон: " + BalconyType;
+                //if (BalconyType != null && BalconyType != "") tmp_send += ", балкон: " + BalconyType;
                 if (RoomsType != null && RoomsType != "") tmp_send += ", комнаты " + RoomsType;
                 if (BathroomType != null && BathroomType != "") tmp_send += ", санузел: " + BathroomType;
                 if (BathroomValue != null && BathroomValue != "") tmp_send += ", тип санузла: " + BathroomValue;
@@ -261,9 +260,14 @@ namespace MlsExclusive.Models
         }
 
         /// <summary>
+        /// Используется для создания копии текущего экземпляра <see cref="MlsOffer"/> в методе <see cref="IModel.Clone"/>.
+        /// </summary>
+        private MlsOffer() { }
+
+        /// <summary>
         /// Формирует объявление, исходя из фида и <see cref="MlsMode"/>.
         /// </summary>
-        /// <param name="mls_string">Принимает фид для обработки; фиды можно получить из <see cref="MlsServer"/>.</param>
+        /// <param name="mls_string">Фид для обработки; его необходимо получить из <see cref="MlsServer"/>.</param>
         /// <param name="mode">Откуда был получен фид.</param>
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="ArgumentException"/>
@@ -408,12 +412,12 @@ namespace MlsExclusive.Models
                 this.Date = values[21];
 
                 this.Id = Convert.ToInt32(values[22]);
-                MlsOffer.FixWrongValues(this);
+                //MlsOffer.FixWrongValues(this);
             }
         } //---конструктор MlsOffer
 
         /// <summary>
-        /// Метод для обновления даты последнего обновления из МЛС.
+        /// Метод для получения даты последнего обновления из МЛС.
         /// </summary>
         /// <param name="model">Не используется в текущем методе.</param>
         public void UpdateDate(Model model)
@@ -422,13 +426,50 @@ namespace MlsExclusive.Models
         }
 
         /// <summary>
-        /// Не используется, необходим для реализации <see cref="IModel"/>.
+        /// Создает копию текущего <see cref="MlsOffer"/>.
         /// </summary>
-        /// <returns>Триггерит исключение.</returns>
+        /// <returns>Возвращает полную копию текущей модели (включая привязки к событиям).</returns>
         /// <exception cref="NotImplementedException"/>
         public IModel Clone()
         {
-            throw new NotImplementedException();
+            MlsOffer tmp_send = new MlsOffer()
+            {
+                Id = this.Id,
+                Mode = this.Mode,
+                Changes = this.Changes,
+                Link = this.Link,
+                Status = this.Status,
+                RoomCount = this.RoomCount,
+                Type = this.Type,
+                District = this.District,
+                Guidemark = this.Guidemark,
+                Street = this.Street,
+                Price = this.Price,
+                Floor = this.Floor,
+                Floors = this.Floors,
+                SqAll = this.SqAll,
+                SqLive = this.SqLive,
+                SqKitchen = this.SqKitchen,
+                SqArea = this.SqArea,
+                BalconyType = this.BalconyType,
+                LiveStatus = this.LiveStatus,
+                Agency = this.Agency,
+                RoomsType = this.RoomsType,
+                Materials = this.Materials,
+                BathroomType = this.BathroomType,
+                GasValue = this.GasValue,
+                SewerageValue = this.SewerageValue,
+                BathroomValue = this.BathroomValue,
+                Phones = new List<string>(this.Phones),
+                Photos = new List<string>(this.Photos),
+                Date = this.Date,
+                Last_update_stamp = this.Last_update_stamp
+            };
+
+            tmp_send.Event_UpdateMlsOffer += this.event_UpdateMlsOffer;
+            tmp_send.Event_select_model = this.Event_select_model;
+
+            return tmp_send;
         }
 
         /// <summary>
@@ -463,8 +504,8 @@ namespace MlsExclusive.Models
                 if (this.Price != offer.Price)
                 {
                     this.Changes += "Цена ";
-                    if (this.Price > offer.Price) this.Changes += "упала: ";
-                    else this.Changes += "поднялась: ";
+                    if (this.Price > offer.Price) this.Changes += "упала на " + (this.Price - offer.Price).ToString() +": ";
+                    else this.Changes += "поднялась на " + (offer.Price - this.Price).ToString() + ": ";
 
                     this.Changes += this.Price + " ---> " + offer.Price + "\n\n";
 
@@ -605,8 +646,13 @@ namespace MlsExclusive.Models
             this.Status = OfferStatus.Delete;
         }
 
+        /// <summary>
+        /// Метод изменяет данные (в основном, улица-район) в полученном <paramref name="offer"/> на валидные данные для базы АН Города.
+        /// </summary>
+        /// <param name="offer"><see cref="MlsOffer"/> для редактирования.</param>
         public static void FixWrongValues(MlsOffer offer)
         {
+
             //районы
             switch (offer.District)
             {
@@ -777,6 +823,11 @@ namespace MlsExclusive.Models
 
         }
 
+        /// <summary>
+        /// Проверяет ссылку на валидность для <see cref="MlsOffer"/>.
+        /// </summary>
+        /// <param name="link">Ссылка для сравнения.</param>
+        /// <returns>Вернет true, если ссылка валидна.</returns>
         public static bool CheckLinkMethod(string link)
         {
             if (link != null && link.Length > 0 && new Regex(@"^http[s]?\:\/\/newcab.bee.th1.vps-private.net\/node\/[\d]+$").IsMatch(link.ToLower())) return true;
@@ -826,6 +877,9 @@ namespace MlsExclusive.Models
             }
         }
 
+        /// <summary>
+        /// Команда для контекстого меню статуса объявления; устанавливает значение <see cref="OfferStatus.Incorrect"/>.
+        /// </summary>
         public RelayCommand Command_SetIncorrectStatus
         {
             get
@@ -837,6 +891,9 @@ namespace MlsExclusive.Models
             }
         }
 
+        /// <summary>
+        /// Команда для контекстого меню статуса объявления; устанавливает значение <see cref="OfferStatus.NoChanges"/>.
+        /// </summary>
         public RelayCommand Command_SetNoChangesStatus
         {
             get

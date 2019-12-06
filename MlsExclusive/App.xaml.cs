@@ -18,6 +18,9 @@ namespace MlsExclusive
         /// </summary>
         public static string UserPath { get; set; }
 
+        /// <summary>
+        /// Часовой пояс, используемый в приложении; от него опираются все значения дат и времени.
+        /// </summary>
         public static TimeSpan Timezone = UnixTime.Local;
 
         /// <summary>

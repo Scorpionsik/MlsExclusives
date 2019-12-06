@@ -41,6 +41,9 @@ namespace MlsExclusive.ViewModels
         }
 
         private bool unlockFlags;
+        /// <summary>
+        /// Флаг-индикатор, который передается в контекстное меню агенств; отмечает, заюлокированы флаги <see cref="Agency.IsLoad"/> и <see cref="Agency.IsPicLoad"/> или нет.
+        /// </summary>
         public bool UnlockFlags
         {
             get { return this.unlockFlags; }
@@ -52,6 +55,9 @@ namespace MlsExclusive.ViewModels
         }
 
         private event Action<MlsOffer> event_ScrollIntoCurrentOffers;
+        /// <summary>
+        /// Событие прокручивает тиблицу с <see cref="Current_offers"/> до выбранного объявления; используется для поиска и отображения объявлений внутри <see cref="Current_offers"/>.
+        /// </summary>
         public event Action<MlsOffer> Event_ScrollIntoCurrentOffers
         {
             add
@@ -71,6 +77,9 @@ namespace MlsExclusive.ViewModels
         public StatusString StatusBar { get; private set; }
 
         private string search_string;
+        /// <summary>
+        /// Текстовое поле для поиска.
+        /// </summary>
         public string Search_string
         {
             get { return this.search_string; }
@@ -81,9 +90,15 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Коллекция возможных вариаций поиска.
+        /// </summary>
         public ListExt<MainSearchMode> SearchModes { get; private set; }
 
         private MainSearchMode select_Searchmode;
+        /// <summary>
+        /// Выбранная вариация поиска.
+        /// </summary>
         public MainSearchMode Select_Searchmode
         {
             get { return this.select_Searchmode; }
@@ -452,6 +467,7 @@ namespace MlsExclusive.ViewModels
                     if (feed_offer != null && feed_offer.Length > 0)
                     {
                         MlsOffer mls_offer = new MlsOffer(feed_offer, current_mode);
+                        MlsOffer.FixWrongValues(mls_offer);
                         Agency feed_agency = new Agency(mls_offer.Agency);
                         try
                         {
@@ -508,6 +524,7 @@ namespace MlsExclusive.ViewModels
                                 return obj.Equals(current_offer);
                             }));
                             current_offer.Merge(mls_offer);
+                            if (current_offer.Status != OfferStatus.NoChanges) current_agency.SetEditStatus();
                         }
                         catch
                         {
@@ -567,6 +584,15 @@ namespace MlsExclusive.ViewModels
             {
                 return new RelayCommand(obj =>
                 {
+                    switch(MessageBox.Show("Начать загрузку из МЛС?", "МЛС Сервер", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                    {
+                        case MessageBoxResult.None:
+                        case MessageBoxResult.Cancel:
+                        case MessageBoxResult.No:
+                            this.StatusBar.SetAsync("Отмена выгрузки в МЛС...", StatusString.LongTime);
+                            return;
+                    }
+
                     Task.Run(() =>
                     {
                         this.Unblock = false;
@@ -654,6 +680,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Команда устанавливает <see cref="UnlockFlags"/> и <see cref="Agency.UnlockFlags"/>  в каждом агенстве внутри <see cref="Agencys"/>; параметр передается через CommandParameter.
+        /// </summary>
         public RelayCommand<string> Command_SetUnlockFlag
         {
             get
@@ -679,6 +708,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Команда ищет объявление с учётом введенных данных и выбранной вариации поиска.
+        /// </summary>
         public RelayCommand<string> Command_searchInCurrentOffers
         {
             get
@@ -768,6 +800,9 @@ namespace MlsExclusive.ViewModels
                 
         }
 
+        /// <summary>
+        /// Команда срабатывает при вводе текста в <see cref="Search_string"/>; пытается подставить максимально подходящий <see cref="MainSearchMode"/> в зависимости от ввода.
+        /// </summary>
         public RelayCommand<string> Command_AutoSwitchFindMode
         {
             get

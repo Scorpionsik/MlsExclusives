@@ -34,7 +34,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Image Source="pack://application:,,,/MlsExclusive;component/Data/icons/load.ico"/>
                         <TextBlock Text=" "/>
-                        <TextBlock Text="Загрузить из МЛС"/>
+                        <TextBlock Text="Загрузить из МЛС..."/>
                     </StackPanel>
                 </Button.Content>
             </Button>

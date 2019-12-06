@@ -1,16 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MlsExclusive.Models;
+using System;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
 namespace MlsExclusive.Utilites.Converters
 {
-    class ContextMenuAgencyConverter : IValueConverter
+    /// <summary>
+    /// Для отображения необходимого контектстого меню для флагов <see cref="Agency"/>.
+    /// </summary>
+    public class ContextMenuAgencyConverter : IValueConverter
     {
+        /// <summary>
+        /// Конвертирет значение флага в необходимый <see cref="Visibility"/>.
+        /// </summary>
+        /// <param name="value">Флаг с типом данных <see cref="bool"/></param>
+        /// <param name="targetType">Не используется в текущем методе.</param>
+        /// <param name="parameter">Строковый параметр для конвертации: принимает "lock" или "unlock".</param>
+        /// <param name="culture">Не используется в текущем методе.</param>
+        /// <returns>Возвращает <see cref="Visibility"/> в зависимости от <paramref name="value"/> и <paramref name="parameter"/>; если не был передан валидный флаг, вернет <see cref="DependencyProperty.UnsetValue"/>.</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is bool choice)

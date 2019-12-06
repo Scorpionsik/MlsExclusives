@@ -17,6 +17,12 @@ namespace MlsExclusive.Models
     public class Agency : Model
     {
         private bool unlockFlags;
+        /// <summary>
+        /// Флаг, блокирующий флаги <see cref="Agency.IsLoad"/>, <see cref="Agency.IsPicLoad"/>. 
+        /// </summary>
+        /// <remarks>
+        /// Сделано, чтобы пользователь случайно не переключал вышеуказанные флаги при выборе агенства в списке.
+        /// </remarks>
         public bool UnlockFlags
         {
             get { return this.unlockFlags; }
@@ -55,6 +61,7 @@ namespace MlsExclusive.Models
             get
             {
                 if (this.Status == AgencyStatus.New) return "Новое агенство!";
+                else if(this.Status == AgencyStatus.Edit) return "Есть изменения!";
                 else return "";
             }
         }
@@ -78,7 +85,7 @@ namespace MlsExclusive.Models
         }
 
         /// <summary>
-        /// Возвращает <see cref="Last_update_stamp"/> в формате <see cref="DateTimeOffset.ToString"/> (используется смещение во времени, взятое из <see cref="App.Timezone"/>).
+        /// Возвращает <see cref="Last_update_stamp"/> в формате <see cref="DateTimeOffset.ToString()"/> (используется смещение во времени, взятое из <see cref="App.Timezone"/>).
         /// </summary>
         public string Last_update_date
         {
@@ -285,7 +292,15 @@ namespace MlsExclusive.Models
         /// </summary>
         public void SetOldStatus()
         {
-            if (this.Status == AgencyStatus.New) this.Status = AgencyStatus.Old;
+            if (this.Status != AgencyStatus.Old) this.Status = AgencyStatus.Old;
+        }
+
+        /// <summary>
+        /// Устанавливает <see cref="Status"/> в <see cref="AgencyStatus.Edit"/>.
+        /// </summary>
+        public void SetEditStatus()
+        {
+            if (this.Status != AgencyStatus.Edit) this.Status = AgencyStatus.Edit;
         }
 
         /// <summary>
@@ -331,6 +346,9 @@ namespace MlsExclusive.Models
             else return null;
         }
 
+        /// <summary>
+        /// Команда-датчик, необходим для блокировки флага <see cref="IsPicLoad"/>, если <see cref="IsLoad"/> равен false.
+        /// </summary>
         public RelayCommand Command_blockIsPicLoad
         {
             get
