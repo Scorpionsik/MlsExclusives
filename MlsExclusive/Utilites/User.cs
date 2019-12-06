@@ -21,7 +21,7 @@
         public string user_agent { get; set; }
 
         /// <summary>
-        /// Создание нового объекта.
+        /// Создание нового пользователя.
         /// </summary>
         /// <param name="login">Логин для авторизации.</param>
         /// <param name="password">Пароль для авторизации.</param>

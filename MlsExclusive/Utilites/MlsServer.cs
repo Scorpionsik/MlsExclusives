@@ -9,12 +9,12 @@ using System.Windows;
 namespace MlsExclusive.Utilites
 {
     /// <summary>
-    /// Представляет собой инструменты для получения фидов МЛС
+    /// Представляет собой инструменты для получения фидов МЛС.
     /// </summary>
     public static class MlsServer
     {
         /// <summary>
-        /// Путь к файлу-конфигурации для фидов МЛС
+        /// Путь к файлу-конфигурации для фидов МЛС.
         /// </summary>
         private const string UserPath = "Data/user.json";
 
@@ -24,12 +24,12 @@ namespace MlsExclusive.Utilites
         private const string UnixTimestampPath = "Data/last_update.time";
 
         /// <summary>
-        /// Строка-фид с квартирами
+        /// Строка-фид с квартирами.
         /// </summary>
         public static string Flats { get; private set; }
 
         /// <summary>
-        /// Строка-фид с домами
+        /// Строка-фид с домами.
         /// </summary>
         public static string Houses { get; private set; }
 
