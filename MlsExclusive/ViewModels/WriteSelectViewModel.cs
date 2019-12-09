@@ -54,7 +54,7 @@ namespace MlsExclusive.ViewModels
                 }
             }
             
-            this.Select_status = this.Statuses.Last();
+            this.Select_status = this.Statuses.First();
         }
 
         /// <summary>

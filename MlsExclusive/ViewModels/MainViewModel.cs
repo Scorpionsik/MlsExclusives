@@ -328,7 +328,7 @@ namespace MlsExclusive.ViewModels
                 }
                 else
                 {
-                    this.StatusBar.SetAsync("Идёт создание документа, пожалуйста подождите...", StatusString.Infinite);
+                    //this.StatusBar.SetAsync("Идёт создание документа, пожалуйста подождите...", StatusString.Infinite);
 
                     ListExt<Agency> agencys = new ListExt<Agency>();
                     List<OfferBase> tmp_offer = new List<OfferBase>();
