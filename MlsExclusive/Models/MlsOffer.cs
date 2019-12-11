@@ -523,6 +523,7 @@ namespace MlsExclusive.Models
                     this.Changes += "Тип: " + this.Type + " -- > " + offer.Type + "\n";
                     this.Type = offer.Type;
                 }
+                /*
                 if (this.District != offer.District)
                 {
                     this.Changes += "Район: " + this.District + " -- > " + offer.District + "\n";
@@ -538,6 +539,7 @@ namespace MlsExclusive.Models
                     this.Changes += "Улица: " + this.Street + " -- > " + offer.Street + "\n";
                     this.Street = offer.Street;
                 }
+                */
                 if (this.Floor != offer.Floor)
                 {
                     this.Changes += "Этаж: " + this.Floor + " -- > " + offer.Floor + "\n";

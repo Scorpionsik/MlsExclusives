@@ -492,7 +492,10 @@ namespace MlsExclusive.ViewModels
             //remove old objects with Delete status
             for(int agency_i = 0; agency_i < this.Agencys.Count; agency_i++)
             {
-                if (this.Agencys[agency_i].Status != AgencyStatus.Old) this.Agencys[agency_i].SetOldStatus();
+                if (this.Agencys[agency_i].Status != AgencyStatus.Old)
+                {
+                    this.Agencys[agency_i].SetOldStatus();
+                }
                 for (int offer_i = 0; offer_i < this.Agencys[agency_i].Offers.Count; offer_i++)
                 {
                     if(this.Agencys[agency_i].Offers[offer_i].Status == OfferStatus.Delete)
@@ -523,8 +526,9 @@ namespace MlsExclusive.ViewModels
                             {
                                 return obj.Equals(current_offer);
                             }));
+                            //MlsOffer.FixWrongValues(mls_offer);
                             current_offer.Merge(mls_offer);
-                            if (current_offer.Status != OfferStatus.NoChanges) current_agency.SetEditStatus();
+                            if (current_offer.Status != OfferStatus.NoChanges && current_offer.Status != OfferStatus.Incorrect) current_agency.SetEditStatus();
                         }
                         catch
                         {
