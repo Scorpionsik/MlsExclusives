@@ -116,6 +116,11 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <!--конец Фильтры-->
+            
+            <!--Отображать агенства и тип фидов-->
+            <CheckBox Margin="10 8 0 0" DockPanel.Dock="Left" Content="Отображать агенства и тип фидов" IsChecked="{Binding Path=ShowFilters}"/>
+            <!--конец Отображать агенства и тип фидов-->
+            
             <!--Поиск-->
             <DockPanel DockPanel.Dock="Left" LastChildFill="True">
                 <Label DockPanel.Dock="Left" Margin="10 2 0 0" Content="Искать по:"/>
@@ -152,7 +157,7 @@
                     <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <!--Таблица агенств-->
-                <ListBox IsEnabled="{Binding Path=Unblock}" Grid.Column="0" ItemsSource="{Binding Path=Agencys}" SelectedItem="{Binding Path=Select_agency}" Background="{StaticResource MlsDarkGreen}">
+                <ListBox IsEnabled="{Binding Path=Unblock}" Grid.Column="0" ItemsSource="{Binding Path=Agencys}" Visibility="{Binding Path=ShowFilters, Converter={StaticResource Bool-Visibility}, ConverterParameter=lock}" SelectedItem="{Binding Path=Select_agency}" Background="{StaticResource MlsDarkGreen}">
                     <ListBox.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Разблокировать флаги" Command="{Binding Path=Command_SetUnlockFlag}" Visibility="{Binding Path=UnlockFlags, Converter={StaticResource ContextMenuAgency}, ConverterParameter=unlock}" CommandParameter="true">
@@ -225,15 +230,11 @@
                 </ListBox>
                 <!--конец Таблица агенств-->
                 <!--Splitter-->
-                <GridSplitter Grid.Column="1" Background="{StaticResource MlsLightGreen}" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+                <GridSplitter Grid.Column="1" Visibility="{Binding Path=ShowFilters, Converter={StaticResource Bool-Visibility}, ConverterParameter=lock}" Background="{StaticResource MlsLightGreen}" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
                 <!--конец Splitter-->
-                <Grid Grid.Column="2" >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
+                <DockPanel Grid.Column="{Binding Path=OffersColumn}" Grid.ColumnSpan="{Binding Path=OffersColumnSpan}" LastChildFill="True">
                     <!--Режим-->
-                    <ListBox Background="{StaticResource MlsLightGreen}" Grid.Row="0" ItemsSource="{Binding Path=Modes}" BorderThickness="0" SelectedItem="{Binding Path=Select_mode}">
+                    <ListBox DockPanel.Dock="Top" Height="30" Background="{StaticResource MlsLightGreen}" Visibility="{Binding Path=ShowFilters, Converter={StaticResource Bool-Visibility}, ConverterParameter=lock}" Grid.Row="0" ItemsSource="{Binding Path=Modes}" BorderThickness="0" SelectedItem="{Binding Path=Select_mode}">
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <UniformGrid Columns="2" Rows="1" />
@@ -265,7 +266,7 @@
                     </ListBox>
                     <!--конец Режим-->
                     <!--Таблица объектов выбранного агенства-->
-                    <ListBox x:Name="CurrentOffers" Grid.Row="1" ItemsSource="{Binding Path=Current_offers}" SelectedItem="{Binding Path=Select_agency.Select_offer}" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox x:Name="CurrentOffers" ItemsSource="{Binding Path=Current_offers}" SelectedItem="{Binding Path=Select_agency.Select_offer}" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                                 <Setter Property="Template">
@@ -506,7 +507,7 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                     <!--конец Таблица объектов выбранного агенства-->
-                </Grid>
+                </DockPanel>
             </Grid>
         </Border>
         <!--конец Таблицы-->

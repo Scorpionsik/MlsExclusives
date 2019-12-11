@@ -23,6 +23,41 @@ namespace MlsExclusive.ViewModels
     /// </summary>
     public class MainViewModel : ViewModel
     {
+        private bool showFilters;
+        /// <summary>
+        /// Флаг, отображающий интерфейс с выбором агенства и типа фида для просмотра; если стоит false, эти фильтры скрываются, и в списке отображаются все объявления.
+        /// </summary>
+        public bool ShowFilters
+        {
+            get { return this.showFilters; }
+            set
+            {
+                this.showFilters = value;
+                this.OnPropertyChanged("ShowFilters");
+                this.OnPropertyChanged("OffersColumn");
+                this.OnPropertyChanged("OffersColumnSpan");
+                this.OnPropertyChanged("Current_offers");
+            }
+        } 
+
+        public int OffersColumn
+        {
+            get
+            {
+                if (this.ShowFilters) return 2;
+                else return 0;
+            }
+        }
+
+        public int OffersColumnSpan
+        {
+            get
+            {
+                if (this.ShowFilters) return 1;
+                else return 3;
+            }
+        }
+
         private bool unblock;
         /// <summary>
         /// Флаг, отмечающий, заблокирован интерфейс окна или нет.
@@ -204,17 +239,29 @@ namespace MlsExclusive.ViewModels
         {
             get
             {
-                if (this.Select_agency != null)
+                if (this.ShowFilters)
                 {
-                    ListExt<MlsOffer> tmp_send = this.Select_agency.Offers.FindRange(new Func<MlsOffer, bool>(offer =>
+                    if (this.Select_agency != null)
                     {
-                         if (offer.Mode == this.Select_mode) return true;
-                         else return false;
-                    }));
+                        ListExt<MlsOffer> tmp_send = this.Select_agency.Offers.FindRange(new Func<MlsOffer, bool>(offer =>
+                        {
+                            if (offer.Mode == this.Select_mode) return true;
+                            else return false;
+                        }));
 
+                        return tmp_send.FindRange(this.Select_filter.Value);
+                    }
+                    else return null;
+                }
+                else
+                {
+                    ListExt<MlsOffer> tmp_send = new ListExt<MlsOffer>();
+                    foreach(Agency a in this.Agencys)
+                    {
+                           if(a.IsLoad) tmp_send.AddRange(a.Offers);
+                    }
                     return tmp_send.FindRange(this.Select_filter.Value);
                 }
-                else return null;
             }
         }
 
@@ -227,6 +274,7 @@ namespace MlsExclusive.ViewModels
             this.StatusBar = new StatusString();
             this.unblock = true;
             this.unlockFlags = false;
+            this.showFilters = true;
 
             this.Filters = new Dictionary<string, Func<MlsOffer, bool>>();
             this.Filters.Add("Все", new Func<MlsOffer, bool>(offer =>
