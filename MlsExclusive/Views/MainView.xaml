@@ -118,7 +118,7 @@
             <!--конец Фильтры-->
             
             <!--Отображать агенства и тип фидов-->
-            <CheckBox Margin="10 8 0 0" DockPanel.Dock="Left" Content="Отображать агенства и тип фидов" IsChecked="{Binding Path=ShowFilters}"/>
+            <CheckBox IsEnabled="{Binding Path=Unblock}"  Margin="10 8 0 0" DockPanel.Dock="Left" Content="Отображать агенства и тип фидов" IsChecked="{Binding Path=ShowFilters}"/>
             <!--конец Отображать агенства и тип фидов-->
             
             <!--Поиск-->
