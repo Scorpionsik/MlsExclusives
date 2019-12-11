@@ -7,6 +7,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Data;
 using MlsExclusive.ViewModels;
+using System.Collections.Generic;
 
 namespace MlsExclusive.Models
 {
@@ -189,6 +190,7 @@ namespace MlsExclusive.Models
             set
             {
                 this.select_offer = value;
+                this.Command_select_model?.Execute();
                 this.OnPropertyChanged("Select_offer");
             }
         }
@@ -265,6 +267,14 @@ namespace MlsExclusive.Models
             {
                 this.SetBindings(offer);
                 this.Offers.Add(offer);
+            }
+        }
+
+        public void AddOfferRange(IEnumerable<MlsOffer> collection)
+        {
+            foreach(MlsOffer m in collection)
+            {
+                this.AddOffer(m);
             }
         }
 

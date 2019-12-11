@@ -33,10 +33,53 @@ namespace MlsExclusive.ViewModels
             set
             {
                 this.showFilters = value;
+                Agency tmp;
+                if (this.showFilters)
+                {
+                    if (this.Select_agency != null && this.Select_agency.Select_offer != null)
+                    {
+                        tmp = this.Agencys.FindFirst(new Func<Agency, bool>(obj =>
+                        {
+                            try
+                            {
+                                obj.Offers.FindFirst(new Func<MlsOffer, bool>(off =>
+                                {
+                                    return off.Equals(this.Select_agency.Select_offer);
+                                }));
+                                return true;
+                            }
+                            catch
+                            {
+                                return false;
+                            }
+                        }));
+                        this.select_mode = this.Select_agency.Select_offer.Mode;
+                        this.OnPropertyChanged("Select_mode");
+                        tmp.Select_offer = this.Select_agency.Select_offer;
+                        this.Select_agency = tmp;
+                    }
+                    else this.Select_agency = null;
+                }
+                else
+                {
+                    tmp = new Agency("выбраны все агенства, которые загружаются в базу.");
+                    foreach (Agency a in this.Agencys)
+                    {
+                        if (a.IsLoad) tmp.AddOfferRange(a.Offers);
+                    }
+                    if (this.Select_agency != null && this.Select_agency.Select_offer != null) tmp.Select_offer = this.Select_agency.Select_offer;
+                    this.Select_agency = tmp;
+                    
+                }
+                
                 this.OnPropertyChanged("ShowFilters");
                 this.OnPropertyChanged("OffersColumn");
                 this.OnPropertyChanged("OffersColumnSpan");
-                this.OnPropertyChanged("Current_offers");
+                if (this.Select_agency != null && this.Select_agency.Select_offer != null)
+                {
+                    if (this.ShowFilters) this.event_ScrollIntoCurrentAgency?.Invoke(this.Select_agency);
+                    this.event_ScrollIntoCurrentOffers?.Invoke(this.Select_agency.Select_offer);
+                }
             }
         } 
 
@@ -103,6 +146,20 @@ namespace MlsExclusive.ViewModels
             remove
             {
                 this.event_ScrollIntoCurrentOffers -= value;
+            }
+        }
+
+        private event Action<Agency> event_ScrollIntoCurrentAgency;
+        public event Action<Agency> Event_ScrollIntoCurrentAgency
+        {
+            add
+            {
+                this.event_ScrollIntoCurrentAgency -= value;
+                this.event_ScrollIntoCurrentAgency += value;
+            }
+            remove
+            {
+                this.event_ScrollIntoCurrentAgency -= value;
             }
         }
 
@@ -193,7 +250,11 @@ namespace MlsExclusive.ViewModels
             {
                 string tmp_send = base.Title;
 
-                if (this.Select_agency != null) tmp_send += ": выбрано агенство " + this.Select_agency.Name;
+                if (this.Select_agency != null)
+                {
+                    if(this.ShowFilters) tmp_send += ": выбрано агенство " + this.Select_agency.Name;
+                    else tmp_send += ": " + this.Select_agency.Name;
+                }
 
                 return tmp_send;
             }
@@ -215,6 +276,7 @@ namespace MlsExclusive.ViewModels
             set
             {
                 this.select_agency = value;
+
                 this.OnPropertyChanged("Select_agency");
                 this.OnPropertyChanged("Current_offers");
                 this.OnPropertyChanged("Title");
@@ -239,29 +301,24 @@ namespace MlsExclusive.ViewModels
         {
             get
             {
-                if (this.ShowFilters)
+                if (this.Select_agency != null)
                 {
-                    if (this.Select_agency != null)
+                    ListExt<MlsOffer> tmp_send = this.Select_agency.Offers.FindRange(new Func<MlsOffer, bool>(offer =>
                     {
-                        ListExt<MlsOffer> tmp_send = this.Select_agency.Offers.FindRange(new Func<MlsOffer, bool>(offer =>
+                        if (this.ShowFilters)
                         {
                             if (offer.Mode == this.Select_mode) return true;
                             else return false;
-                        }));
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }));
 
-                        return tmp_send.FindRange(this.Select_filter.Value);
-                    }
-                    else return null;
-                }
-                else
-                {
-                    ListExt<MlsOffer> tmp_send = new ListExt<MlsOffer>();
-                    foreach(Agency a in this.Agencys)
-                    {
-                           if(a.IsLoad) tmp_send.AddRange(a.Offers);
-                    }
                     return tmp_send.FindRange(this.Select_filter.Value);
                 }
+                else return null;
             }
         }
 
@@ -467,6 +524,7 @@ namespace MlsExclusive.ViewModels
         private void LoadMlsMethod()
         {
             this.Select_agency = null;
+            this.ShowFilters = true;
 
             #region load mls feed
             this.StatusBar.SetAsync("Загружаем из МЛС...", StatusString.Infinite);
@@ -769,14 +827,15 @@ namespace MlsExclusive.ViewModels
             {
                 return new RelayCommand<string>(search =>
                 {
-                    int startIndex = 0, allSteps = this.Select_agency.Offers.Count;
+                    int startIndex = 0, allSteps = 0;
+                    allSteps = this.Select_agency.Offers.Count;
                     bool finish = false;
                     if (this.Select_agency.Select_offer != null) startIndex = this.Select_agency.Offers.IndexOf(this.Select_agency.Select_offer) + 1;
 
                     for (int step = 0; step < allSteps && !finish; step++, startIndex++)
                     {
                         if (startIndex >= allSteps) startIndex = 0;
-                        
+
 
                         switch (this.Select_Searchmode)
                         {
@@ -784,7 +843,7 @@ namespace MlsExclusive.ViewModels
                                 double price = -1;
                                 try
                                 {
-                                    price = Convert.ToDouble(search.Replace(" ","").Replace("$",""));
+                                    price = Convert.ToDouble(search.Replace(" ", "").Replace("$", ""));
                                 }
                                 catch
                                 {
@@ -814,7 +873,7 @@ namespace MlsExclusive.ViewModels
                                 int id = -1;
                                 try
                                 {
-                                    id = Convert.ToInt32(search.Replace("yandex", "").Replace("_", "").Replace(" ",""));
+                                    id = Convert.ToInt32(search.Replace("yandex", "").Replace("_", "").Replace(" ", ""));
                                 }
                                 catch
                                 {
@@ -824,7 +883,7 @@ namespace MlsExclusive.ViewModels
 
                                 if (!finish)
                                 {
-                                    if(this.Select_agency.Offers[startIndex].Id == id)
+                                    if (this.Select_agency.Offers[startIndex].Id == id)
                                     {
                                         if (this.Select_mode != this.Select_agency.Offers[startIndex].Mode) this.Select_mode = this.Select_agency.Offers[startIndex].Mode;
                                         this.Select_agency.Select_offer = this.Select_agency.Offers[startIndex];
@@ -842,11 +901,11 @@ namespace MlsExclusive.ViewModels
                         this.StatusBar.SetAsync("Найдено!", StatusString.ShortTime);
                     }
                 },
-                (search) => (search != null && search.Length > 0) && 
+                (search) => ((search != null && search.Length > 0) && 
                 (this.Select_agency != null && this.Select_agency.Offers != null && this.Select_agency.Offers.Count > 0) &&
                 ((this.Select_Searchmode == MainSearchMode.Price && new Regex(@"^[\d \$]+$").IsMatch(search)) || 
                 (this.Select_Searchmode == MainSearchMode.Text) || 
-                (this.Select_Searchmode == MainSearchMode.Id && new Regex(@"^(yandex)?[_]{0,2}[\d]+[ ]*$").IsMatch(search)))
+                (this.Select_Searchmode == MainSearchMode.Id && new Regex(@"^(yandex)?[_]{0,2}[\d]+[ ]*$").IsMatch(search))))
                 );
             }
                 
