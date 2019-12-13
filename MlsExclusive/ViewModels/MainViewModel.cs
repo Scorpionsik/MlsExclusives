@@ -85,6 +85,9 @@ namespace MlsExclusive.ViewModels
             }
         } 
 
+        /// <summary>
+        /// Используется в связке с <see cref="ShowFilters"/>; указывает для коллекции <see cref="Current_offers"/> расположение в интерфейсе.
+        /// </summary>
         public int OffersColumn
         {
             get
@@ -94,6 +97,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Используется в связке с <see cref="ShowFilters"/>; указывает для коллекции <see cref="Current_offers"/> расположение в интерфейсе.
+        /// </summary>
         public int OffersColumnSpan
         {
             get
@@ -136,7 +142,7 @@ namespace MlsExclusive.ViewModels
 
         private event Action<MlsOffer> event_ScrollIntoCurrentOffers;
         /// <summary>
-        /// Событие прокручивает тиблицу с <see cref="Current_offers"/> до выбранного объявления; используется для поиска и отображения объявлений внутри <see cref="Current_offers"/>.
+        /// Событие прокручивает таблицу с <see cref="Current_offers"/> до выбранного объявления; используется для поиска и отображения объявлений внутри <see cref="Current_offers"/>.
         /// </summary>
         public event Action<MlsOffer> Event_ScrollIntoCurrentOffers
         {
@@ -152,6 +158,9 @@ namespace MlsExclusive.ViewModels
         }
 
         private event Action<Agency> event_ScrollIntoCurrentAgency;
+        /// <summary>
+        /// Событие прокручивает таблицу с <see cref="Agencys"/> до выбранного агенства.
+        /// </summary>
         public event Action<Agency> Event_ScrollIntoCurrentAgency
         {
             add
@@ -953,6 +962,9 @@ namespace MlsExclusive.ViewModels
             }
         }
 
+        /// <summary>
+        /// Команда для отладки, была необходима для проверки загрузки сейвов в формате <see cref="AgencySerializeMode.Default"/>
+        /// </summary>
         public RelayCommand Command_loadAgency
         {
             get

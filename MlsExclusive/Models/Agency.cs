@@ -285,6 +285,10 @@ namespace MlsExclusive.Models
             }
         }
 
+        /// <summary>
+        /// Метод для доавления коллекции объектов.
+        /// </summary>
+        /// <param name="collection">Коллекция объектов для добавления.</param>
         public void AddOfferRange(IEnumerable<MlsOffer> collection)
         {
             foreach(MlsOffer m in collection)
@@ -333,6 +337,7 @@ namespace MlsExclusive.Models
         /// </summary>
         /// <param name="agency"><see cref="Agency"/> для сериализации.</param>
         /// <param name="folder_path">Папка для сохранения сериализованного <see cref="Agency"/>.</param>
+        /// <param name="mode">Режим сохранения.</param>
         /// <returns>Возвращает полный путь к сериализованному <see cref="Agency"/>.</returns>
         public static string Serialize(Agency agency, string folder_path, AgencySerializeMode mode = AgencySerializeMode.Default)
         {
@@ -368,6 +373,7 @@ namespace MlsExclusive.Models
         /// Статический метод, десериализует <see cref="Agency"/> из файла.
         /// </summary>
         /// <param name="path">Путь к файлу *.agency для десериализации</param>
+        /// <param name="mode">Режим сохранения.</param>
         /// <returns>возвращает десериализованный <see cref="Agency"/>.</returns>
         public static Agency Deserialize(string path, AgencySerializeMode mode = AgencySerializeMode.Default)
         {
