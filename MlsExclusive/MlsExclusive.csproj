@@ -92,6 +92,7 @@
     <Compile Include="Utilites\Converters\MlsModeConverter.cs" />
     <Compile Include="Utilites\Converters\FirstCharUpConverter.cs" />
     <Compile Include="Utilites\Converters\OfferStatusConverter.cs" />
+    <Compile Include="Utilites\Crypt.cs" />
     <Compile Include="Utilites\Enums\AgencySerializeMode.cs" />
     <Compile Include="Utilites\Enums\MainSearchMode.cs" />
     <Compile Include="Utilites\Enums\WriteStatus.cs" />

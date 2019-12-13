@@ -10,6 +10,8 @@ using MlsExclusive.ViewModels;
 using System.Collections.Generic;
 using MessagePack;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using MlsExclusive.Utilites;
 
 namespace MlsExclusive.Models
 {
@@ -355,7 +357,7 @@ namespace MlsExclusive.Models
                 case AgencySerializeMode.MessagePackNotJson:
                     byte[] bytes2 = MessagePackSerializer.Serialize(agency);
 
-                    File.WriteAllBytes(folder_path + agency.Name + ".agnc", bytes2);
+                    File.WriteAllBytes(folder_path + agency.Name + ".agnc", Crypt.Encrypt(bytes2, "ugly goblin"));
                     break;
                 default:
                     BinaryFormatter formatter = new BinaryFormatter();
@@ -389,7 +391,8 @@ namespace MlsExclusive.Models
                     case AgencySerializeMode.MessagePackNotJson:
                         if (!new Regex(@"\.agnc$").IsMatch(path)) return null;
                         byte[] bytes = File.ReadAllBytes(path);
-                        return MessagePackSerializer.Deserialize<Agency>(bytes, MessagePack.Resolvers.ContractlessStandardResolverAllowPrivate.Instance);
+
+                        return MessagePackSerializer.Deserialize<Agency>(Crypt.Decrypt(bytes, "ugly goblin"), MessagePack.Resolvers.ContractlessStandardResolverAllowPrivate.Instance);
                     default:
                         if (!new Regex(@"\.agency$").IsMatch(path)) return null;
                         BinaryFormatter formatter = new BinaryFormatter();

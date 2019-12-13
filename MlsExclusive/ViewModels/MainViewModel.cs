@@ -437,7 +437,7 @@ namespace MlsExclusive.ViewModels
             {
                 if (agency.IsChanges)
                 {
-                //File.Delete("Data/agencys/" + agency.Name + ".agency");
+                File.Delete("Data/agencys/" + agency.Name + ".agency");
                     Agency.Serialize(agency, "Data/agencys/", this.SerializeMode);
                 }
             }   
