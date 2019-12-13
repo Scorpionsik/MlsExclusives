@@ -74,9 +74,9 @@
             Событие выбора данной модели
             </summary>
         </member>
-        <member name="P:CoreWPF.MVVM.Model.Event_select_model">
+        <member name="E:CoreWPF.MVVM.Model.Event_select_model">
             <summary>
-            Ссылка на событие выбора данной модели
+            Cобытие выбора данной модели
             </summary>
         </member>
         <member name="P:CoreWPF.MVVM.Model.ClassName">
@@ -217,12 +217,12 @@
             </summary>
             <typeparam name="T">Принимает любой <see cref="T:System.Object"/></typeparam>
         </member>
-        <member name="P:CoreWPF.Utilites.ListExt`1.FirstElement">
+        <member name="P:CoreWPF.Utilites.ListExt`1.First">
             <summary>
             Возвращает первый элемент последовательности
             </summary>
         </member>
-        <member name="P:CoreWPF.Utilites.ListExt`1.LastElement">
+        <member name="P:CoreWPF.Utilites.ListExt`1.Last">
             <summary>
             Возвращает последний элемент последовательности
             </summary>

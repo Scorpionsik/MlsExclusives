@@ -1,8 +1,13 @@
-﻿namespace MlsExclusive.Utilites.Enums
+﻿using MessagePack;
+using MlsExclusive.Models;
+using System;
+
+namespace MlsExclusive.Utilites.Enums
 {
     /// <summary>
     /// Значения флага для обозначения новизны добавленного агенства.
     /// </summary>
+    [Serializable]
     public enum AgencyStatus
     {
         /// <summary>

@@ -79,6 +79,13 @@
                 </Button.Content>
             </Button>
             <Separator />
+            <Button Visibility="Collapsed" Command="{Binding Path=Command_loadAgency}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Загрузить агенства"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
         </ToolBar>
         <!--конец Панель управления-->
         

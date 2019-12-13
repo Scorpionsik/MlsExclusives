@@ -8,15 +8,19 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Data;
 using MlsExclusive.ViewModels;
 using System.Collections.Generic;
+using MessagePack;
+using System.Text.RegularExpressions;
 
 namespace MlsExclusive.Models
 {
     /// <summary>
     /// Модель агенства, с необходимым инструментарием.
     /// </summary>
+    [MessagePackObject(keyAsPropertyName: true)]
     [Serializable]
     public class Agency : Model
     {
+        [IgnoreMember]
         private bool unlockFlags;
         /// <summary>
         /// Флаг, блокирующий флаги <see cref="Agency.IsLoad"/>, <see cref="Agency.IsPicLoad"/>. 
@@ -34,7 +38,7 @@ namespace MlsExclusive.Models
             }
         }
 
-
+        [IgnoreMember]
         private AgencyStatus status;
         /// <summary>
         /// Флаг, отмечающий, новое агенство добавлено в приложение или нет.
@@ -57,6 +61,7 @@ namespace MlsExclusive.Models
         /// <remarks>
         /// Свойство используется вместо соответствующего <see cref="IValueConverter"/>, до того как было принято решение использовать их; оставлено для совместимости со старыми сохранениями.
         /// </remarks>
+        [IgnoreMember]
         public string StatusString
         {
             get
@@ -67,6 +72,7 @@ namespace MlsExclusive.Models
             }
         }
 
+        [IgnoreMember]
         private double last_update_stamp;
         /// <summary>
         /// Время, когда в последний раз агенство или его объекты были обновлены (флаг <see cref="IsChanges"/> устанавливался в true).
@@ -88,6 +94,7 @@ namespace MlsExclusive.Models
         /// <summary>
         /// Возвращает <see cref="Last_update_stamp"/> в формате <see cref="DateTimeOffset.ToString()"/> (используется смещение во времени, взятое из <see cref="App.Timezone"/>).
         /// </summary>
+        [IgnoreMember]
         public string Last_update_date
         {
             get
@@ -96,6 +103,7 @@ namespace MlsExclusive.Models
             }
         }
 
+        [IgnoreMember]
         private bool isload;
         /// <summary>
         /// Флаг, отмечающий, нужно ли сохранять объекты текущего агенства при выгрузках. <para>Внмание: если флаг установлен в false, он также установит <see cref="IsPicLoad"/> в false.</para>
@@ -119,6 +127,7 @@ namespace MlsExclusive.Models
             }
         }
 
+        [IgnoreMember]
         private bool ispicload;
         /// <summary>
         /// Флаг, отмечающий, сохранять ли фотографии объектов при выгрузках.
@@ -139,6 +148,7 @@ namespace MlsExclusive.Models
             }
         }
 
+        [IgnoreMember]
         private bool ischanges;
         /// <summary>
         /// Флаг, отмечающий, есть ли изменения в свойствах агенства или внутри объектов.
@@ -160,6 +170,7 @@ namespace MlsExclusive.Models
             }
         }
 
+        [IgnoreMember]
         private string name;
         /// <summary>
         /// Название агенства.
@@ -180,17 +191,20 @@ namespace MlsExclusive.Models
         public ListExt<MlsOffer> Offers { get; private set; }
 
         [NonSerialized]
+        [IgnoreMember]
         private MlsOffer select_offer;
+
         /// <summary>
         /// Выбранное объявление из коллекции <see cref="Offers"/>.
         /// </summary>
+        [IgnoreMember]
         public MlsOffer Select_offer
         {
             get { return this.select_offer; }
             set
             {
                 this.select_offer = value;
-                this.Command_select_model?.Execute();
+                //this.Command_select_model?.Execute();
                 this.OnPropertyChanged("Select_offer");
             }
         }
@@ -199,6 +213,7 @@ namespace MlsExclusive.Models
         /// Экземпляр класса с указанным названием.
         /// </summary>
         /// <param name="name">Название агенства.</param>
+        [SerializationConstructor]
         public Agency(string name)
         {
             this.status = AgencyStatus.New;
@@ -217,7 +232,7 @@ namespace MlsExclusive.Models
         /// <param name="event_select_model">Метод, полученный из <see cref="MainViewModel"/> для обновления выбранного агенства.</param>
         public void UpdateBindings(Action<Model> event_select_model)
         {
-            this.Event_select_model = new Action<Model>(event_select_model);
+            this.Event_select_model += new Action<Model>(event_select_model);
             foreach(MlsOffer offer in this.Offers)
             {
                 this.SetBindings(offer);
@@ -232,7 +247,7 @@ namespace MlsExclusive.Models
         /// <param name="offer"><see cref="MlsOffer"/>, к которому будет осуществена привязка.</param>
         private void SetBindings(MlsOffer offer)
         {
-            offer.Event_select_model = new Action<Model>(this.SetSelectOffer);
+            offer.Event_select_model += new Action<Model>(this.SetSelectOffer);
             offer.Event_UpdateMlsOffer += new Action<Model>(this.SetBindings);
             offer.Event_UpdateMlsOffer += new Action<Model>(offer.UpdateDate);
         }
@@ -319,17 +334,32 @@ namespace MlsExclusive.Models
         /// <param name="agency"><see cref="Agency"/> для сериализации.</param>
         /// <param name="folder_path">Папка для сохранения сериализованного <see cref="Agency"/>.</param>
         /// <returns>Возвращает полный путь к сериализованному <see cref="Agency"/>.</returns>
-        public static string Serialize(Agency agency, string folder_path)
+        public static string Serialize(Agency agency, string folder_path, AgencySerializeMode mode = AgencySerializeMode.Default)
         {
             if (folder_path.Contains("\\") && folder_path[folder_path.Length - 1] != '\\') folder_path = folder_path + "\\";
             else if (folder_path.Contains("/") && folder_path[folder_path.Length - 1] != '/') folder_path = folder_path + "/";
             agency.IsChanges = false;
             //if(agency.Status == AgencyStatus.New) agency.Status = AgencyStatus.Old;
-            BinaryFormatter formatter = new BinaryFormatter();
-            using (FileStream fs = new FileStream(folder_path + agency.Name + ".agency", FileMode.OpenOrCreate))
+            switch (mode)
             {
-                formatter.Serialize(fs, agency);
-                //fs.Close();
+                case AgencySerializeMode.MessagePack:
+                    byte[] bytes = MessagePackSerializer.Serialize(agency);
+                    
+                    File.WriteAllText(folder_path + agency.Name + ".json", MessagePackSerializer.ToJson(bytes));
+                    break;
+                case AgencySerializeMode.MessagePackNotJson:
+                    byte[] bytes2 = MessagePackSerializer.Serialize(agency);
+
+                    File.WriteAllBytes(folder_path + agency.Name + ".agnc", bytes2);
+                    break;
+                default:
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    using (FileStream fs = new FileStream(folder_path + agency.Name + ".agency", FileMode.OpenOrCreate))
+                    {
+                        formatter.Serialize(fs, agency);
+                        //fs.Close();
+                    }
+                    break;
             }
             return folder_path + agency.Name + ".agency";
         }
@@ -339,18 +369,30 @@ namespace MlsExclusive.Models
         /// </summary>
         /// <param name="path">Путь к файлу *.agency для десериализации</param>
         /// <returns>возвращает десериализованный <see cref="Agency"/>.</returns>
-        public static Agency Deserialize(string path)
+        public static Agency Deserialize(string path, AgencySerializeMode mode = AgencySerializeMode.Default)
         {
             if (File.Exists(path))
             {
-                if (!path.Contains(".agency")) return null;
-
-                BinaryFormatter formatter = new BinaryFormatter();
-                using (FileStream fs = new FileStream(path, FileMode.Open))
+                
+                switch (mode)
                 {
-                    Agency agency = (Agency)formatter.Deserialize(fs);
-                    //fs.Close();
-                    return agency;
+                    case AgencySerializeMode.MessagePack:
+                        if (!new Regex(@"\.json$").IsMatch(path)) return null;
+                        string json = File.ReadAllText(path);
+                        return MessagePackSerializer.Deserialize<Agency>(MessagePackSerializer.FromJson(json), MessagePack.Resolvers.ContractlessStandardResolverAllowPrivate.Instance);
+                    case AgencySerializeMode.MessagePackNotJson:
+                        if (!new Regex(@"\.agnc$").IsMatch(path)) return null;
+                        byte[] bytes = File.ReadAllBytes(path);
+                        return MessagePackSerializer.Deserialize<Agency>(bytes, MessagePack.Resolvers.ContractlessStandardResolverAllowPrivate.Instance);
+                    default:
+                        if (!new Regex(@"\.agency$").IsMatch(path)) return null;
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        using (FileStream fs = new FileStream(path, FileMode.Open))
+                        {
+                            Agency agency = (Agency)formatter.Deserialize(fs);
+                            //fs.Close();
+                            return agency;
+                        }
                 }
             }
             else return null;
@@ -359,6 +401,7 @@ namespace MlsExclusive.Models
         /// <summary>
         /// Команда-датчик, необходим для блокировки флага <see cref="IsPicLoad"/>, если <see cref="IsLoad"/> равен false.
         /// </summary>
+        [IgnoreMember]
         public RelayCommand Command_blockIsPicLoad
         {
             get

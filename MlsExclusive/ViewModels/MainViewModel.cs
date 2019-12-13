@@ -23,6 +23,8 @@ namespace MlsExclusive.ViewModels
     /// </summary>
     public class MainViewModel : ViewModel
     {
+        private AgencySerializeMode SerializeMode = AgencySerializeMode.MessagePackNotJson;
+
         private bool showFilters;
         /// <summary>
         /// Флаг, отображающий интерфейс с выбором агенства и типа фида для просмотра; если стоит false, эти фильтры скрываются, и в списке отображаются все объявления.
@@ -392,12 +394,24 @@ namespace MlsExclusive.ViewModels
             {
                 this.Unblock = false;
                 if (!Directory.Exists("Data/agencys/")) Directory.CreateDirectory("Data/agencys/");
-
-                string[] files = Directory.GetFiles("Data/agencys/", "*.agency");
+                string extension = "*.";
+                switch (this.SerializeMode)
+                {
+                    case AgencySerializeMode.MessagePack:
+                        extension += "json";
+                        break;
+                    case AgencySerializeMode.MessagePackNotJson:
+                        extension += "agnc";
+                        break;
+                    default:
+                        extension += "agency";
+                        break;
+                }
+                string[] files = Directory.GetFiles("Data/agencys/", extension);
 
                 foreach (string file_path in files)
                 {
-                    Agency agency = Agency.Deserialize(file_path);
+                    Agency agency = Agency.Deserialize(file_path, this.SerializeMode);
                     //agency.SetOldStatus();
                     this.AddAgency(agency);
                 }
@@ -414,7 +428,8 @@ namespace MlsExclusive.ViewModels
             {
                 if (agency.IsChanges)
                 {
-                    Agency.Serialize(agency, "Data/agencys/");
+                //File.Delete("Data/agencys/" + agency.Name + ".agency");
+                    Agency.Serialize(agency, "Data/agencys/", this.SerializeMode);
                 }
             }   
         }
@@ -935,6 +950,46 @@ namespace MlsExclusive.ViewModels
                 },
                 (obj) => obj != null && obj.Length > 0
                 );
+            }
+        }
+
+        public RelayCommand Command_loadAgency
+        {
+            get
+            {
+                return new RelayCommand(obj =>
+                {
+                    Task.Run(() =>
+                    {
+                        try
+                        {
+                            if (this.Agencys.Count == 0)
+                            {
+                                this.Unblock = false;
+                                if (!Directory.Exists("Data/agencys/")) Directory.CreateDirectory("Data/agencys/");
+
+                                string[] files = Directory.GetFiles("Data/agencys/", "*.agency");
+                                this.StatusBar.SetAsync("Получаем агенства", StatusString.Infinite);
+                                foreach (string file_path in files)
+                                {
+                                    Agency agency = Agency.Deserialize(file_path);
+                                    //agency.SetOldStatus();
+                                    this.InvokeInMainThread(() =>
+                                    {
+                                        this.AddAgency(agency);
+                                    });
+                                    this.StatusBar.SetAsync("Добвлено: " + agency.Name, StatusString.Infinite);
+                                }
+                                this.Unblock = true;
+                                this.StatusBar.SetAsync("Готово!", StatusString.LongTime);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                    });
+                });
             }
         }
         #endregion

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Text.RegularExpressions;
+using MessagePack;
 
 namespace MlsExclusive.Models
 {
@@ -14,6 +15,7 @@ namespace MlsExclusive.Models
     /// Модель МЛС объявлений, с необходимым инструментарием.
     /// </summary>
     [Serializable]
+    [MessagePackObject(keyAsPropertyName: true)]
     public class MlsOffer : Model, IModel
     {
         /// <summary>
@@ -31,6 +33,7 @@ namespace MlsExclusive.Models
         /// </summary>
         public string Changes { get; set; }
 
+        [IgnoreMember]
         private string link;
         /// <summary>
         /// Ссылка на текущее объявление в базе АН Города.
@@ -64,6 +67,7 @@ namespace MlsExclusive.Models
             remove { this.event_UpdateMlsOffer -= value; }
         }
 
+        [IgnoreMember]
         private OfferStatus status;
         /// <summary>
         /// Статус объявления.
@@ -198,6 +202,7 @@ namespace MlsExclusive.Models
         /// <summary>
         /// Описание объекта; поскольку в фидах МЛС описания нету, оно формируется из параметров, указанных в объявлении.
         /// </summary>
+        [IgnoreMember]
         public string Description
         {
             get
@@ -227,6 +232,7 @@ namespace MlsExclusive.Models
         /// </summary>
         public string Date { get; set; }
 
+        [IgnoreMember]
         private double last_update_stamp;
         /// <summary>
         /// Unix timestamp последнего обновления из МЛС
@@ -245,6 +251,7 @@ namespace MlsExclusive.Models
         /// <summary>
         /// Конвертирует <see cref="Last_update_stamp"/> в соответствующую строку.
         /// </summary>
+        [IgnoreMember]
         public string Last_update_date
         {
             get
@@ -262,7 +269,8 @@ namespace MlsExclusive.Models
         /// <summary>
         /// Используется для создания копии текущего экземпляра <see cref="MlsOffer"/> в методе <see cref="IModel.Clone"/>.
         /// </summary>
-        private MlsOffer() { }
+        [SerializationConstructor]
+        public MlsOffer() { }
 
         /// <summary>
         /// Формирует объявление, исходя из фида и <see cref="MlsMode"/>.
@@ -467,8 +475,7 @@ namespace MlsExclusive.Models
             };
 
             tmp_send.Event_UpdateMlsOffer += this.event_UpdateMlsOffer;
-            tmp_send.Event_select_model = this.Event_select_model;
-
+            
             return tmp_send;
         }
 
@@ -839,6 +846,7 @@ namespace MlsExclusive.Models
         /// <summary>
         /// Команда для кнопки, открывающая строку с объявлением в базе АН Города в браузере.
         /// </summary>
+        [IgnoreMember]
         public RelayCommand<string> Command_OpenLink
         {
             get
@@ -859,6 +867,7 @@ namespace MlsExclusive.Models
         /// <summary>
         /// Команда для кнопки, копирующая в буфер обмена Windows ссылки на фотографии и адрес текущего объявления.
         /// </summary>
+        [IgnoreMember]
         public RelayCommand Command_CopyToClipboardsImages
         {
             get
@@ -882,6 +891,7 @@ namespace MlsExclusive.Models
         /// <summary>
         /// Команда для контекстого меню статуса объявления; устанавливает значение <see cref="OfferStatus.Incorrect"/>.
         /// </summary>
+        [IgnoreMember]
         public RelayCommand Command_SetIncorrectStatus
         {
             get
@@ -896,6 +906,7 @@ namespace MlsExclusive.Models
         /// <summary>
         /// Команда для контекстого меню статуса объявления; устанавливает значение <see cref="OfferStatus.NoChanges"/>.
         /// </summary>
+        [IgnoreMember]
         public RelayCommand Command_SetNoChangesStatus
         {
             get
