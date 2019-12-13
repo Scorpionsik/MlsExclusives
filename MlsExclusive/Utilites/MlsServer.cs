@@ -1,5 +1,4 @@
 ﻿using CoreWPF.Utilites;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net;
@@ -168,7 +167,8 @@ namespace MlsExclusive.Utilites
         public static User GetUser()
         {
             string json = File.ReadAllText(UserPath);
-            return JsonConvert.DeserializeObject<User>(json);
+            //return JsonConvert.DeserializeObject<User>(json);
+            return User.Deserialize(json);
         }
 
         /// <summary>
@@ -177,8 +177,11 @@ namespace MlsExclusive.Utilites
         /// <param name="user">Структура <see cref="User"/> с данными для фидов</param>
         public static void SetUser(User user)
         {
+            /*
             string json = JsonConvert.SerializeObject(user);
             File.WriteAllText(UserPath, json);
+            */
+            File.WriteAllText(UserPath, User.Serialize(user));
         }
     }
 }
