@@ -44,6 +44,7 @@ namespace MlsExclusive.Utilites
         public static string Serialize(User user)
         {
             byte[] bytes = MessagePackSerializer.Serialize(user);
+            //return Crypt.EncryptString(MessagePackSerializer.ToJson(bytes), "ugly goblin");
             return MessagePackSerializer.ToJson(bytes);
         }
 
@@ -54,6 +55,7 @@ namespace MlsExclusive.Utilites
         /// <returns>Возвращает соответствующий <see cref="User"/>.</returns>
         public static User Deserialize(string json)
         {
+            //return MessagePackSerializer.Deserialize<User>(MessagePackSerializer.FromJson(Crypt.DecryptString(json, "ugly goblin")), MessagePack.Resolvers.ContractlessStandardResolverAllowPrivate.Instance);
             return MessagePackSerializer.Deserialize<User>(MessagePackSerializer.FromJson(json), MessagePack.Resolvers.ContractlessStandardResolverAllowPrivate.Instance);
         }
     }

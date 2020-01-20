@@ -287,7 +287,7 @@ namespace MlsExclusive.Models
             this.Mode = mode;
             this.Status = OfferStatus.New;
             this.Link = "";
-            this.last_update_stamp = 0;
+            this.Last_update_stamp = UnixTime.CurrentUnixTimestamp();
             string[] old_values = mls_string.Split('\t');
             ListExt<string> values = new ListExt<string>();
             foreach (string s in old_values)

@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace MlsExclusive.Utilites
 {
@@ -21,6 +23,11 @@ namespace MlsExclusive.Utilites
             return ms.ToArray();
         }
 
+        public static string EncryptString(string data, string password)
+        {
+            return Convert.ToBase64String(Encrypt(Encoding.UTF8.GetBytes(data), password));
+        }
+
         static public byte[] Decrypt(byte[] data, string password)
         {
             SymmetricAlgorithm sa = Rijndael.Create();
@@ -32,6 +39,11 @@ namespace MlsExclusive.Utilites
             CryptoStream st = new CryptoStream(ms, ct, CryptoStreamMode.Read);
             st.Read(data, 0, data.Length);
             return ms.ToArray();
+        }
+
+        static public string DecryptString(string data, string password)
+        {
+            return Convert.ToBase64String(Decrypt(Encoding.UTF8.GetBytes(data), password));
         }
     }
 }

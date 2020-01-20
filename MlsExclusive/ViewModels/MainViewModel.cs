@@ -747,7 +747,7 @@ namespace MlsExclusive.ViewModels
             {
                 return new RelayCommand(obj =>
                 {
-                    if (this.Select_agency != null)
+                    if (this.Select_agency != null && this.ShowFilters)
                     {
                         WriteSelectView window = new WriteSelectView(this.Select_agency.Name);
                         if ((bool)window.Show())
