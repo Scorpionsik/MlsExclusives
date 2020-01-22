@@ -520,7 +520,7 @@ namespace MlsExclusive.ViewModels
                         XmlDocument yandexDoc = OfferBase.GetYandexDoc(tmp_offer);
                         this.StatusBar.SetAsync("Документ сформирован, выбираем папку...", StatusString.Infinite);
                         SaveFileDialog window = new SaveFileDialog();
-                        window.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                        //window.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
                         window.Title = "Сохранение документа в формате Яндекс.недвижимость...";
                         window.FileName = "mls_feed";
