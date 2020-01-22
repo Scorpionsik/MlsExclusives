@@ -525,7 +525,7 @@ namespace MlsExclusive.ViewModels
                         window.Title = "Сохранение документа в формате Яндекс.недвижимость...";
                         window.FileName = "mls_feed";
                         if (write_status == WriteStatus.Select) window.FileName += "_" + this.Select_agency.Name.Replace(" ", "");
-                        window.FileName += ".yrl";
+                        window.Filter = "Фид в формате Яндекс-недвижимости|*.yrl";
                         if ((bool)window.ShowDialog())
                         {
                             this.StatusBar.SetAsync("Идёт сохранение, пожалуйста подождите...", StatusString.Infinite);
@@ -648,6 +648,7 @@ namespace MlsExclusive.ViewModels
                         else return false;
                     }));
 
+                    #region merge or delete
                     foreach(MlsOffer current_offer in current_agency.Offers)
                     {
                         try
@@ -663,8 +664,42 @@ namespace MlsExclusive.ViewModels
                         catch
                         {
                             current_offer.SetDeleteStatus();
+                            //mls_agency.AddOffer(current_offer);
                         }
                     }
+                    #endregion
+
+                    #region add
+                    foreach (MlsOffer mls_offer in mls_agency.Offers)
+                    {
+                        try
+                        {
+                            MlsOffer current_offer = current_agency.Offers.FindFirst(new Func<MlsOffer, bool>(obj =>
+                            {
+                                return obj.Equals(mls_offer);
+                            }));
+                        }
+                        catch
+                        {
+                            current_agency.AddOffer(mls_offer);
+                        }
+                    }
+                    #endregion
+                    /*
+                    foreach(MlsOffer delete_offer in current_agency.Offers)
+                    {
+                        try
+                        {
+                            MlsOffer mls_offer = mls_agency.Offers.FindFirst(new Func<MlsOffer, bool>(obj =>
+                            {
+                                return obj.Equals(delete_offer);
+                            }));
+                        }
+                        catch
+                        {
+                            delete_offer.SetDeleteStatus();
+                        }
+                    }*/
                 }
                 catch
                 {
