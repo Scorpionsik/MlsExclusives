@@ -7,6 +7,7 @@
         xmlns:corewpf="clr-namespace:CoreWPF.Utilites;assembly=CoreWPF"
         xmlns:converter="clr-namespace:MlsExclusive.Utilites.Converters"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         WindowState="Maximized"
         Title="{Binding Path=Title}" Height="450" Width="800">
@@ -19,6 +20,11 @@
         <converter:OfferContextMenuConverter x:Key="ContextMenu"/>
         <converter:ContextMenuAgencyConverter x:Key="ContextMenuAgency"/>
         <converter:MainSearchModeConverter x:Key="SearchConvert"/>
+        <CollectionViewSource Source="{Binding Path=Agencys}" x:Key="AgencySort">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Name" Direction="Ascending" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
     </window:WindowExt.Resources>
     <Window.InputBindings>
         <KeyBinding Modifiers="" Gesture="F8" Command="{Binding Path=Command_LoadMls}"/>
@@ -171,7 +177,7 @@
                     <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <!--Таблица агенств-->
-                <ListBox x:Name="Agencys" IsEnabled="{Binding Path=Unblock}" Grid.Column="0" ItemsSource="{Binding Path=Agencys}" Visibility="{Binding Path=ShowFilters, Converter={StaticResource Bool-Visibility}, ConverterParameter=lock}" SelectedItem="{Binding Path=Select_agency}" Background="{StaticResource MlsDarkGreen}">
+                <ListBox x:Name="Agencys" IsEnabled="{Binding Path=Unblock}" Grid.Column="0" ItemsSource="{Binding Source={StaticResource AgencySort}}" Visibility="{Binding Path=ShowFilters, Converter={StaticResource Bool-Visibility}, ConverterParameter=lock}" SelectedItem="{Binding Path=Select_agency}" Background="{StaticResource MlsDarkGreen}">
                     <ListBox.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Разблокировать флаги" Command="{Binding Path=Command_SetUnlockFlag}" Visibility="{Binding Path=UnlockFlags, Converter={StaticResource ContextMenuAgency}, ConverterParameter=unlock}" CommandParameter="true">
