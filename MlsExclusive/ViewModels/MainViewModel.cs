@@ -682,6 +682,7 @@ namespace MlsExclusive.ViewModels
                         catch
                         {
                             current_agency.AddOffer(mls_offer);
+                            current_agency.SetEditStatus();
                         }
                     }
                     #endregion
