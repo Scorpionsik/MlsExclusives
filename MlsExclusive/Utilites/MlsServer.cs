@@ -1,4 +1,5 @@
 ﻿using CoreWPF.Utilites;
+using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Net;
@@ -13,14 +14,9 @@ namespace MlsExclusive.Utilites
     public static class MlsServer
     {
         /// <summary>
-        /// Путь к файлу-конфигурации для фидов МЛС.
+        /// Путь в реестре к данным для сервера.
         /// </summary>
-        private const string UserPath = "Data/user.json";
-
-        /// <summary>
-        /// Путь, где хранится значение последней выгрузки из МЛС в формате Unix Timestamp.
-        /// </summary>
-        private const string UnixTimestampPath = "Data/last_update.time";
+        private const string RegeditPath = "SOFTWARE/Coreman soft/Mls Exclusive";
 
         /// <summary>
         /// Строка-фид с квартирами.
@@ -148,7 +144,18 @@ namespace MlsExclusive.Utilites
         /// <returns>Возвращает время последней выгрузки из МЛС в формате <see cref="DateTimeOffset"/>.</returns>
         public static DateTimeOffset GetUpdateTime()
         {
-            return UnixTime.ToDateTimeOffset(Convert.ToDouble(File.ReadAllText(UnixTimestampPath)), App.Timezone);
+            try
+            {
+                return UnixTime.ToDateTimeOffset(
+                    Convert.ToDouble(RegeditEditor.Read(Registry.CurrentUser, RegeditPath, "value1"))
+                    , App.Timezone);
+            }
+            catch(Exception ex)
+            {
+                double current_stamp = UnixTime.CurrentUnixTimestamp();
+                SetUpdateTime(current_stamp);
+                return UnixTime.ToDateTimeOffset(current_stamp, App.Timezone);
+            }
         }
 
         /// <summary>
@@ -157,7 +164,8 @@ namespace MlsExclusive.Utilites
         /// <param name="timestamp">Unix Timestamp со смещением во времени по <see cref="UnixTime.UTC"/>.</param>
         private static void SetUpdateTime(double timestamp)
         {
-            File.WriteAllText(UnixTimestampPath, timestamp.ToString());
+            //File.WriteAllText(UnixTimestampPath, timestamp.ToString());
+            RegeditEditor.Write(Registry.CurrentUser, RegeditPath, "value1", timestamp, true);
         }
 
         /// <summary>
@@ -166,9 +174,21 @@ namespace MlsExclusive.Utilites
         /// <returns>Структура <see cref="User"/> с данными для фидов</returns>
         public static User GetUser()
         {
-            string json = File.ReadAllText(UserPath);
+            try
+            {
+                string json = Crypt.DecryptString((string)RegeditEditor.Read(Registry.CurrentUser, RegeditPath, "value2"), "vile goblin");
+                return User.Deserialize(json);
+            }
+            catch
+            {
+                User tmp_user = new User("", "", "");
+                SetUser(tmp_user);
+                return tmp_user;
+            }
             //return JsonConvert.DeserializeObject<User>(json);
-            return User.Deserialize(json);
+            
+
+
         }
 
         /// <summary>
@@ -181,7 +201,8 @@ namespace MlsExclusive.Utilites
             string json = JsonConvert.SerializeObject(user);
             File.WriteAllText(UserPath, json);
             */
-            File.WriteAllText(UserPath, User.Serialize(user));
+            string value = Crypt.EncryptString(User.Serialize(user), "vile goblin");
+            RegeditEditor.Write(Registry.CurrentUser, RegeditPath, "value2", value, true);
         }
     }
 }

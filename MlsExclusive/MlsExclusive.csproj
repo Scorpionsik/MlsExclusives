@@ -96,6 +96,7 @@
     <Compile Include="Utilites\Enums\AgencySerializeMode.cs" />
     <Compile Include="Utilites\Enums\MainSearchMode.cs" />
     <Compile Include="Utilites\Enums\WriteStatus.cs" />
+    <Compile Include="Utilites\RegeditEditor.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\WriteSelectViewModel.cs" />
     <Compile Include="Views\SettingsView.xaml.cs">
@@ -151,12 +152,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Data\last_update.time">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\user.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
