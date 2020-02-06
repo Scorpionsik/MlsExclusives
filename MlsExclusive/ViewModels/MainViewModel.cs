@@ -574,7 +574,7 @@ namespace MlsExclusive.ViewModels
             #region check feed
             this.StatusBar.SetAsync("Обработка объектов...", StatusString.Infinite);
 
-            //get new objects
+            #region Get new objects
             ListExt<Agency> tmp_agencys = new ListExt<Agency>();
             for(int i = 0; i < 2; i++)
             {
@@ -619,24 +619,48 @@ namespace MlsExclusive.ViewModels
                     }
                 }
             }
-            //remove old objects with Delete status
-            for(int agency_i = 0; agency_i < this.Agencys.Count; agency_i++)
+            #endregion
+
+            #region Delete offers and empty agencys from app
+            double time_filter = UnixTime.CurrentUnixTimestamp() - 7776000000;
+
+            for (int agency_i = 0; agency_i < this.Agencys.Count; agency_i++)
             {
+                //set old status and check delete offers
                 if (this.Agencys[agency_i].Status != AgencyStatus.Old)
                 {
                     this.Agencys[agency_i].SetOldStatus();
                 }
+
                 for (int offer_i = 0; offer_i < this.Agencys[agency_i].Offers.Count; offer_i++)
                 {
-                    if(this.Agencys[agency_i].Offers[offer_i].Status == OfferStatus.Delete)
+                    //Delete offer
+                    if (this.Agencys[agency_i].Offers[offer_i].Status == OfferStatus.Delete)
                     {
                         this.Agencys[agency_i].Offers.RemoveAt(offer_i);
                         offer_i--;
                     }
+                    //Check by time offer by agency timestamp
+                    else if (this.Agencys[agency_i].Last_update_stamp <= time_filter)
+                    {
+                        this.Agencys[agency_i].Offers[offer_i].SetDeleteStatus();
+                    }
+                }
+
+                //delete empty agency
+                if (this.Agencys[agency_i].Offers == null || this.Agencys[agency_i].Offers.Count == 0)
+                {
+                    this.InvokeInMainThread(() =>
+                    {
+                        File.Delete(@"Data/agencys/" + this.Agencys[agency_i].Name + ".agnc");
+                        this.Agencys.RemoveAt(agency_i);
+                        agency_i--;
+                    });
                 }
             }
+            #endregion
 
-            //equal old and new objects
+            #region Equal old and new objects
             bool isNewAgency = false;
             foreach(Agency mls_agency in tmp_agencys)
             {
@@ -712,14 +736,49 @@ namespace MlsExclusive.ViewModels
                 }
             }
             #endregion
+            #endregion
 
             #region finish
             string status = "Готово!";
             if (isNewAgency) status += " Добавлены новые агенства!";
+            
             this.StatusBar.SetAsync(status, StatusString.LongTime + StatusString.LongTime);
             this.OnPropertyChanged("CurrentUpdateTime");
             #endregion
         } //---метод LoadMlsMethod
+
+        /*
+        private void DeleteEmptyAgencys()
+        {
+            if (this.Agencys != null)
+            {
+                for (int i = 0; i < Agencys.Count; i++)
+                {
+                    //delete empty
+                    if (this.Agencys[i].Offers == null || this.Agencys[i].Offers.Count == 0)
+                    {
+                        this.InvokeInMainThread(() =>
+                        {
+                            File.Delete(@"Data/agencys/" + this.Agencys[i].Name + ".agnc");
+                            this.Agencys.RemoveAt(i);
+                            i--;
+                        });
+                    }
+                    //delete old
+                    else
+                    {
+                        double time_filter = UnixTime.CurrentUnixTimestamp() - 7776000000;
+                        if(this.Agencys[i].Last_update_stamp <= time_filter)
+                        {
+                            foreach(MlsOffer offerDelete in this.Agencys[i].Offers)
+                            {
+                                offerDelete.SetDeleteStatus();
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
 
         /// <summary>
         /// Метод, передаваемый в события агенства; срабатывает если <see cref="Agency.IsLoad"/> или <see cref="Agency.IsPicLoad"/> были изменены.
