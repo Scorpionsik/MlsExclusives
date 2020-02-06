@@ -2,6 +2,7 @@
 using CoreWPF.Utilites;
 using MlsExclusive.Utilites;
 using MlsExclusive.Views;
+using System.Text.RegularExpressions;
 
 namespace MlsExclusive.ViewModels
 {
@@ -76,7 +77,11 @@ namespace MlsExclusive.ViewModels
                 {
                     MlsServer.SetUser(new User(this.Login, this.Password, this.User_agent));
                     base.Command_save?.Execute();
-                });
+                },
+                (obj) => (this.Login != null && new Regex(@"^\d+$").IsMatch(this.Login)) &&
+                (this.Password != null && this.Password.Length > 3) &&
+                (this.User_agent != null && new Regex(@"(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)").IsMatch(this.User_agent))
+                );
             }
         }
     }
