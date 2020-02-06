@@ -78,8 +78,10 @@ namespace MlsExclusive.Utilites
                     if (result.Contains("error")) throw new ArgumentException(result.Replace("\r\n", "").Replace("{", "").Replace("}", "").Split(':')[1].Replace("\"", ""));
                     session = new Regex("\"session\": \"[\\w\\d]+\"").Match(result).Value;
                     session = new Regex("[\\w\\d]+").Matches(session)[1].Value;
+                    streamReader.Close();
                 }
-
+                httpResponse.Close();
+                httpWebRequest.Abort();
                 #endregion
 
                 #region Get feed code
@@ -100,8 +102,11 @@ namespace MlsExclusive.Utilites
                     {
                         string result = streamReader.ReadToEnd();
                         feeds[i - 1] = result;
+                        streamReader.Close();
                         //System.IO.File.WriteAllText(@"E:\request" + i + ".txt", result);
                     }
+                    httpResponse.Close();
+                    httpWebRequest.Abort();
                 }
                 #endregion
 
@@ -121,10 +126,8 @@ namespace MlsExclusive.Utilites
                 }
 
                 httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-                {
-                    string result = streamReader.ReadToEnd();
-                }
+                httpResponse.Close();
+                httpWebRequest.Abort();
                 #endregion
 
                 Flats = feeds[0];
@@ -150,7 +153,7 @@ namespace MlsExclusive.Utilites
                     Convert.ToDouble(RegeditEditor.Read(Registry.CurrentUser, RegeditPath, "value1"))
                     , App.Timezone);
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 double current_stamp = UnixTime.CurrentUnixTimestamp();
                 SetUpdateTime(current_stamp);
