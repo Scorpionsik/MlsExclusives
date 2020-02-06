@@ -1,15 +1,16 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace MlsExclusive.Utilites
 {
+    /// <summary>
+    /// Класс для записи/считывания переменных в реестре Windows
+    /// </summary>
     public static class RegeditEditor
     {
+        /// <summary>
+        /// Записывает параметр по указанному пути
+        /// </summary>
         public static void Write(RegistryKey key, string path, string value_name, object value, bool createPath = false)
         {
             RegistryKey work = key;
