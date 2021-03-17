@@ -101,7 +101,7 @@
             </Button>
         </ToolBar>
         <!--конец Панель управления-->
-        
+
         <DockPanel Grid.Row="1" LastChildFill="True" Background="{StaticResource MlsLightGreen}">
             <!--Фильтры-->
             <Label DockPanel.Dock="Left" Content="Показать: " Margin="5 2 0 0"/>
@@ -136,11 +136,11 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <!--конец Фильтры-->
-            
+
             <!--Отображать агенства и тип фидов-->
             <CheckBox IsEnabled="{Binding Path=Unblock}"  Margin="10 8 0 0" DockPanel.Dock="Left" Content="Отображать агенства и тип фидов" IsChecked="{Binding Path=ShowFilters}"/>
             <!--конец Отображать агенства и тип фидов-->
-            
+
             <!--Поиск-->
             <DockPanel DockPanel.Dock="Left" LastChildFill="True">
                 <Label DockPanel.Dock="Left" Margin="10 2 0 0" Content="Искать по:"/>
@@ -167,7 +167,7 @@
             </DockPanel>
             <!--конец Поиск-->
         </DockPanel>
-        
+
         <!--Таблицы-->
         <Border Grid.Row="2" BorderBrush="{StaticResource MlsGreen}" BorderThickness="1">
             <Grid>
@@ -194,7 +194,7 @@
                     </ListBox.ContextMenu>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                           
+
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             <Setter Property="Margin" Value="3"/>
                             <Setter Property="Template">
@@ -233,7 +233,7 @@
                                         <TextBlock Text=" "/>
                                         <TextBlock Grid.Column="1" Text="{Binding Path=StatusString}" FontSize="12px" FontWeight="Bold"/>
                                     </StackPanel>
-                                    
+
                                 </Grid>
                                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock TextAlignment="Center" Text="{Binding Path=Name}" FontSize="20px" FontWeight="Bold"/>
@@ -369,7 +369,7 @@
                                         <!--конец Ссылка-->
                                     </Grid>
                                     <Grid Grid.Row="1">
-                                        
+
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="5"/>
@@ -379,6 +379,10 @@
                                         <StackPanel Orientation="Vertical" Grid.Column="0">
 
                                             <StackPanel Orientation="Vertical">
+                                                <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=Agency}">
+                                                    <TextBlock Text="Агенство: " FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=Agency}"/>
+                                                </StackPanel>
                                                 <StackPanel Orientation="Horizontal" ToolTip="{Binding Path=Date}">
                                                     <TextBlock Text="Дата добавления: " FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding Path=Date}"/>
@@ -491,26 +495,26 @@
                                                     </StackPanel>
                                                 </Expander.Header>
                                                 <ListBox ItemsSource="{Binding Path=Photos}">
-                                                <i:Interaction.Behaviors>
-                                                    <corewpf:IgnoreMouseWheelBehavior/>
-                                                </i:Interaction.Behaviors>
-                                                <ListBox.ItemContainerStyle>
-                                                    <Style TargetType="ListBoxItem">
-                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                                    </Style>
-                                                </ListBox.ItemContainerStyle>
-                                                <ListBox.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel Orientation="Horizontal"/>
-                                                    </ItemsPanelTemplate>
-                                                </ListBox.ItemsPanel>
-                                                <ListBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Image HorizontalAlignment="Left" Source="{Binding}" MaxHeight="300"/>
-                                                    </DataTemplate>
-                                                </ListBox.ItemTemplate>
-                                            </ListBox>
+                                                    <i:Interaction.Behaviors>
+                                                        <corewpf:IgnoreMouseWheelBehavior/>
+                                                    </i:Interaction.Behaviors>
+                                                    <ListBox.ItemContainerStyle>
+                                                        <Style TargetType="ListBoxItem">
+                                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                        </Style>
+                                                    </ListBox.ItemContainerStyle>
+                                                    <ListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel Orientation="Horizontal"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ListBox.ItemsPanel>
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Image HorizontalAlignment="Left" Source="{Binding}" MaxHeight="300"/>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
                                             </Expander>
                                             <!--конец Фотографии-->
                                             <!--Изменения-->

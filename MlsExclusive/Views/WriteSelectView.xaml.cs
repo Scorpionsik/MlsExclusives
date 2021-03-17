@@ -38,5 +38,6 @@ namespace MlsExclusive.Views
             this.event_getWriteStatus += new Func<KeyValuePair<string, WriteStatus>>(vm.GetSelectStatus);
             this.DataContext = vm;
         }
+
     }
 }

@@ -214,6 +214,7 @@ namespace MlsExclusive.Models
                 tmp_send += Type;
 
                 if (Guidemark != null && Guidemark != "") tmp_send += ", ориентир: " + Guidemark;
+                tmp_send += ", " + this.Floor + "/" + this.Floors;
                 if (Materials != null && Materials != "") tmp_send += ", материал: " + Materials;
                 if (LiveStatus != null && LiveStatus != "") tmp_send += ", состояние: " + LiveStatus;
                 //if (BalconyType != null && BalconyType != "") tmp_send += ", балкон: " + BalconyType;
@@ -222,6 +223,7 @@ namespace MlsExclusive.Models
                 if (BathroomValue != null && BathroomValue != "") tmp_send += ", тип санузла: " + BathroomValue;
                 if (SewerageValue != null && SewerageValue != "") tmp_send += ", канализация: " + SewerageValue;
                 if (GasValue != null && GasValue != "") tmp_send += ", газ: " + GasValue;
+                if(this.SqArea > 0) tmp_send += ", участок " + this.SqArea + " " + this.DeclarationOfNum(Convert.ToInt32(this.SqArea), new string[3] { "сотка", "сотки", "соток"});
 
                 return tmp_send + ".";
             }
@@ -305,6 +307,8 @@ namespace MlsExclusive.Models
                 this.RoomCount = 0;
             }
 
+            if(values.Count > 5) { 
+
             this.District = values[2];
             this.Guidemark = values[3];
             this.Street = values[4];
@@ -337,90 +341,91 @@ namespace MlsExclusive.Models
             }
             catch { this.SqKitchen = 0; }
             this.LiveStatus = values[12];
-            //for flat
-            if (mode == MlsMode.Flat)
-            {
-                this.Agency = values[16];
-                switch (values[1].ToLower())
+                //for flat
+                if (mode == MlsMode.Flat)
                 {
-                    case "г":
-                        this.Type = "гостинка";
-                        break;
-                    case "и":
-                        this.Type = "квартира";
-                        break;
-                    case "п":
-                        this.Type = "подселение";
-                        break;
+                    this.Agency = values[16];
+                    switch (values[1].ToLower())
+                    {
+                        case "г":
+                            this.Type = "гостинка";
+                            break;
+                        case "и":
+                            this.Type = "квартира";
+                            break;
+                        case "п":
+                            this.Type = "подселение";
+                            break;
+                    }
+                    this.SqArea = 0;
+                    this.BalconyType = values[11];
+                    this.RoomsType = values[13];
+                    this.Materials = values[14];
+                    this.BathroomType = values[15];
+                    this.GasValue = "";
+                    this.SewerageValue = "";
+                    this.BathroomValue = "";
+                    try
+                    {
+                        values[17] = values[17].Remove(values[17].Length - 1);
+                        this.Phones = new List<string>(values[17].Split(','));
+                    }
+                    catch { this.Phones = new List<string>(); }
+                    if (values[18] != @"https://mls.kh.ua/photo/.jpg")
+                    {
+                        this.Photos = new List<string>(values[18].Split(','));
+                    }
+                    else this.Photos = new List<string>();
+                    this.Date = values[19];
+                    this.Id = Convert.ToInt32(values[20]);
                 }
-                this.SqArea = 0;
-                this.BalconyType = values[11];
-                this.RoomsType = values[13];
-                this.Materials = values[14];
-                this.BathroomType = values[15];
-                this.GasValue = "";
-                this.SewerageValue = "";
-                this.BathroomValue = "";
-                try
+                //for house
+                else if (mode == MlsMode.House)
                 {
-                    values[17] = values[17].Remove(values[17].Length - 1);
-                    this.Phones = new List<string>(values[17].Split(','));
-                }
-                catch { this.Phones = new List<string>(); }
-                if (values[18] != @"https://mls.kh.ua/photo/.jpg")
-                {
-                    this.Photos = new List<string>(values[18].Split(','));
-                }
-                else this.Photos = new List<string>();
-                this.Date = values[19];
-                this.Id = Convert.ToInt32(values[20]);
-            }
-            //for house
-            else if (mode == MlsMode.House)
-            {
-                this.Agency = values[15];
-                switch (values[1].ToLower())
-                {
-                    case "1":
-                        this.Type = "пол-дома";
-                        break;
-                    case "д":
-                        this.Type = "дача";
-                        break;
-                    case "у":
-                        this.Type = "участок";
-                        break;
-                    case "ц":
-                        this.Type = "дом";
-                        break;
-                }
-                try
-                {
-                    this.SqArea = Convert.ToInt32(values[11]);
-                }
-                catch { this.SqArea = 0; }
-                this.BalconyType = "";
-                this.RoomsType = "";
-                this.Materials = values[13];
-                this.BathroomType = values[14];
-                this.GasValue = values[16];
-                this.SewerageValue = values[17];
-                this.BathroomValue = values[18];
-                try
-                {
-                    values[19] = values[19].Remove(values[19].Length - 1);
-                    this.Phones = new List<string>(values[19].Split(','));
-                }
-                catch { this.Phones = new List<string>(); }
-                if (values[20] != @"https://mls.kh.ua/photo/.jpg")
-                {
-                    this.Photos = new List<string>(values[20].Split(','));
-                }
-                else this.Photos = new List<string>();
-                this.Date = values[21];
+                    this.Agency = values[15];
+                    switch (values[1].ToLower())
+                    {
+                        case "1":
+                            this.Type = "пол-дома";
+                            break;
+                        case "д":
+                            this.Type = "дача";
+                            break;
+                        case "у":
+                            this.Type = "участок";
+                            break;
+                        case "ц":
+                            this.Type = "дом";
+                            break;
+                    }
+                    try
+                    {
+                        this.SqArea = Convert.ToInt32(values[11]);
+                    }
+                    catch { this.SqArea = 0; }
+                    this.BalconyType = "";
+                    this.RoomsType = "";
+                    this.Materials = values[13];
+                    this.BathroomType = values[14];
+                    this.GasValue = values[16];
+                    this.SewerageValue = values[17];
+                    this.BathroomValue = values[18];
+                    try
+                    {
+                        values[19] = values[19].Remove(values[19].Length - 1);
+                        this.Phones = new List<string>(values[19].Split(','));
+                    }
+                    catch { this.Phones = new List<string>(); }
+                    if (values[20] != @"https://mls.kh.ua/photo/.jpg")
+                    {
+                        this.Photos = new List<string>(values[20].Split(','));
+                    }
+                    else this.Photos = new List<string>();
+                    this.Date = values[21];
 
-                this.Id = Convert.ToInt32(values[22]);
-                //MlsOffer.FixWrongValues(this);
+                    this.Id = Convert.ToInt32(values[22]);
+                    //MlsOffer.FixWrongValues(this);
+                }
             }
         } //---конструктор MlsOffer
 
@@ -431,6 +436,13 @@ namespace MlsExclusive.Models
         public void UpdateDate(Model model)
         {
             this.Last_update_stamp = UnixTime.CurrentUnixTimestamp();
+        }
+
+        private string DeclarationOfNum(int num, string[] decl)
+        {
+            if (decl == null || decl.Length != 3) throw new Exception("decl должен содержать 3 строки!");
+            int[] cases = new int[6] { 2, 0, 1, 1, 1, 2 };
+            return decl[(num % 100 > 4 && num % 100 < 21) ? 2 : cases[Math.Min(num % 10, 5)]];
         }
 
         /// <summary>

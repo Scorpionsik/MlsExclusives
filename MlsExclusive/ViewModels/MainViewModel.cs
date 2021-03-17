@@ -464,6 +464,12 @@ namespace MlsExclusive.ViewModels
 
                     if (write_status == WriteStatus.All) agencys.AddRange(this.Agencys);
                     else if (write_status == WriteStatus.Select) agencys.Add(this.Select_agency);
+                    else if (write_status == WriteStatus.New)
+                    {
+                        Agency tmp = new Agency("");
+                        tmp.AddOfferRange(this.Current_offers);
+                        agencys.Add(tmp);
+                    }
 
                     foreach (Agency agency in agencys)
                     {
@@ -525,6 +531,7 @@ namespace MlsExclusive.ViewModels
                         window.Title = "Сохранение документа в формате Яндекс.недвижимость...";
                         window.FileName = "mls_feed";
                         if (write_status == WriteStatus.Select) window.FileName += "_" + this.Select_agency.Name.Replace(" ", "");
+                        else if (write_status == WriteStatus.New) window.FileName += "_only_new";
                         window.Filter = "Фид в формате Яндекс-недвижимости|*.yrl";
                         if ((bool)window.ShowDialog())
                         {
@@ -562,6 +569,12 @@ namespace MlsExclusive.ViewModels
                     if (MlsServer.Houses.Length == 0) message += " Не загружены дома!";
                     throw new ArgumentException(message);
                 }
+                try
+                {
+                    File.WriteAllText("Data//feed_flats.txt", MlsServer.Flats);
+                    File.WriteAllText("Data//feed_houses.txt", MlsServer.Houses);
+                }
+                catch(Exception ex) { }
             }
             catch(Exception ex)
             {
@@ -596,26 +609,32 @@ namespace MlsExclusive.ViewModels
                 {
                     if (feed_offer != null && feed_offer.Length > 0)
                     {
-                        MlsOffer mls_offer = new MlsOffer(feed_offer, current_mode);
-                        MlsOffer.FixWrongValues(mls_offer);
-                        Agency feed_agency = new Agency(mls_offer.Agency);
-                        try
+                        
+                        
+                            MlsOffer mls_offer = new MlsOffer(feed_offer, current_mode);
+                        if (mls_offer.Id > 0)
                         {
-                            feed_agency = tmp_agencys.FindFirst(new Func<Agency, bool>(obj =>
+                            MlsOffer.FixWrongValues(mls_offer);
+                            Agency feed_agency = new Agency(mls_offer.Agency);
+                            try
                             {
-                                if (obj.Name == feed_agency.Name) return true;
-                                else return false;
-                            }));
+                                feed_agency = tmp_agencys.FindFirst(new Func<Agency, bool>(obj =>
+                                {
+                                    if (obj.Name == feed_agency.Name) return true;
+                                    else return false;
+                                }));
+                            }
+                            catch
+                            {
+                                feed_agency.UpdateBindings(this.SelectChangesForAgency);
+                                tmp_agencys.Add(feed_agency);
+                            }
+                            finally
+                            {
+                                feed_agency.AddOffer(mls_offer);
+                            }
                         }
-                        catch
-                        {
-                            feed_agency.UpdateBindings(this.SelectChangesForAgency);
-                            tmp_agencys.Add(feed_agency);
-                        }
-                        finally
-                        {
-                            feed_agency.AddOffer(mls_offer);
-                        }
+                       
                     }
                 }
             }
@@ -826,6 +845,9 @@ namespace MlsExclusive.ViewModels
                     {
                         this.Unblock = false;
                         this.LoadMlsMethod();
+                        this.Select_filter = this.Filters.ElementAt(1);
+                        this.ShowFilters = false;
+                        this.Command_SaveInFile?.Execute();
                         this.Unblock = true;
                     });
                 }
@@ -850,6 +872,18 @@ namespace MlsExclusive.ViewModels
                             this.SaveInFileMethod(window.Result);
                         }
                         else this.StatusBar.SetAsync("Отмена записи...", StatusString.LongTime);
+                    }
+                    else if (this.Select_agency != null && !this.ShowFilters && this.Select_filter.Key == "Новые")
+                    {
+                        switch(MessageBox.Show("Выгрузить только новые объекты?", "Сохранение в файл...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question))
+                        {
+                            case MessageBoxResult.Yes:
+                                this.SaveInFileMethod(WriteStatus.New);
+                                break;
+                            case MessageBoxResult.No:
+                                this.SaveInFileMethod(WriteStatus.All);
+                                break;
+                        }
                     }
                     else this.SaveInFileMethod(WriteStatus.All);
                 }
