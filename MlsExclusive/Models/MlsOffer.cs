@@ -199,6 +199,7 @@ namespace MlsExclusive.Models
         /// </summary>
         public List<string> Photos { get; set; }
 
+        public string OfferDescription { get; set; }
         /// <summary>
         /// Описание объекта; поскольку в фидах МЛС описания нету, оно формируется из параметров, указанных в объявлении.
         /// </summary>
@@ -207,25 +208,34 @@ namespace MlsExclusive.Models
         {
             get
             {
-                string tmp_send = "В продаже ";
+                string tmp_send = "";
+                if (this.OfferDescription == null || this.OfferDescription.Length == 0)
+                {
+                    tmp_send = "В продаже ";
 
-                if (RoomCount > 0) tmp_send += RoomCount + "-комн. ";
+                    if (RoomCount > 0) tmp_send += RoomCount + "-комн. ";
 
-                tmp_send += Type;
+                    tmp_send += Type;
 
-                if (Guidemark != null && Guidemark != "") tmp_send += ", ориентир: " + Guidemark;
-                tmp_send += ", " + this.Floor + "/" + this.Floors;
-                if (Materials != null && Materials != "") tmp_send += ", материал: " + Materials;
-                if (LiveStatus != null && LiveStatus != "") tmp_send += ", состояние: " + LiveStatus;
-                //if (BalconyType != null && BalconyType != "") tmp_send += ", балкон: " + BalconyType;
-                if (RoomsType != null && RoomsType != "") tmp_send += ", комнаты " + RoomsType;
-                if (BathroomType != null && BathroomType != "") tmp_send += ", санузел: " + BathroomType;
-                if (BathroomValue != null && BathroomValue != "") tmp_send += ", тип санузла: " + BathroomValue;
-                if (SewerageValue != null && SewerageValue != "") tmp_send += ", канализация: " + SewerageValue;
-                if (GasValue != null && GasValue != "") tmp_send += ", газ: " + GasValue;
-                if(this.SqArea > 0) tmp_send += ", участок " + this.SqArea + " " + this.DeclarationOfNum(Convert.ToInt32(this.SqArea), new string[3] { "сотка", "сотки", "соток"});
+                    if (Guidemark != null && Guidemark != "") tmp_send += ", ориентир: " + Guidemark;
+                    tmp_send += ", " + this.Floor + "/" + this.Floors;
+                    if (Materials != null && Materials != "") tmp_send += ", материал: " + Materials;
+                    if (LiveStatus != null && LiveStatus != "") tmp_send += ", состояние: " + LiveStatus;
+                    //if (BalconyType != null && BalconyType != "") tmp_send += ", балкон: " + BalconyType;
+                    if (RoomsType != null && RoomsType != "") tmp_send += ", комнаты " + RoomsType;
+                    if (BathroomType != null && BathroomType != "") tmp_send += ", санузел: " + BathroomType;
+                    if (BathroomValue != null && BathroomValue != "") tmp_send += ", тип санузла: " + BathroomValue;
+                    if (SewerageValue != null && SewerageValue != "") tmp_send += ", канализация: " + SewerageValue;
+                    if (GasValue != null && GasValue != "") tmp_send += ", газ: " + GasValue;
+                    if (this.SqArea > 0) tmp_send += ", участок " + this.SqArea + " " + this.DeclarationOfNum(Convert.ToInt32(this.SqArea), new string[3] { "сотка", "сотки", "соток" });
 
-                return tmp_send + ".";
+                    tmp_send += ".";
+                }
+                else
+                {
+                    tmp_send = this.OfferDescription;
+                }
+                return tmp_send;
             }
         }
 
@@ -292,9 +302,10 @@ namespace MlsExclusive.Models
             this.Last_update_stamp = UnixTime.CurrentUnixTimestamp();
             string[] old_values = mls_string.Split('\t');
             ListExt<string> values = new ListExt<string>();
+            Regex replace = new Regex("[\"\r\n]");
             foreach (string s in old_values)
             {
-                values.Add(s.Replace("\"", ""));
+                values.Add(replace.Replace(s,""));
             }
 
             //for all
@@ -312,8 +323,11 @@ namespace MlsExclusive.Models
             this.District = values[2];
             this.Guidemark = values[3];
             this.Street = values[4];
-
-            this.Price = Convert.ToDouble(values[5].Replace('.', ',')) * Convert.ToDouble(1000);
+                try
+                {
+                    this.Price = Convert.ToDouble(values[5].Replace('.', ',')) * Convert.ToDouble(1000);
+                }
+                catch { this.Price = 0; }
             try
             {
                 this.Floor = Convert.ToInt32(values[6].Split('/')[0]);
@@ -378,6 +392,8 @@ namespace MlsExclusive.Models
                     else this.Photos = new List<string>();
                     this.Date = values[19];
                     this.Id = Convert.ToInt32(values[20]);
+
+                    this.OfferDescription = values[21];
                 }
                 //for house
                 else if (mode == MlsMode.House)
@@ -424,6 +440,8 @@ namespace MlsExclusive.Models
                     this.Date = values[21];
 
                     this.Id = Convert.ToInt32(values[22]);
+
+                    this.OfferDescription = values[23];
                     //MlsOffer.FixWrongValues(this);
                 }
             }

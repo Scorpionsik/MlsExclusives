@@ -593,8 +593,8 @@ namespace MlsExclusive.ViewModels
             {
                 string current_feed = "";
                 MlsMode current_mode = MlsMode.Flat;
-
-                if(i == 0)
+                Regex get_split = new Regex(@"([^\t]+\t){22}[^\r\n]+");
+                if (i == 0)
                 {
                     current_feed = MlsServer.Flats;
                     current_mode = MlsMode.Flat;
@@ -603,10 +603,12 @@ namespace MlsExclusive.ViewModels
                 {
                     current_feed = MlsServer.Houses;
                     current_mode = MlsMode.House;
+                    get_split = new Regex(@"([^\t]+\t){24}[^\r\n]+");
                 }
-
-                foreach(string feed_offer in current_feed.Split('\n'))
+                
+                foreach(Match feed_match in get_split.Matches(current_feed))
                 {
+                    string feed_offer = feed_match.Value;
                     if (feed_offer != null && feed_offer.Length > 0)
                     {
                         
