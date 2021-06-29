@@ -467,6 +467,7 @@ namespace MlsExclusive.ViewModels
                     else if (write_status == WriteStatus.New)
                     {
                         Agency tmp = new Agency("");
+                        //tmp.IsPicLoad = true;
                         tmp.AddOfferRange(this.Current_offers);
                         agencys.Add(tmp);
                     }
@@ -509,7 +510,22 @@ namespace MlsExclusive.ViewModels
                                     };
 
                                     tmp_send.Phones.AddRange(offer.Phones);
-                                    if (agency.IsPicLoad) tmp_send.Photos.AddRange(offer.Photos);
+
+                                    bool isLoadPic = false;
+
+                                    try
+                                    {
+                                        isLoadPic = this.Agencys.FindFirst(ag =>
+                                        {
+                                            return ag.Name == offer.Agency;
+                                        }).IsPicLoad;
+                                    }
+                                    catch { }
+
+                                    if (isLoadPic)
+                                    {
+                                        tmp_send.Photos.AddRange(offer.Photos);
+                                    }
 
                                     tmp_offer.Add(tmp_send);
                                 }
@@ -593,7 +609,7 @@ namespace MlsExclusive.ViewModels
             {
                 string current_feed = "";
                 MlsMode current_mode = MlsMode.Flat;
-                Regex get_split = new Regex(@"([^\t]+\t){22}[^\r\n]+");
+                Regex get_split = new Regex("([^\t]+\t){22}\"[^\"]\"\r?\n");
                 if (i == 0)
                 {
                     current_feed = MlsServer.Flats;
@@ -603,17 +619,19 @@ namespace MlsExclusive.ViewModels
                 {
                     current_feed = MlsServer.Houses;
                     current_mode = MlsMode.House;
-                    get_split = new Regex(@"([^\t]+\t){24}[^\r\n]+");
+                    get_split = new Regex("([^\t]+\t){24}\"[^\"]\"\r?\n");
                 }
-                
-                foreach(Match feed_match in get_split.Matches(current_feed))
+                current_feed = new Regex("[\t](?=[^\"]+?(\"|$))").Replace(current_feed, " ");
+
+
+                foreach (Match feed_match in get_split.Matches(current_feed))
                 {
                     string feed_offer = feed_match.Value;
                     if (feed_offer != null && feed_offer.Length > 0)
                     {
                         
                         
-                            MlsOffer mls_offer = new MlsOffer(feed_offer, current_mode);
+                        MlsOffer mls_offer = new MlsOffer(feed_offer, current_mode);
                         if (mls_offer.Id > 0)
                         {
                             MlsOffer.FixWrongValues(mls_offer);

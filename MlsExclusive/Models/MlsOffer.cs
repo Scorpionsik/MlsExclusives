@@ -441,7 +441,7 @@ namespace MlsExclusive.Models
 
                     this.Id = Convert.ToInt32(values[22]);
 
-                    this.OfferDescription = values[23];
+                    this.OfferDescription = new Regex(@"(\+?[-.\s]*3)?(8[-.\s]*)?\(?0\(?[1-9]\d\)?[-.\s]*(\d[-.\s]*){7}").Replace(values[23], "");
                     //MlsOffer.FixWrongValues(this);
                 }
             }
@@ -658,6 +658,8 @@ namespace MlsExclusive.Models
                     if (!this.Photos.Contains(photo)) this.Photos.Add(photo);
                 }
 
+                if (this.OfferDescription != offer.OfferDescription) this.OfferDescription = offer.OfferDescription;
+
                 //set status
                 if (this.Changes.Length > 0)
                 {
@@ -691,7 +693,8 @@ namespace MlsExclusive.Models
         /// <param name="offer"><see cref="MlsOffer"/> для редактирования.</param>
         public static void FixWrongValues(MlsOffer offer)
         {
-
+            if (offer.OfferDescription == null) offer.OfferDescription = "";
+            offer.OfferDescription = new Regex(@"(\+?[-.\s]*3)?(8[-.\s]*)?\(?0\(?[1-9]\d\)?[-.\s]*(\d[-.\s]*){7}").Replace(offer.OfferDescription, "");
             //районы
             switch (offer.District)
             {
